@@ -23,12 +23,15 @@
   "dependencies": {
     "@discordx/importer": "^1.1.9",
     "@discordx/koa": "^1.1.0",
+    "@discordx/utilities": "^4.3.1",
     "@koa/router": "^10.1.1",
     "discord.js": "^13.7.0",
     "discordx": "^9.7.1",
     "dotenv": "^16.0.1",
     "koa": "^2.13.4",
+    "mysql2": "^2.3.3",
     "reflect-metadata": "^0.1.13",
-    "ts-node": "^10.8.0"
+    "ts-node": "^10.8.0",
+    "typeorm": "^0.3.6"
   }
 }
