@@ -1,7 +1,7 @@
 import { Category, Description, ICategory, RateLimit, TIME_UNIT } from "@discordx/utilities";
 import { ButtonInteraction, CommandInteraction, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { ButtonComponent, DApplicationCommand, Discord, Guard, MetadataStorage, Slash } from "discordx";
-import { categories, helpText } from "..";
+import { categories, helpText } from "../events/botReady";
 
 let helpMenu: MessageEmbed;
 

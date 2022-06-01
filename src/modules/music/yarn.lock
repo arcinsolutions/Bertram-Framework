@@ -2,3 +2,20 @@
 # yarn lockfile v1
 
 
+"undici@^5.0.0":
+  "integrity" "sha512-A1SRXysDg7J+mVP46jF+9cKANw0kptqSFZ8tGyL+HBiv0K1spjxPX8Z4EGu+Eu6pjClJUBdnUPlxrOafR668/g=="
+  "resolved" "https://registry.npmjs.org/undici/-/undici-5.4.0.tgz"
+  "version" "5.4.0"
+
+"vulkava@^1.2.4":
+  "integrity" "sha512-fh0BuRh0pZMEA/GqvPdYFOkq+rvATBDjv/WvY0djB015fvykcKzGMKDe/rbRhogrHMzm7EaHaGQgBXHm23Oc9A=="
+  "resolved" "https://registry.npmjs.org/vulkava/-/vulkava-1.2.4.tgz"
+  "version" "1.2.4"
+  dependencies:
+    "undici" "^5.0.0"
+    "ws" "^8.5.0"
+
+"ws@^8.5.0":
+  "integrity" "sha512-c2gsP0PRwcLFzUiA8Mkr37/MI7ilIlHQxaEAtd0uNMbVMoy8puJyafRlm0bV9MbGSabUPeLrRRaqIBcFcA2Pqg=="
+  "resolved" "https://registry.npmjs.org/ws/-/ws-8.7.0.tgz"
+  "version" "8.7.0"

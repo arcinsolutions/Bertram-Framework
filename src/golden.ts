@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { dirname, importx } from "@discordx/importer";
+import { dirname, importx, isESM } from "@discordx/importer";
 import { Koa } from "@discordx/koa";
 import { log } from "console";
 import { CacheType, Intents, Interaction } from "discord.js";
@@ -26,7 +26,6 @@ export const client = new Client({
 
 start();
 
-
 client.on("ready", async () => {
     // make sure all guilds are in cache
     await client.guilds.fetch();
@@ -45,9 +44,7 @@ client.on("ready", async () => {
     await client.clearApplicationCommands(
         ...client.guilds.cache.map((g) => g.id)
     );
-
     log("Golden started");
-
     client.emit("botReady");
 });
 
@@ -64,23 +61,24 @@ async function start() {
     }
 
     //Import Slash Commands
-    await importx(
-        dirname(import.meta.url) + "/modules/**/{events,commands,api}/*.{ts,js}"
+    const folder = isESM ? dirname(import.meta.url) : __dirname;
+    await importx(`${folder}/modules/**/{events,commands,api}/*.{ts,js}`).then(() =>
+        console.log("All files imported")
     );
-
-    client.login(goldenConfig.DISCORD_TOKEN);
-
     //rest api section
     // api: prepare server
-    const server = new Koa();
+    const server = await new Koa();
 
     // api: need to build the api server first
     await server.build();
 
     // api: let's start the server now
     const port = process.env.PORT ?? 3000;
-    server.listen(port, () => {
+    await server.listen(port, () => {
         console.log(`discord api server started on ${port}`);
         console.log(`visit localhost:${port}/guilds`);
     });
+
+
+    client.login(goldenConfig.DISCORD_TOKEN);
 }

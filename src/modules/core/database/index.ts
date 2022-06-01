@@ -4,9 +4,7 @@ import { Guild } from "./entities/guild";
 import { goldenConfig } from './../../../golden';
 import { exit } from "process";
 
-init();
-
-async function init() {
+export async function CoreInit() {
     if (!goldenConfig || (goldenConfig.DB_HOST || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
         log(
             "Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/spasten-studio/Golden"

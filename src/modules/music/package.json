@@ -3,8 +3,11 @@
   "version": "0.0.5",
   "description": "The Music System for our Bot",
   "main": "index.js",
-  "author": "Botis#0666, Raved",
+  "author": "Botis#0666, Raved#8329",
   "license": "MIT",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "vulkava": "^1.2.4"
+  },
+  "type": "module"
 }
