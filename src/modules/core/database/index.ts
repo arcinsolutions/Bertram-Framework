@@ -2,7 +2,7 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import { log } from 'console';
 import { Guild } from "./entities/guild";
 import { goldenConfig } from './../../../golden';
-import { exit, exitCode } from "process";
+import { exit } from "process";
 
 init();
 

@@ -11,7 +11,7 @@ import './database'
 let tempCategories: Array<string> = [];
 let tempHelpText: Array<string> = [];
 
-await client.on("botReady", () => {
+await client.once("botReady", () => {
     MetadataStorage.instance.applicationCommands.forEach(
         (cmd: DApplicationCommand & ICategory) => {
             if (cmd.category === undefined)

@@ -1,0 +1,10 @@
+{
+  "name": "golden_music",
+  "version": "0.0.5",
+  "description": "The Music System for our Bot",
+  "main": "index.js",
+  "author": "Botis#0666, Raved",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {}
+}
