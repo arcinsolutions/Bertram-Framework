@@ -6,5 +6,4 @@ await client.once("botReady", () => {
         return;
 
     music.start(client.user.id);
-    console.log("check!");
 })

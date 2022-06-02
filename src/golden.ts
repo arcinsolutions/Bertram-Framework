@@ -67,7 +67,7 @@ async function start() {
     );
     //rest api section
     // api: prepare server
-    const server = await new Koa();
+    const server: any = await new Koa();
 
     // api: need to build the api server first
     await server.build();
