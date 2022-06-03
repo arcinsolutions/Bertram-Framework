@@ -22,7 +22,7 @@ music.on('trackStart', (player: Player, track: Track) => {
     if (player.textChannelId == (undefined || null))
         return
 
-    const channel = client.channels.cache.get(player.textChannelId);
+    //Update Player
 
     console.log(`[Music] - Now playing ${track.title}, ${track.source}`);
 
@@ -31,6 +31,7 @@ music.on('trackStart', (player: Player, track: Track) => {
 music.on('trackEnd', (player: Player, track: Track, reason: string) => {
     console.log(`[Music] - Track ended ${track.title}, ${track.source}`);
 
+    //Update Player
 })
 
 music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
@@ -38,9 +39,22 @@ music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
 
 })
 
+music.on('queueEnd', (player: Player) => {
+    if (player.textChannelId == (undefined || null))
+        return
+
+    //Update Player
+
+    player.destroy();
+})
 // --- Track / Queue ---
 
 // +++ Error / Warnings etc. +++
+//Important
+client.on("raw", (packet) => {
+    music.handleVoiceUpdate(packet);
+})
+
 music.on("error", (node: Node, err: Error) => {
     console.error(`[Music] - Error on node ${node.identifier}`, err.message);
 })

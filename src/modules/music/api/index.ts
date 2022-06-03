@@ -1,4 +1,5 @@
 import { Vulkava } from 'vulkava'
+import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
 
 export const music = new Vulkava({
@@ -10,7 +11,7 @@ export const music = new Vulkava({
             password: 'fzx@zbx8apq0tvk-NXA'
         }
     ],
-    sendWS: (guildId, payload) => {
+    sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {
         client.guilds.cache.get(guildId)?.shard.send(payload);
         // With eris
         // client.guilds.get(guildId)?.shard.sendWS(payload.op, payload.d);

@@ -1,30 +1,77 @@
-import { Category, Description } from "@discordx/utilities";
-import { Discord, Slash } from "discordx";
-import { Interaction, MessageEmbed } from 'discord.js';
+import { Category } from "@discordx/utilities";
+import { Discord, Slash, SlashOption } from "discordx";
+import { MessageEmbed } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
-import { client } from "../../../golden";
 import { music } from './../api/index';
+import { checkCommandInteraction } from "../../core/api/functions";
 
 @Discord()
 @Category("Music")
-class Stats {
-    @Slash("play")
-    @Description("let you Play your Favorite song.")
-    async play(interaction: CommandInteraction) {
-        const embed = new MessageEmbed();
+class Play {
+    @Slash("play", { description: "let you Play your Favorite song." })
+    async play(@SlashOption("song", { description: "add a Song to the Queue" })
+    song: string, interaction: CommandInteraction) {
+        const embed = new MessageEmbed({
+            color: "DARK_RED"
+        });
 
         interaction.deferReply({
-            fetchReply: true,
+            ephemeral: true
         })
 
-        
+        await checkCommandInteraction(interaction);
 
-        const sent: any = await interaction.reply({
-            embeds: [embed.setDescription(`**Pinging...**`).setColor('DARK_RED')],
-            fetchReply: true,
-            ephemeral: true,
+        if (!interaction.member.voice.channel)
+            return await interaction.editReply({
+                embeds: [embed.setDescription(":x: please Join a Voice Channel!")]
+            })
+
+        // Search for Music
+        const res = await music.search(song);
+
+        switch (res.loadType) {
+            case "LOAD_FAILED":
+                return interaction.editReply({
+                    embeds: [embed.setDescription(`:x: Load failed!\nError: ${res.exception?.message}`)]
+                })
+            case "NO_MATCHES":
+                return interaction.editReply({
+                    embeds: [embed.setDescription(`:x: No matches!`)]
+                })
+            default:
+                break;
+        }
+
+        const player = music.createPlayer({
+            guildId: interaction.guild.id,
+            voiceChannelId: interaction.member.voice.channel.id,
+            textChannelId: interaction.channel.id,
+            selfDeaf: true
         })
 
+        //Connect to the Voice Channel
+        await player.connect();
 
+
+        if (res.loadType === 'PLAYLIST_LOADED') {
+            for (const track of res.tracks) {
+                track.setRequester(interaction.user);
+                player.queue.push(track);
+            }
+
+            interaction.editReply({
+                embeds: [embed.setDescription(`Playlist \`${res.playlistInfo.name}\` loaded!`).setColor("DARK_GREEN")]
+            });
+        } else {
+            const track = res.tracks[0];
+            track.setRequester(interaction.user);
+
+            player.queue.push(track);
+            interaction.editReply({
+                embeds: [embed.setDescription(`Queued **${track.title}**`).setColor("DARK_GREEN")]
+            });
+        }
+
+        if (!player.playing) player.play();
     }
 }
