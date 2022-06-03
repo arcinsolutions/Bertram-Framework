@@ -7,8 +7,8 @@ export const music = new Vulkava({
         {
             id: 'arcin1',
             hostname: 'arcin.solutions',
-            port: 2333,
-            password: 'fzx@zbx8apq0tvk-NXA'
+            port: 2334,
+            password: 'eriCmEqBitDZv3rnH3Wr'
         }
     ],
     sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {

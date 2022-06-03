@@ -3,26 +3,25 @@ import { Discord, Slash, SlashOption } from "discordx";
 import { MessageEmbed } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { music } from './../api/index';
-import { checkCommandInteraction } from "../../core/api/functions";
+import { checkCommandInteraction } from "../../core/api";
 
 @Discord()
 @Category("Music")
 class Play {
     @Slash("play", { description: "let you Play your Favorite song." })
-    async play(@SlashOption("song", { description: "add a Song to the Queue" })
-    song: string, interaction: CommandInteraction) {
+    async play(@SlashOption("song", { description: "add a Song to the Queue" }) song: string, interaction: CommandInteraction) {
         const embed = new MessageEmbed({
             color: "DARK_RED"
         });
 
-        interaction.deferReply({
-            ephemeral: true
-        })
+        // interaction.deferReply({
+        //     ephemeral: true
+        // })
 
         await checkCommandInteraction(interaction);
 
         if (!interaction.member.voice.channel)
-            return await interaction.editReply({
+            return await interaction.reply({
                 embeds: [embed.setDescription(":x: please Join a Voice Channel!")]
             })
 
@@ -31,11 +30,11 @@ class Play {
 
         switch (res.loadType) {
             case "LOAD_FAILED":
-                return interaction.editReply({
+                return interaction.reply({
                     embeds: [embed.setDescription(`:x: Load failed!\nError: ${res.exception?.message}`)]
                 })
             case "NO_MATCHES":
-                return interaction.editReply({
+                return interaction.reply({
                     embeds: [embed.setDescription(`:x: No matches!`)]
                 })
             default:
@@ -59,7 +58,7 @@ class Play {
                 player.queue.push(track);
             }
 
-            interaction.editReply({
+            interaction.reply({
                 embeds: [embed.setDescription(`Playlist \`${res.playlistInfo.name}\` loaded!`).setColor("DARK_GREEN")]
             });
         } else {
@@ -67,7 +66,7 @@ class Play {
             track.setRequester(interaction.user);
 
             player.queue.push(track);
-            interaction.editReply({
+            interaction.reply({
                 embeds: [embed.setDescription(`Queued **${track.title}**`).setColor("DARK_GREEN")]
             });
         }
