@@ -21,13 +21,13 @@ export async function CoreInit() {
         database: goldenConfig.DB_Database,
         synchronize: true,
         logging: false,
-        entities: [Guild],
+        entities: ["../../*/database/entities/*.ts"],
     })
 
     await DB.initialize().then(() => {
-        log("DB Connected.")
+        log("[Core] - DB Connected.")
     }).catch((reason: string) => {
-        log(`DB err: ${reason}`)
+        log(`[Core] -  DB err: ${reason}`)
     })
 
     return DB;
