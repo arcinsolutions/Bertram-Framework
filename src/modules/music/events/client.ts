@@ -9,6 +9,11 @@ client.once("botReady", () => {
     music.start(client.user.id);
 })
 
+//Important
+client.on("raw", (packet) => {
+    music.handleVoiceUpdate(packet);
+})
+
 client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState) => {
     const player = music.players.get(oldState.guild.id);
     if (oldState.channel && !newState.channel) {

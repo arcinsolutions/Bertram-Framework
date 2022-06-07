@@ -50,9 +50,9 @@ music.on('queueEnd', (player: Player) => {
 // --- Track / Queue ---
 
 // +++ Error / Warnings etc. +++
-//Important
-client.on("raw", (packet) => {
-    music.handleVoiceUpdate(packet);
+music.on("raw", (node: Node, payload: unknown) => {
+    console.log(`[Music] - Something happend at Node ${node.identifier}: ${payload}`);
+
 })
 
 music.on("error", (node: Node, err: Error) => {
