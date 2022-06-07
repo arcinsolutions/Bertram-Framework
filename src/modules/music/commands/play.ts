@@ -10,6 +10,10 @@ import { checkCommandInteraction } from "../../core/api";
 class Play {
     @Slash("play", { description: "let you Play your Favorite song." })
     async play(@SlashOption("song", { description: "add a Song to the Queue" }) song: string, interaction: CommandInteraction) {
+        await interaction.deferReply({
+            ephemeral: true,
+            fetchReply: true
+        })
         const embed = new MessageEmbed({
             color: "DARK_RED"
         });
@@ -21,7 +25,7 @@ class Play {
         await checkCommandInteraction(interaction);
 
         if (!interaction.member.voice.channel)
-            return await interaction.reply({
+            return await interaction.editReply({
                 embeds: [embed.setDescription(":x: please Join a Voice Channel!")]
             })
 
@@ -30,11 +34,11 @@ class Play {
 
         switch (res.loadType) {
             case "LOAD_FAILED":
-                return interaction.reply({
+                return interaction.editReply({
                     embeds: [embed.setDescription(`:x: Load failed!\nError: ${res.exception?.message}`)]
                 })
             case "NO_MATCHES":
-                return interaction.reply({
+                return interaction.editReply({
                     embeds: [embed.setDescription(`:x: No matches!`)]
                 })
             default:
@@ -58,7 +62,7 @@ class Play {
                 player.queue.push(track);
             }
 
-            interaction.reply({
+            interaction.editReply({
                 embeds: [embed.setDescription(`Playlist \`${res.playlistInfo.name}\` loaded!`).setColor("DARK_GREEN")]
             });
         } else {
@@ -66,7 +70,7 @@ class Play {
             track.setRequester(interaction.user);
 
             player.queue.push(track);
-            interaction.reply({
+            interaction.editReply({
                 embeds: [embed.setDescription(`Queued **${track.title}**`).setColor("DARK_GREEN")]
             });
         }
