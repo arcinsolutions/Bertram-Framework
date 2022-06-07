@@ -63,7 +63,7 @@ async function start() {
     //Import Slash Commands
     const folder = isESM ? dirname(import.meta.url) : __dirname;
     await importx(`${folder}/modules/**/{events,commands,api}/*.{ts,js}`).then(() =>
-        console.log("All files imported")
+        console.log("[Core] - All files imported")
     );
     //rest api section
     // api: prepare server

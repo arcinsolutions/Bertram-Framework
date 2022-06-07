@@ -9,7 +9,7 @@ import { music } from './../api/index';
 @Discord()
 @Category("Music")
 class Skip {
-    @Slash("skip", { description: "SKip the current Sogn" })
+    @Slash("skip", { description: "Skip the current Song" })
     async skip(@SlashOption("amount", { description: "let you skip a specific amount of Songs", required: false }) amount: number, interaction: CommandInteraction) {
         await checkCommandInteraction(interaction);
 
