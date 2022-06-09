@@ -27,6 +27,14 @@ class Help {
 
     }
 
+    @ButtonComponent("firstBtn")
+    async first_Btn(interaction: ButtonInteraction) {
+        interaction.update({
+            embeds: [helpMenu.setDescription(`${helpText[0]}`)],
+            components: [CreateHelpMenuActionRow(0)]
+        })
+    }
+
     @ButtonComponent("prevBtn")
     async prev_Btn(interaction: ButtonInteraction) {
         let prevPage: number = await (helpText.indexOf(`${helpMenu.description}`) - 1);
@@ -49,14 +57,49 @@ class Help {
         })
     }
 
+    @ButtonComponent("lastBtn")
+    async last_Btn(interaction: ButtonInteraction) {
+        interaction.update({
+            embeds: [helpMenu.setDescription(`${helpText[helpText.length - 1]}`)],
+            components: [CreateHelpMenuActionRow(helpText.length - 1)]
+        })
+    }
+
 }
 
 
 function CreateHelpMenuActionRow(page: number) {
-    const prevBtn = new MessageButton().setCustomId("prevBtn").setEmoji('<:arrowleft:930879597178929153>').setStyle("SECONDARY").setDisabled((page <= 0) ? true : false)
-    const currBtn = new MessageButton().setCustomId("currentPage").setLabel(categories[(page <= 0 || page > categories.length) ? 0 : page]).setStyle("SECONDARY").setDisabled(true)
-    const nextBtn = new MessageButton().setCustomId("nextBtn").setEmoji('<:arrowright:930879597472518145>').setStyle("SECONDARY").setDisabled((page >= (categories.length - 1)) ? true : false)
-
-    return new MessageActionRow().addComponents(prevBtn).addComponents(currBtn).addComponents(nextBtn)
+    return new MessageActionRow({
+        components: [new MessageButton({
+            customId: "firstBtn",
+            emoji: '<:firstPage:984398945872670760> ',
+            style: "SECONDARY",
+            disabled: (page <= 0) ? true : false
+        }),
+        new MessageButton({
+            customId: "prevBtn",
+            emoji: '<:arrowleft:930879597178929153>',
+            style: "SECONDARY",
+            disabled: (page <= 0) ? true : false
+        }),
+        new MessageButton({
+            style: "SECONDARY",
+            customId: "currPage",
+            label: categories[(page <= 0 || page > categories.length) ? 0 : page],
+            disabled: true
+        }),
+        new MessageButton({
+            style: "SECONDARY",
+            customId: "nextBtn",
+            emoji: '<:arrowright:930879597472518145>',
+            disabled: (page >= (categories.length - 1)) ? true : false
+        }),
+        new MessageButton({
+            style: "SECONDARY",
+            customId: "lastBtn",
+            emoji: '<:lastPage:984398886376460339>',
+            disabled: (page >= (categories.length - 1)) ? true : false
+        })]
+    })
 }
 
