@@ -18,7 +18,7 @@ class Skip {
             color: "DARK_GREEN"
         })
 
-        const player = music.players.get(interaction.guild?.id);
+        const player = music.players.get(interaction.guild!.id);
         player?.skip(amount);
 
         interaction.reply({

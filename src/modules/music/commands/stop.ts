@@ -18,7 +18,7 @@ class Stop {
 
         const embed = new MessageEmbed()
 
-        const player = music.players.get(interaction.guild?.id);
+        const player = music.players.get(interaction.guild!.id);
         if (!player) 
             return interaction.editReply({
                 embeds: [embed.setDescription("No active Player...").setColor("DARK_RED")]

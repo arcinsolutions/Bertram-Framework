@@ -24,7 +24,7 @@ class Play {
 
         await checkCommandInteraction(interaction);
 
-        if (!interaction.member.voice.channel)
+        if (!interaction.member.voice.channel || !interaction.member)
             return await interaction.editReply({
                 embeds: [embed.setDescription(":x: please Join a Voice Channel!")]
             })
