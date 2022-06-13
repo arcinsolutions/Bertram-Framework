@@ -3,7 +3,6 @@ import { Discord, Slash, SlashOption } from "discordx";
 import { MessageEmbed } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { music } from './../api/index';
-import { checkCommandInteraction } from "../../core/api";
 
 @Discord()
 @Category("Music")
@@ -21,8 +20,6 @@ class Play {
         // interaction.deferReply({
         //     ephemeral: true
         // })
-
-        await checkCommandInteraction(interaction);
 
         if (!interaction.member.voice.channel || !interaction.member)
             return await interaction.editReply({

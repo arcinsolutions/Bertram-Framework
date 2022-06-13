@@ -1,8 +1,6 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
-import { Player } from "vulkava";
-import { checkCommandInteraction } from "../../core/api";
 import { music } from './../api/index';
 
 
@@ -14,12 +12,10 @@ class Stop {
         await interaction.deferReply({
             ephemeral: true
         })
-        await checkCommandInteraction(interaction);
-
         const embed = new MessageEmbed()
 
         const player = music.players.get(interaction.guild!.id);
-        if (!player) 
+        if (!player)
             return interaction.editReply({
                 embeds: [embed.setDescription("No active Player...").setColor("DARK_RED")]
             })
@@ -28,7 +24,7 @@ class Stop {
         interaction.editReply({
             embeds: [embed.setDescription("Player Stopped and Destroyed!").setColor("DARK_GREEN")]
         })
-            
+
     }
 
 }
