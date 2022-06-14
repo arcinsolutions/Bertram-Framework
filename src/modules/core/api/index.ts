@@ -6,7 +6,7 @@ export async function addOrCheckConfigKey(key: string, options?: ({ question?: s
     let content = await readFile(`./config.env`, {
         encoding: 'utf-8'
     })
-    let questionText = `What should the Value for the Key ${key}? `;
+    let questionText = `What should be the Value for ${key}? `;
 
     if (content.includes(key))
         return;
@@ -29,21 +29,29 @@ export async function addOrCheckConfigKey(key: string, options?: ({ question?: s
 
     const question = (str: string) => new Promise(resolve => rl.question(str, resolve));
 
+    // let value: any = await Number(await question(questionText));
     let value: any = await question(questionText);
 
     switch (options?.type) {
         case 'number':
-            while (Number(value) === NaN)
-                value = Number(await question("This is not a Number! What should be the Number?"));
-            console.log(Number(value));
+            do {
+                value = await Number(await question("that wasn't a Number, please try again: "));
+                console.log(value);
+            } while (isNaN(value) || typeof value != 'number')
             break;
 
         case 'string':
-            let tempString: string = String(value)
-            if (tempString.includes('"'))
-                value = tempString
+            if (value.includes('"'))
+                value = value
             else
-                value = `"${tempString}"`
+                value = `"${value}"`
+            break;
+
+        default:
+            if (value.includes('"'))
+                value = value
+            else
+                value = `"${value}"`
             break;
     }
 
@@ -51,28 +59,5 @@ export async function addOrCheckConfigKey(key: string, options?: ({ question?: s
     console.log(content);
 
     // Writes the File with filled Config-Key
-    // writeFile('./config.env', content, { encoding: 'utf-8' })
-
-
-
-    // console.log(content);
-    // let rl = readline.createInterface({
-    //     input: process.stdin,
-    //     output: process.stdout
-    // });
-
-    // rl.question('Is this example useful? [y/n] ', (answer) => {
-    //     switch (answer.toLowerCase()) {
-    //         case 'y':
-    //             console.log('Super!');
-    //             break;
-    //         case 'n':
-    //             console.log('Sorry! :(');
-    //             break;
-    //         default:
-    //             console.log('Invalid answer!');
-    //     }
-    //     rl.close();
-    // });
-
+    writeFile('./config.env', content, { encoding: 'utf-8' })
 }
