@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "fs/promises";
 import { createInterface } from 'readline';
 
-export async function addOrCheckConfigKey(key: string, options?: ({ question?: string, type?: 'string' | 'number', comment?: boolean })) {
+export async function addOrCheckConfigKey(key: string, type: 'string' | 'number', options?: ({ question?: string, comment?: boolean })) {
     // Get the Content from the Config file
     let content = await readFile(`./config.env`, {
         encoding: 'utf-8'
@@ -32,7 +32,7 @@ export async function addOrCheckConfigKey(key: string, options?: ({ question?: s
     // let value: any = await Number(await question(questionText));
     let value: any = await question(questionText);
 
-    switch (options?.type) {
+    switch (type) {
         case 'number':
             do {
                 value = await Number(await question("that wasn't a Number, please try again: "));
@@ -41,13 +41,6 @@ export async function addOrCheckConfigKey(key: string, options?: ({ question?: s
             break;
 
         case 'string':
-            if (value.includes('"'))
-                value = value
-            else
-                value = `"${value}"`
-            break;
-
-        default:
             if (value.includes('"'))
                 value = value
             else
