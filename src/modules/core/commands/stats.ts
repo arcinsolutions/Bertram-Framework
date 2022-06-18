@@ -12,12 +12,16 @@ class Stats {
     @Description("shows you a lot of stats how Golden performs...")
     async stats(interaction: CommandInteraction) {
         const embed = new MessageEmbed();
+        const startUsage = process.cpuUsage();
 
         const sent: any = await interaction.reply({
             embeds: [embed.setDescription(`**Pinging...**`).setColor('DARK_RED')],
             fetchReply: true,
             ephemeral: true,
         })
+
+        const now = Date.now();
+        while (Date.now() - now < 500);
 
         if (client.uptime == null)
             client.uptime = 0;
@@ -29,8 +33,6 @@ class Stats {
         totalSeconds %= 3600;
         let minutes = Math.floor(totalSeconds / 60);
         let seconds = Math.floor(totalSeconds % 60);
-
-        const usage = process.cpuUsage();
 
         interaction.editReply({
             embeds: [
@@ -61,7 +63,7 @@ class Stats {
                         },
                         {
                             name: "CPU usage",
-                            value: `${process.cpuUsage(usage).user / 100} %`,
+                            value: `${process.cpuUsage(startUsage).user / 100000} %`,
                             inline: true,
                         },
                         {
