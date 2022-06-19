@@ -11,20 +11,23 @@ class Queue {
         const player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
-                embeds: [new MessageEmbed({
-                    description: ":x: No player found!",
-                    color: "DARK_RED"
-                })]
+                embeds: [
+                    new MessageEmbed({
+                        description: ":x: No player found!",
+                        color: "DARK_RED"
+                    })
+                ]
             })
         const queue = player.queue;
-        const embed = new MessageEmbed({
-            title: "Queue",
-            description: queue.map((song, index) => `${index + 1}. ${song.title}`).join("\n"),
-            color: "DARK_GREEN"
-        })
 
         interaction.reply({
-            embeds: [embed],
+            embeds: [
+                new MessageEmbed({
+                    title: "Queue",
+                    description: queue.map((song, index) => `${index + 1}. ${song.title}`).join("\n"),
+                    color: "DARK_GREEN"
+                })
+            ],
             ephemeral: true
         })
     }

@@ -14,8 +14,7 @@ class Help {
         helpMenu = new MessageEmbed({
             title: 'Help Menu',
             description: helpText[0],
-            color: "DARK_GREEN",
-            provider: ({ name: 'arcin Solutions', url: 'https://github.com/arcinsolutions' })
+            color: "DARK_GREEN"
         })
 
         interaction.reply({
