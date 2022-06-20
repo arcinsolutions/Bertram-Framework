@@ -4,7 +4,7 @@ import { Koa } from "@discordx/koa";
 import { log } from "console";
 import { CacheType, Intents, Interaction } from "discord.js";
 import { Client } from "discordx";
-import { exit } from "process";
+import { cwd, exit } from "process";
 import { config, DotenvParseOutput } from "dotenv";
 const env = await config({
     path: "./config.env",
@@ -22,6 +22,8 @@ export const client = new Client({
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
         Intents.FLAGS.GUILD_VOICE_STATES,
     ],
+    //botGuilds: process.env.DEVELOPMENT?.toString() ? [process.env.GUILD_ID] : [undefined]
+   // botGuilds: [ "909754694681911357" ]
 });
 
 start();
