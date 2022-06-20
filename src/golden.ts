@@ -22,6 +22,7 @@ export const client = new Client({
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
         Intents.FLAGS.GUILD_VOICE_STATES,
     ],
+    botGuilds: goldenConfig?.RELEASE ? undefined : [(client) => client.guilds.cache.map((guild) => guild.id)]
 });
 
 start();
@@ -31,10 +32,20 @@ client.on("ready", async () => {
     await client.guilds.fetch();
 
     // init all application commands
-    await client.initApplicationCommands({
-        guild: { log: true },
-        global: { log: true },
-    });
+    // await client.initApplicationCommands({
+    //     guild: { log: true },
+    //     global: { log: true,
+    //     disable: {
+    //         add: true,
+    //     } },
+    // });
+
+    if (goldenConfig?.RELEASE) {
+        return client.initGlobalApplicationCommands({
+            log: true
+        });
+    }
+    client.initApplicationCommands();
 
     // init permissions; enabled log to see changes
     await client.initApplicationPermissions(true);
