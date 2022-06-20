@@ -78,10 +78,31 @@ class NowPlaying {
         interaction.update({
             embeds: [new MessageEmbed({
                 description: ":white_check_mark: Player Stopped and Destroyed!",
-                color: "DARK_RED"
+                color: "DARK_GREEN"
             })],
             components: []
         })
         return player.destroy();
+    }
+
+    @ButtonComponent("playpause")
+    async playPause(interaction: ButtonInteraction) {
+        const player = await music.players.get(interaction.guild!.id);
+        if (!player)
+            return interaction.reply({
+                embeds: [new MessageEmbed({
+                    description: ":x: No active found!",
+                    color: "DARK_RED"
+                })],
+                ephemeral: true
+            })
+
+        await player.pause(!player.paused);
+        return interaction.update({
+            embeds: interaction.message.embeds.map(embed => {
+                embed.description = (player.paused ? ("**Paused** |" + embed.description) : (embed.description?.replace("**Paused** |", "")));
+                return embed;
+            })
+        })
     }
 }
