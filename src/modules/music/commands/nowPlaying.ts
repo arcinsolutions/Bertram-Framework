@@ -91,7 +91,7 @@ class NowPlaying {
         if (!player)
             return interaction.reply({
                 embeds: [new MessageEmbed({
-                    description: ":x: No active found!",
+                    description: ":x: No active Player found!",
                     color: "DARK_RED"
                 })],
                 ephemeral: true
