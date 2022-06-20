@@ -41,7 +41,7 @@ client.on("ready", async () => {
     // });
 
     if (goldenConfig?.RELEASE) {
-        return client.initGlobalApplicationCommands({
+        client.initGlobalApplicationCommands({
             log: true
         });
     }
