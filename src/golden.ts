@@ -4,7 +4,7 @@ import { Koa } from "@discordx/koa";
 import { log } from "console";
 import { CacheType, Intents, Interaction } from "discord.js";
 import { Client } from "discordx";
-import { exit } from "process";
+import { cwd, exit } from "process";
 import { config, DotenvParseOutput } from "dotenv";
 const env = await config({
     path: "./config.env",
