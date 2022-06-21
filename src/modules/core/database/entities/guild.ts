@@ -1,14 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, PrimaryColumn } from "typeorm"
 
 @Entity()
 export class Guild extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number
-
-    @Column()
-    guildID: string
+    @PrimaryColumn()
+    guildId: string
 
     @Column()
     guildName: string
 
+    @Column()
+    channelId: string
 }
