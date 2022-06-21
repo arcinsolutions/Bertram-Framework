@@ -1,7 +1,7 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
-import { Guild as GuildEntity } from "../../core/database/entities/guild"
+import { musicGuild as GuildEntity } from "../database/entities/guild"
 import { Guild } from "discord.js";
 
 @Discord()
@@ -21,19 +21,21 @@ class Setup {
         }
 
         return interaction.editReply({
-            content: "Möchtest du einen neuen Channel generieren?",
+            content: `Es exestiert bereits ein Channel (<#${dbGuild?.channelId}>). Möchtest du einen neuen Channel generieren?`,
             components: [
                 new MessageActionRow({
                     components: [
                         new MessageButton({
                             customId: "abort",
                             style: "SECONDARY",
-                            label: "NE DOCH NICHT",
+                            emoji: "922932409668874290",
+                            label: "Cancel",
                         }),
                         new MessageButton({
                             customId: "create",
-                            label: "MACH MA",
-                            style: "SECONDARY",
+                            style: "DANGER",
+                            emoji: "922932409157181440",
+                            label: "Recreate",
                         })
                     ]
                 })
