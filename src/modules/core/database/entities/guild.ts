@@ -8,4 +8,6 @@ export class Guild extends BaseEntity {
     @Column()
     guildName: string
 
+    @Column()
+    channelId: string
 }

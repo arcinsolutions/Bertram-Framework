@@ -1,8 +1,8 @@
 import { Category } from "@discordx/utilities";
-import { CommandInteraction, MessageEmbed, MessageActionRow, MessageButton, ButtonInteraction } from "discord.js";
+import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
-import { musicGuild } from "../database/entities/guild"
-import { Guild as DiscordGuild } from "discord.js";
+import { Guild as GuildEntity } from "../../core/database/entities/guild"
+import { Guild } from "discord.js";
 
 @Discord()
 @Category("Music")
@@ -13,7 +13,9 @@ class Setup {
             fetchReply: true
         })
 
-        if (!await this.hasChannel(interaction.guild!.id)) {
+        const dbGuild = await this.getGuild(interaction.guild.id);
+
+        if (interaction.guild.channels.cache.get(dbGuild?.channelId) === undefined) {
             const channel = await this.createChannel(interaction.guild);
             return interaction.editReply(`Channel created ${channel}`);
         }
@@ -53,7 +55,7 @@ class Setup {
         });
     }
 
-    async createChannel(guild: DiscordGuild) {
+    async createChannel(guild: Guild) {
         const channel = await guild.channels.create('song-requests', {
             type: "text",
             permissionOverwrites: [
@@ -64,7 +66,7 @@ class Setup {
             ],
         });
 
-        await musicGuild.createQueryBuilder()
+        await GuildEntity.createQueryBuilder()
             .insert()
             .values({
                 guildId: guild.id,
@@ -74,10 +76,12 @@ class Setup {
             .orUpdate(["guildID", "guildName", "channelId"])
             .execute();
 
+        channel.send("Hallo!")
+
         return channel;
     }
 
-    async hasChannel(guildId: string) {
-        return (await musicGuild.findOneBy({ guildId: guildId }) !== null)
+    async getGuild(guildId: string) {
+        return (await GuildEntity.findOneBy({ guildId: guildId }))
     }
 }
