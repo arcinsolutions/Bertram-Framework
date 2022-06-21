@@ -21,7 +21,7 @@ export async function CoreInit() {
         database: goldenConfig.DB_Database,
         synchronize: true,
         logging: false,
-        entities: ["../../*/database/entities/*.ts"],
+        entities: ["src/modules/**/database/entities/*.ts"]
     })
 
     await DB.initialize().then(() => {
