@@ -9,7 +9,7 @@ client.once("botReady", async () => {
 
     music.start(client.user.id);
 
-    await addOrCheckConfigKey("Key1", { type: 'number' })
+    await addOrCheckConfigKey("Key1", "number")
 })
 
 //Important

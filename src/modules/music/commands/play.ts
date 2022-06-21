@@ -21,7 +21,7 @@ class Play {
         //     ephemeral: true
         // })
 
-        if (!interaction.member.voice.channel || !interaction.member)
+        if (!interaction.member!.voice.channel || !interaction.member)
             return await interaction.editReply({
                 embeds: [embed.setDescription(":x: please Join a Voice Channel!")]
             })
@@ -43,9 +43,9 @@ class Play {
         }
 
         const player = music.createPlayer({
-            guildId: interaction.guild.id,
+            guildId: interaction.guild!.id,
             voiceChannelId: interaction.member.voice.channel.id,
-            textChannelId: interaction.channel.id,
+            textChannelId: interaction.channel!.id,
             selfDeaf: true
         })
 
@@ -73,5 +73,8 @@ class Play {
         }
 
         if (!player.playing) player.play();
+
+
+        
     }
 }

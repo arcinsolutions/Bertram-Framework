@@ -29,14 +29,12 @@ export async function addOrCheckConfigKey(key: string, type: 'string' | 'number'
 
     const question = (str: string) => new Promise(resolve => rl.question(str, resolve));
 
-    // let value: any = await Number(await question(questionText));
     let value: any = await question(questionText);
 
     switch (type) {
         case 'number':
             do {
                 value = await Number(await question("that wasn't a Number, please try again: "));
-                console.log(value);
             } while (isNaN(value) || typeof value != 'number')
             break;
 
@@ -49,7 +47,8 @@ export async function addOrCheckConfigKey(key: string, type: 'string' | 'number'
     }
 
     content += `\n${key} = ${value}`
-    console.log(content);
+
+    console.log("Value accepted!");
 
     // Writes the File with filled Config-Key
     writeFile('./config.env', content, { encoding: 'utf-8' })
