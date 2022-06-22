@@ -59,7 +59,7 @@ class Setup {
 
     async createChannel(guild: Guild) {
         const channel = await guild.channels.create('song-requests', {
-            type: "text",
+            type: "GUILD_TEXT",
             permissionOverwrites: [
                 {
                     id: guild.roles.everyone,
