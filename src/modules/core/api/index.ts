@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "fs/promises";
 import { createInterface } from 'readline';
+import { Collection, Guild, OverwriteResolvable } from 'discord.js';
 
 export async function addOrCheckConfigKey(key: string, type: 'string' | 'number', options?: ({ question?: string, comment?: boolean })) {
     // Get the Content from the Config file

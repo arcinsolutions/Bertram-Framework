@@ -1,8 +1,9 @@
 import { Category } from "@discordx/utilities";
-import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction } from "discord.js";
+import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction, MessageEmbed, OverwriteResolvable, Collection } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
 import { musicGuild as GuildEntity } from "../database/entities/guild"
 import { Guild } from "discord.js";
+import { createMusicChannel } from "../api";
 
 @Discord()
 @Category("Music")
@@ -13,10 +14,10 @@ class Setup {
             fetchReply: true
         })
 
-        const dbGuild = await this.getGuild(interaction.guild.id);
+        const dbGuild = await this.getGuild(interaction.guild!.id);
 
-        if (interaction.guild.channels.cache.get(dbGuild?.channelId) === undefined) {
-            const channel = await this.createChannel(interaction.guild);
+        if (interaction.guild!.channels.cache.get(dbGuild!.channelId) === undefined) {
+            const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply(`Channel created ${channel}`);
         }
 
@@ -50,37 +51,14 @@ class Setup {
 
     @ButtonComponent("create")
     async create(interaction: ButtonInteraction) {
-        const channel = await this.createChannel(interaction.guild)
+        const dbGuild = await this.getGuild(interaction.guild!.id);
+        interaction.guild?.channels.cache.get(String(dbGuild?.channelId))?.delete();
+
+        const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({
             content: `JOO LÜPPT! ${channel}`,
             components: []
         });
-    }
-
-    async createChannel(guild: Guild) {
-        const channel = await guild.channels.create('song-requests', {
-            type: "GUILD_TEXT",
-            permissionOverwrites: [
-                {
-                    id: guild.roles.everyone,
-                    allow: ["VIEW_CHANNEL"],
-                },
-            ],
-        });
-
-        await GuildEntity.createQueryBuilder()
-            .insert()
-            .values({
-                guildId: guild.id,
-                guildName: guild.name,
-                channelId: channel.id
-            })
-            .orUpdate(["guildID", "guildName", "channelId"])
-            .execute();
-
-        channel.send("Hallo!")
-
-        return channel;
     }
 
     async getGuild(guildId: string) {
