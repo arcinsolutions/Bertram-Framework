@@ -44,12 +44,16 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 })
 
 client.on("messageCreate", async (message) => {
-    if (message.author.bot) {
-        setTimeout(() => message.delete().catch(() => {}), 10000);
-        return;
-    }
-
     const dbGuild = await getGuild(message.guild!.id)
-    if (dbGuild?.channelId === message.channel.id)
+    if (dbGuild?.channelId === message.channel.id) {
+        if (message.id == dbGuild?.embedId) return;
+
+        if (message.author.bot) {
+            setTimeout(() => message.delete().catch(() => {}), 10000);
+            return;
+        }
+
         await play(message, dbGuild)
+    }
+        
 })
