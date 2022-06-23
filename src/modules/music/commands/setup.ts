@@ -15,10 +15,14 @@ class Setup {
 
         const dbGuild = await this.getGuild(interaction.guild!.id);
 
-        if (interaction.guild!.channels.cache.get(dbGuild!.channelId) === undefined) {
+        if (dbGuild == null || interaction.guild!.channels.cache.get(dbGuild!.channelId) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new MessageEmbed({
+                    color: "#2F3136",
+                    image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
+                }),
+                new MessageEmbed({
                     color: "#45C16C",
                     fields: [
                         {
@@ -28,8 +32,7 @@ class Setup {
                         },
                         {
                             name: "Successfully created",
-                            value:
-                                `You're all set up! Ready to jam some music? Just paste any song-, playlist link or just search for anything in here ${channel}`,
+                            value: `You're all set up! Ready to jam some music? Just paste any song-, playlist link in ${channel} or search by typing`,
                             inline: true,
                         },
                         {
@@ -45,7 +48,7 @@ class Setup {
                             new MessageButton({
                                 customId: "abort",
                                 style: "SUCCESS",
-                                label: "Finish",
+                                label: "Woohoo!",
                             })
                         ]
                     })
@@ -53,8 +56,12 @@ class Setup {
             })
         }
 
-        return interaction.editReply({
+        return await interaction.editReply({
             embeds: [new MessageEmbed({
+                color: "#2F3136",
+                image: { url: "https://cdn.discordapp.com/attachments/934031298119475271/989234099216601118/1.gif" }
+            }),
+            new MessageEmbed({
                 color: "#ED4245",
                 fields: [
                     {
@@ -64,8 +71,7 @@ class Setup {
                     },
                     {
                         name: "Channel creation",
-                        value:
-                            `There already exists a channel on this server <#${dbGuild?.channelId}>\nBut you can create a new one at anytime.`,
+                        value: `There already exists a channel on this server <#${dbGuild?.channelId}>, but you can create a new one at anytime.`,
                         inline: true,
                     },
                     {
@@ -109,6 +115,10 @@ class Setup {
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({
             embeds: [new MessageEmbed({
+                color: "#2F3136",
+                image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
+            }),
+            new MessageEmbed({
                 color: "#45C16C",
                 fields: [
                     {
@@ -118,8 +128,7 @@ class Setup {
                     },
                     {
                         name: "Successfully created",
-                        value:
-                            `Awesome, all set up! Now let's jam some music together.\nJust paste any link or name in here ${channel}`,
+                        value: `Awesome, all set up! Let's jam some music together. Just paste any song-, playlist link in ${channel} or search by typing`,
                         inline: true,
                     },
                     {
@@ -133,9 +142,14 @@ class Setup {
                 new MessageActionRow({
                     components: [
                         new MessageButton({
+                            style: "LINK",
+                            url: "https://arcin.solutions/",
+                            label: "Learn more"
+                        }),
+                        new MessageButton({
                             customId: "abort",
                             style: "SUCCESS",
-                            label: "Finish",
+                            label: "Woohoo!",
                         })
                     ]
                 })
