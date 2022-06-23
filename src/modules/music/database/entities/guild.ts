@@ -7,5 +7,5 @@ export class musicGuild extends Guild {
     channelId: string
 
     @Column()
-    embedId: string
+    messageId: string
 }

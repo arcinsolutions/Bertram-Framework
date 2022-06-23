@@ -2,10 +2,10 @@ import { config } from 'dotenv';
 import { Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { Guild, MessageEmbed, Message } from 'discord.js';
+import { Guild, MessageEmbed, Message, CommandInteraction } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 
-// +++ create Vulkava Client +++
+// +++ Vulkava Stuff +++
 
 export const music = new Vulkava({
     nodes: [
@@ -23,11 +23,26 @@ export const music = new Vulkava({
     }
 })
 
-// --- create Vulkava Client ---
+export async function createMusicPlayer(interaction: CommandInteraction) {
+    const player = music.createPlayer({
+        guildId: interaction.guild!.id,
+        voiceChannelId: interaction.member!.voice.channel.id,
+        textChannelId: interaction.channel!.id,
+        selfDeaf: true
+    })
 
-export async function getGuild(guildId: string) {
-    return (await musicGuild.findOneBy({ guildId: guildId }))
+    music.emit("playerCreate", player);
+
+    return player;
 }
+
+export async function setPlayerData(guildId: string, channelId: string, messageId: string) {
+    const guild = await music.getGuild(guildId);
+    guild.channelId = channelId;
+    guild.messageId = messageId;
+}
+
+// --- Vulkava Stuff ---
 
 // +++ Channel stuff +++
 
@@ -47,7 +62,7 @@ export async function createMusicChannel(guild: Guild) {
         ]
     });
 
-    const embed = await channel.send({
+    const message = await channel.send({
         embeds: [
             new MessageEmbed({
                 title: "Song-Requests",
@@ -76,24 +91,24 @@ export async function createMusicChannel(guild: Guild) {
     })
 
     await musicGuild.createQueryBuilder()
-    .insert()
-    .values({
-        guildId: guild.id,
-        guildName: guild.name,
-        channelId: channel.id,
-        embedId: embed.id
-    })
-    .orUpdate(["guildID", "guildName", "channelId", "embedId"])
-    .execute();
+        .insert()
+        .values({
+            guildId: guild.id,
+            guildName: guild.name,
+            channelId: channel.id,
+            messageId: message.id
+        })
+        .orUpdate(["guildID", "guildName", "channelId", "messageId"])
+        .execute();
 
     return channel;
 }
 
-export async function play(message: Message, dbGuild: musicGuild) {
-    await message.delete().catch(() => {});
+export async function play(message: Message, dbGuild: musicGuild | Guild) {
+    await message.delete().catch(() => { });
 
     if (!message.member!.voice.channel)
-            return await message.channel.send("JOIN_A_VOICECHANNEL")
+        return await message.channel.send("JOIN_A_VOICECHANNEL")
 
     console.log("Success!")
 }

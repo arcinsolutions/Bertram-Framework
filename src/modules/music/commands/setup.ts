@@ -1,8 +1,8 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction, MessageEmbed } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
-import { musicGuild as GuildEntity } from "../database/entities/guild"
 import { createMusicChannel } from "../api";
+import { getGuild } from "../../core/database";
 
 @Discord()
 @Category("Music")
@@ -13,9 +13,9 @@ class Setup {
             fetchReply: true
         })
 
-        const dbGuild = await this.getGuild(interaction.guild!.id);
+        const dbGuild = await getGuild(interaction.guild!.id);
 
-        if (dbGuild == null || interaction.guild!.channels.cache.get(dbGuild!.channelId) === undefined) {
+        if (await dbGuild == null || interaction.guild!.channels.cache.get(await dbGuild!.channelID) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new MessageEmbed({
@@ -109,8 +109,8 @@ class Setup {
 
     @ButtonComponent("create")
     async create(interaction: ButtonInteraction) {
-        const dbGuild = await this.getGuild(interaction.guild!.id);
-        interaction.guild?.channels.cache.get(dbGuild!.channelId)?.delete();
+        const dbGuild = await getGuild(interaction.guild!.id);
+        interaction.guild?.channels.cache.get(dbGuild!.channelID)?.delete();
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({
@@ -155,9 +155,5 @@ class Setup {
                 })
             ]
         })
-    }
-
-    async getGuild(guildId: string) {
-        return (await GuildEntity.findOneBy({ guildId: guildId }))
     }
 }

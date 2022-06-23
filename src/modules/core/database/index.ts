@@ -1,8 +1,11 @@
-import { DataSource, DataSourceOptions } from "typeorm";
+import { DataSource, DataSourceOptions, Db } from "typeorm";
 import { log } from 'console';
 import { Guild } from "./entities/guild";
 import { goldenConfig } from './../../../golden';
 import { exit } from "process";
+import { musicGuild } from './../../music/database/entities/guild';
+
+export let DB: DataSource;
 
 export async function CoreInit() {
     if (!goldenConfig || (goldenConfig.DB_HOST || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
@@ -12,7 +15,7 @@ export async function CoreInit() {
         exit(1);
     }
 
-    const DB = await new DataSource({
+    DB = await new DataSource({
         type: "mysql",
         host: goldenConfig.DB_Host,
         port: Number(goldenConfig.DB_Port),
@@ -29,6 +32,12 @@ export async function CoreInit() {
     }).catch((reason: string) => {
         log(`[Core] -  DB err: ${reason}`)
     })
-
-    return DB;
 }
+
+// +++ functions +++
+
+export async function getGuild(ID: string) {
+    return await (DB.getRepository(Guild).findOneBy({ guildId: ID }) as Promise<Guild>);
+}
+
+// --- functions ---

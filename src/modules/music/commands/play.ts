@@ -2,7 +2,8 @@ import { Category } from "@discordx/utilities";
 import { Discord, Slash, SlashOption } from "discordx";
 import { MessageEmbed } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
-import { music } from './../api/index';
+import { createMusicPlayer, music } from './../api/index';
+import { getGuild } from "../../core/database";
 
 @Discord()
 @Category("Music")
@@ -42,12 +43,10 @@ class Play {
                 break;
         }
 
-        const player = music.createPlayer({
-            guildId: interaction.guild!.id,
-            voiceChannelId: interaction.member.voice.channel.id,
-            textChannelId: interaction.channel!.id,
-            selfDeaf: true
-        })
+        const player = await createMusicPlayer(interaction);
+
+        player.channelID = (await getGuild(interaction.guild!.id))?.channelID;
+        player.messageID = "01";
 
         //Connect to the Voice Channel
         await player.connect();
@@ -75,6 +74,6 @@ class Play {
         if (!player.playing) player.play();
 
 
-        
+
     }
 }

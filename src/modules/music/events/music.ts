@@ -51,10 +51,10 @@ music.on('queueEnd', (player: Player) => {
 
 // +++ Error / Warnings etc. +++
 // Currently useless
-// music.on("raw", (node: Node) => {
-//     console.log(`[Music] - Something happend at Node ${node.identifier}`);
+music.on("raw", (node: Node) => {
+    console.log(`[Music] - Something happend at Node ${node.identifier}`);
 
-// })
+})
 
 music.on("error", (node: Node, err: Error) => {
     console.error(`[Music] - Error on node ${node.identifier}`, err.message);
@@ -63,4 +63,9 @@ music.on("error", (node: Node, err: Error) => {
 music.on('warn', (node: Node, msg: string) => {
     console.warn(`[Music] - Warning on Node ${node.identifier}, Warning: `, msg)
 })
+
+music.addListener('playerCreate', (player: Player) => {
+    console.log(`[Music] - Player ${player.guildId} created!`);
+})
+
 // +++ Other +++

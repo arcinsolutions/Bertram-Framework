@@ -1,7 +1,9 @@
 import { AnyChannel, TextChannel, VoiceState } from "discord.js";
 import { client } from "../../../golden";
 import { addOrCheckConfigKey } from "../../core/api";
-import { music, getGuild, play } from "../api";
+import { getGuild } from "../../core/database";
+import { music, play } from "../api";
+import { music } from './../api/index';
 
 client.once("botReady", async () => {
     if (client.user == null)
@@ -44,16 +46,30 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 })
 
 client.on("messageCreate", async (message) => {
-    const dbGuild = await getGuild(message.guild!.id)
-    if (dbGuild?.channelId === message.channel.id) {
-        if (message.id == dbGuild?.embedId) return;
+    if (music.players.get(message.guild!.id) == null) {
+        const dbGuild = await getGuild(message.guild!.id)
+        if (await dbGuild?.channelId === message.channel.id) {
+            if (message.id == await dbGuild?.messageId) return;
 
-        if (message.author.bot) {
-            setTimeout(() => message.delete().catch(() => {}), 10000);
-            return;
+            if (message.author.bot) {
+                setTimeout(() => message.delete().catch(() => { }), 10000);
+                return;
+            }
+
+            await play(message, dbGuild)
         }
-
-        await play(message, dbGuild)
     }
-        
+    else {
+        const player = music.players.get(message.guild!.id);
+
+        if (player?.channelID === message.channel.id) {
+            if (message.id == player?.messageID) return;
+
+            if (message.author.bot) {
+                setTimeout(() => message.delete().catch(() => { }), 10000);
+                return;
+            }
+
+        }
+    }
 })
