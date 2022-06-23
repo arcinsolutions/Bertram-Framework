@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, PrimaryColumn, TableInheritance } from "typeorm"
+import { Entity, Column, BaseEntity, PrimaryColumn, TableInheritance } from "typeorm"
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
