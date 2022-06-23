@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { Guild, MessageEmbed } from 'discord.js';
+import { Guild, MessageEmbed, Message } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 
 // +++ create Vulkava Client +++
@@ -47,17 +47,7 @@ export async function createMusicChannel(guild: Guild) {
         ]
     });
 
-    await musicGuild.createQueryBuilder()
-        .insert()
-        .values({
-            guildId: guild.id,
-            guildName: guild.name,
-            channelId: channel.id
-        })
-        .orUpdate(["guildID", "guildName", "channelId"])
-        .execute();
-
-    channel.send({
+    const embed = await channel.send({
         embeds: [
             new MessageEmbed({
                 title: "Song-Requests",
@@ -85,7 +75,25 @@ export async function createMusicChannel(guild: Guild) {
         ]
     })
 
+    await musicGuild.createQueryBuilder()
+    .insert()
+    .values({
+        guildId: guild.id,
+        guildName: guild.name,
+        channelId: channel.id,
+        embedId: embed.id
+    })
+    .orUpdate(["guildID", "guildName", "channelId"])
+    .execute();
+
     return channel;
+}
+
+export async function play(message: Message, dbGuild: musicGuild) {
+    await message.delete();
+
+    if (!message.member!.voice.channel)
+            return await message.channel.send("JOIN_A_VOICECHANNEL")
 }
 
 // --- Channel Stuff ---

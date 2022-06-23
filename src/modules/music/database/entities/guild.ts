@@ -5,4 +5,7 @@ import { Guild } from "../../../core/database/entities/guild";
 export class musicGuild extends Guild {
     @Column()
     channelId: string
+
+    @Column()
+    embedId: string
 }

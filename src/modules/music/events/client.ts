@@ -1,7 +1,7 @@
 import { AnyChannel, TextChannel, VoiceState } from "discord.js";
 import { client } from "../../../golden";
 import { addOrCheckConfigKey } from "../../core/api";
-import { music } from "../api";
+import { music, getGuild, play } from "../api";
 
 client.once("botReady", async () => {
     if (client.user == null)
@@ -41,4 +41,15 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
             return;
         player.pause(false);
     }
+})
+
+client.on("messageCreate", async (message) => {
+    if (message.author.bot) {
+        setTimeout(() => message.delete().catch(() => {}), 10000);
+        return;
+    }
+
+    const dbGuild = await getGuild(message.guild!.id)
+    if (dbGuild?.channelId === message.channel.id)
+        await play(message, dbGuild)
 })
