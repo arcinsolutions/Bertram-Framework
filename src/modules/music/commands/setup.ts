@@ -110,7 +110,7 @@ class Setup {
     @ButtonComponent("create")
     async create(interaction: ButtonInteraction) {
         const dbGuild = await this.getGuild(interaction.guild!.id);
-        interaction.guild?.channels.cache.get(String(dbGuild?.channelId))?.delete();
+        interaction.guild?.channels.cache.get(dbGuild!.channelId)?.delete();
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({

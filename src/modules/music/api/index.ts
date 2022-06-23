@@ -83,17 +83,19 @@ export async function createMusicChannel(guild: Guild) {
         channelId: channel.id,
         embedId: embed.id
     })
-    .orUpdate(["guildID", "guildName", "channelId"])
+    .orUpdate(["guildID", "guildName", "channelId", "embedId"])
     .execute();
 
     return channel;
 }
 
 export async function play(message: Message, dbGuild: musicGuild) {
-    await message.delete();
+    await message.delete().catch(() => {});
 
     if (!message.member!.voice.channel)
             return await message.channel.send("JOIN_A_VOICECHANNEL")
+
+    console.log("Success!")
 }
 
 // --- Channel Stuff ---
