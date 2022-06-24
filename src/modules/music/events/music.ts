@@ -51,10 +51,9 @@ music.on('queueEnd', (player: Player) => {
 
 // +++ Error / Warnings etc. +++
 // Currently useless
-music.on("raw", (node: Node) => {
+/*music.on("raw", (node: Node) => {
     console.log(`[Music] - Something happend at Node ${node.identifier}`);
-
-})
+})*/
 
 music.on("error", (node: Node, err: Error) => {
     console.error(`[Music] - Error on node ${node.identifier}`, err.message);
