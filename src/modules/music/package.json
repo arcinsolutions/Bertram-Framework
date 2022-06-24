@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "vulkava": "^1.2.4"
+    "vulkava": "^1.4.0"
   },
   "type": "module"
 }

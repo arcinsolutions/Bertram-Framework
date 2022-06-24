@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"undici@^5.0.0":
-  "integrity" "sha512-A1SRXysDg7J+mVP46jF+9cKANw0kptqSFZ8tGyL+HBiv0K1spjxPX8Z4EGu+Eu6pjClJUBdnUPlxrOafR668/g=="
-  "resolved" "https://registry.npmjs.org/undici/-/undici-5.4.0.tgz"
-  "version" "5.4.0"
+undici@^5.5.1:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.5.1.tgz#baaf25844a99eaa0b22e1ef8d205bffe587c8f43"
+  integrity sha512-MEvryPLf18HvlCbLSzCW0U00IMftKGI5udnjrQbC5D4P0Hodwffhv+iGfWuJwg16Y/TK11ZFK8i+BPVW2z/eAw==
 
-"vulkava@^1.2.4":
-  "integrity" "sha512-fh0BuRh0pZMEA/GqvPdYFOkq+rvATBDjv/WvY0djB015fvykcKzGMKDe/rbRhogrHMzm7EaHaGQgBXHm23Oc9A=="
-  "resolved" "https://registry.npmjs.org/vulkava/-/vulkava-1.2.4.tgz"
-  "version" "1.2.4"
+vulkava@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/vulkava/-/vulkava-1.4.0.tgz#e68120c038d131ca87b425b97a996d8c86d8a817"
+  integrity sha512-JBcYdaiwc6jo0CmsuZvzoySTxCrB/5v6j2DfwIBUzAt7/NbMFKfkdARfm+VgnG+WlvuFe6xBM5z+cnMSZfRVhw==
   dependencies:
-    "undici" "^5.0.0"
-    "ws" "^8.5.0"
+    undici "^5.5.1"
+    ws "^8.8.0"
 
-"ws@^8.5.0":
-  "integrity" "sha512-c2gsP0PRwcLFzUiA8Mkr37/MI7ilIlHQxaEAtd0uNMbVMoy8puJyafRlm0bV9MbGSabUPeLrRRaqIBcFcA2Pqg=="
-  "resolved" "https://registry.npmjs.org/ws/-/ws-8.7.0.tgz"
-  "version" "8.7.0"
+ws@^8.8.0:
+  version "8.8.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.8.0.tgz#8e71c75e2f6348dbf8d78005107297056cb77769"
+  integrity sha512-JDAgSYQ1ksuwqfChJusw1LSJ8BizJ2e/vVu5Lxjq3YvNJNlROv1ui4i+c/kUUrPheBvQl4c5UbERhTwKa6QBJQ==
