@@ -15,7 +15,7 @@ class Setup {
 
         const dbGuild = await getGuild(interaction.guild!.id);
 
-        if (await dbGuild == null || interaction.guild!.channels.cache.get(await dbGuild!.channelID) === undefined) {
+        if (await dbGuild == null || interaction.guild!.channels.cache.get(await dbGuild!.channelId) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new MessageEmbed({
@@ -110,7 +110,7 @@ class Setup {
     @ButtonComponent("create")
     async create(interaction: ButtonInteraction) {
         const dbGuild = await getGuild(interaction.guild!.id);
-        interaction.guild?.channels.cache.get(dbGuild!.channelID)?.delete();
+        interaction.guild?.channels.cache.get(dbGuild!.channelId)?.delete();
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({
