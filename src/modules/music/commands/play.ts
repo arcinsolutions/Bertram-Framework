@@ -49,7 +49,7 @@ class Play {
         player.messageID = "01";
 
         //Connect to the Voice Channel
-        await player.connect();
+        player.connect();
 
 
         if (res.loadType === 'PLAYLIST_LOADED') {

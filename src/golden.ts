@@ -10,7 +10,7 @@ const env = await config({
     path: "./config.env",
     encoding: 'utf8'
 });
-export const goldenConfig = await env.parsed;
+export const goldenConfig = env.parsed;
 
 //Init Golden Client
 export const client = new Client({

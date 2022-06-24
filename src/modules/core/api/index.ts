@@ -35,7 +35,7 @@ export async function addOrCheckConfigKey(key: string, type: 'string' | 'number'
     switch (type) {
         case 'number':
             do {
-                value = await Number(await question("that wasn't a Number, please try again: "));
+                value = Number(await question("that wasn't a Number, please try again: "));
             } while (isNaN(value) || typeof value != 'number')
             break;
 

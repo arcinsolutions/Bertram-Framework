@@ -15,7 +15,7 @@ class Setup {
 
         const dbGuild = await getGuild(interaction.guild!.id);
 
-        if (await dbGuild == null || interaction.guild!.channels.cache.get(await dbGuild!.channelId) === undefined) {
+        if (dbGuild == null || interaction.guild!.channels.cache.get(await dbGuild!.channelId) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new MessageEmbed({
