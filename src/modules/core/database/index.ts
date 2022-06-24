@@ -1,11 +1,11 @@
 import { DataSource, DataSourceOptions, Db } from "typeorm";
 import { log } from 'console';
 import { Guild } from "./entities/guild";
-import { goldenConfig } from './../../../golden';
+import { client, goldenConfig } from './../../../golden';
 import { exit } from "process";
 import { musicGuild } from './../../music/database/entities/guild';
 
-export let DB: DataSource;
+export let CoreDatabase: DataSource;
 
 export async function CoreInit() {
     if (!goldenConfig || (goldenConfig.DB_HOST || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
@@ -15,7 +15,7 @@ export async function CoreInit() {
         exit(1);
     }
 
-    DB = await new DataSource({
+    CoreDatabase = await new DataSource({
         type: "mysql",
         host: goldenConfig.DB_Host,
         port: Number(goldenConfig.DB_Port),
@@ -27,8 +27,9 @@ export async function CoreInit() {
         entities: ["src/modules/**/database/entities/*.ts"]
     })
 
-    await DB.initialize().then(() => {
+    await CoreDatabase.initialize().then(() => {
         log("[Core] - DB Connected.")
+        client.emit("DB_Connected", (CoreDatabase: DataSource) => { });
     }).catch((reason: string) => {
         log(`[Core] -  DB err: ${reason}`)
     })
@@ -37,7 +38,7 @@ export async function CoreInit() {
 // +++ functions +++
 
 export async function getGuild(ID: string) {
-    return await (DB.getRepository(Guild).findOneBy({ guildId: ID }) as Promise<Guild>);
+    return await (CoreDatabase.getRepository(Guild).findOneBy({ guildId: ID }) as Promise<Guild>);
 }
 
 // --- functions ---

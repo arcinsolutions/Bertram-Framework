@@ -1,9 +1,10 @@
-import { config } from 'dotenv';
 import { Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
 import { Guild, MessageEmbed, Message, CommandInteraction } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
+import { Guild as baseGuild } from './../../core/database/entities/guild';
+import { CoreDatabase } from './../../core/database/index';
 
 // +++ Vulkava Stuff +++
 
@@ -43,6 +44,36 @@ export async function setPlayerData(guildId: string, channelId: string, messageI
 }
 
 // --- Vulkava Stuff ---
+
+
+// +++ Get Stuff from Database +++
+
+export let musicChannels: Array<string> = [];
+export let musicMessageIds: Array<string> = [];
+
+export async function getMusicStuffFromDB() {
+    const data = await CoreDatabase.getRepository(baseGuild).createQueryBuilder("guild").getMany()
+    data.map(guild => {
+        musicChannels.push(guild.channelId)
+        musicMessageIds.push(guild.messageId)
+    });
+
+    // data.forEach(async (guild) => {
+    //     musicChannels.push(await guild.channelId);
+    //     musicMessageIds.push(await guild.messageId);
+    // })
+
+    console.log(musicMessageIds);
+
+
+    console.log(musicChannels);
+
+}
+
+
+// --- Get Stuff from Database ---
+
+
 
 // +++ Channel stuff +++
 
