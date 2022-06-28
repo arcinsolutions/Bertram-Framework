@@ -4,8 +4,8 @@ import { Koa } from "@discordx/koa";
 import { log } from "console";
 import { CacheType, Intents, Interaction } from "discord.js";
 import { Client } from "discordx";
-import { cwd, exit } from "process";
-import { config, DotenvParseOutput } from "dotenv";
+import { exit } from "process";
+import { config } from "dotenv";
 const env = await config({
     path: "./config.env",
     encoding: 'utf8'
@@ -31,21 +31,13 @@ client.on("ready", async () => {
     // make sure all guilds are in cache
     await client.guilds.fetch();
 
-    // init all application commands
-    // await client.initApplicationCommands({
-    //     guild: { log: true },
-    //     global: { log: true,
-    //     disable: {
-    //         add: true,
-    //     } },
-    // });
-
-    if (goldenConfig?.RELEASE) {
+    if (goldenConfig?.RELEASE == "true") {
         client.initGlobalApplicationCommands({
             log: true
         });
     }
-    client.initApplicationCommands();
+    else
+        client.initApplicationCommands();
 
     // init permissions; enabled log to see changes
     await client.initApplicationPermissions(true);
