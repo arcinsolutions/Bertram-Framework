@@ -45,9 +45,6 @@ class Play {
 
         const player = await createMusicPlayer(interaction);
 
-        player.channelID = (await getGuild(interaction.guild!.id))?.channelID;
-        player.messageID = "01";
-
         //Connect to the Voice Channel
         player.connect();
 
@@ -59,7 +56,7 @@ class Play {
             }
 
             interaction.editReply({
-                embeds: [embed.setDescription(`Playlist \`${res.playlistInfo.name}\` loaded!`).setColor("DARK_GREEN")]
+                embeds: [embed.setDescription(`Playlist ${res.playlistInfo.name} loaded!`).setColor("DARK_GREEN")]
             });
         } else {
             const track = res.tracks[0];
@@ -72,8 +69,6 @@ class Play {
         }
 
         if (!player.playing) player.play();
-
-
 
     }
 }

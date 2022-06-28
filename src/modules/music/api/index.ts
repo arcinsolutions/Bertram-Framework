@@ -42,41 +42,35 @@ export async function createMusicPlayer(interaction: CommandInteraction) {
     return player;
 }
 
-export async function setPlayerData(guildId: string, channelId: string, messageId: string) {
-    const player = await music.players.get(guildId);
-    player!.channelID = channelId;
-    player!.messageID = messageId;
-}
+// export async function setPlayerData(guildId: string, channelId: string, messageId: string) {
+//     const player = await music.players.get(guildId);
+//     player!.channelID = channelId;
+//     player!.messageID = messageId;
+// }
 
 // --- Vulkava Stuff ---
 
 
 // +++ Get Stuff from Database +++
 
-export let musicChannels: Array<string> = [];
-export let musicMessageIds: Array<string> = [];
+/**
+ * Get the music Guild from the Database
+ * @get [0] = channelId [1] = messageId
+ */
+export let musicGuilds: Map<string, Array<string>> = new Map();
 
 /**
  * 
  * @returns Array of music channel ids and Array of music message ids
  */
-export async function getMusicStuffFromDB(): Promise<string[]> {
+export async function getMusicStuffFromDB() {
     const data = await CoreDatabase.getRepository(baseGuild).createQueryBuilder("guild").getMany()
     data.map(guild => {
-        musicChannels.push(guild.channelId)
-        musicMessageIds.push(guild.messageId)
+        musicGuilds.set(guild.guildId, [guild.channelId, guild.messageId]);
     });
 
-    // data.forEach(async (guild) => {
-    //     musicChannels.push(await guild.channelId);
-    //     musicMessageIds.push(await guild.messageId);
-    // })
-
-    console.log(musicMessageIds);
-    console.log(musicChannels);
-
-    return musicChannels && musicMessageIds;
 }
+
 
 
 // --- Get Stuff from Database ---
@@ -145,21 +139,88 @@ export async function createMusicChannel(guild: Guild) {
         .orUpdate(["guildID", "guildName", "channelId", "messageId"])
         .execute();
 
+    musicGuilds.set(guild.id, [channel.id, message.id]);
     return channel;
 }
 
 /**
  * 
  * @param message Message object
- * @param dbGuild Database guild object
  */
-export async function play(message: Message, dbGuild: musicGuild | Guild) {
+export async function play(message: Message) {
     await message.delete().catch(() => { });
 
     if (!message.member!.voice.channel)
-        return await message.channel.send("JOIN_A_VOICECHANNEL")
+        return await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    description: ":x: please join a voice channel first",
+                    color: "DARK_RED"
+                })
+            ]
+        })
 
-    console.log("Success!")
+    let player = await music.players.get(message.guild!.id);
+    if (!player)
+        player = music.createPlayer({
+            guildId: message.guild!.id,
+            voiceChannelId: message.member!.voice.channel.id,
+            selfDeaf: true
+        })
+
+    // Search for Music
+    const res = await music.search(message.content);
+
+    switch (res.loadType) {
+        case "LOAD_FAILED":
+            return message.channel.send({
+                embeds: [new MessageEmbed({
+                    description: `:x: Load failed!\nError: ${res.exception?.message}`
+                })]
+            })
+        case "NO_MATCHES":
+            return message.channel.send({
+                embeds: [
+                    new MessageEmbed({
+                        description: `:x: No matches!`
+                    })
+                ]
+            })
+        default:
+            break;
+    }
+
+    //Connect to the Voice Channel
+    player.connect();
+
+    if (res.loadType === 'PLAYLIST_LOADED') {
+        for (const track of res.tracks) {
+            track.setRequester(message.author);
+            player.queue.push(track);
+        }
+
+        message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`
+                })
+            ]
+        });
+    } else {
+        const track = res.tracks[0];
+        track.setRequester(message.author);
+
+        player.queue.push(track);
+        message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    description: `:white_check_mark: Track added to the queue!`
+                })
+            ]
+        });
+    }
+
+    if (!player.playing) player.play();
 }
 
 // --- Channel Stuff ---

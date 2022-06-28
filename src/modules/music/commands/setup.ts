@@ -1,7 +1,7 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction, MessageEmbed } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
-import { createMusicChannel } from "../api";
+import { createMusicChannel, musicGuilds } from "../api";
 import { getGuild } from "../../core/database";
 
 @Discord()
@@ -13,9 +13,9 @@ class Setup {
             fetchReply: true
         })
 
-        const dbGuild = await getGuild(interaction.guild!.id);
+        const tempMusic = musicGuilds.get(interaction.guild!.id);
 
-        if (dbGuild == null || interaction.guild!.channels.cache.get(await dbGuild!.channelId) === undefined) {
+        if (interaction.guild!.channels.cache.get(tempMusic[0]) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new MessageEmbed({
@@ -71,7 +71,7 @@ class Setup {
                     },
                     {
                         name: "Channel creation",
-                        value: `There already exists a channel on this server <#${dbGuild?.channelId}>, but you can create a new one at anytime.`,
+                        value: `There already exists a channel on this server <#${tempMusic[0]}>, but you can create a new one at anytime.`,
                         inline: true,
                     },
                     {
@@ -109,8 +109,8 @@ class Setup {
 
     @ButtonComponent("create")
     async create(interaction: ButtonInteraction) {
-        const dbGuild = await getGuild(interaction.guild!.id);
-        interaction.guild?.channels.cache.get(dbGuild!.channelId)?.delete();
+        const tempMusic = musicGuilds.get(interaction.guild!.id);
+        interaction.guild?.channels.cache.get(tempMusic[0])?.delete();
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({

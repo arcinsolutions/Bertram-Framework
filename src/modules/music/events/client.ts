@@ -1,9 +1,6 @@
 import { AnyChannel, MessageEmbed, TextChannel, VoiceState } from "discord.js";
 import { client } from "../../../golden";
-import { addOrCheckConfigKey } from "../../core/api";
-import { getGuild } from "../../core/database";
-import { getMusicStuffFromDB, music, musicChannels, play } from "../api";
-import { music, musicMessageIds } from './../api/index';
+import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
 import { DataSource } from 'typeorm';
 
 client.once("botReady", async () => {
@@ -25,6 +22,9 @@ client.on("raw", (packet) => {
 })
 
 client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState) => {
+    if (oldState.client.user?.bot === false)
+        return;
+
     const player = music.players.get(oldState.guild.id);
     if (oldState.channel && !newState.channel) {
         if (player) {
@@ -51,92 +51,22 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 })
 
 client.on("messageCreate", async (message) => {
-    // remove all bot messages
-
-    if (message.author.bot && musicChannels.includes(message.channel.id) && !musicMessageIds.includes(message.id)) {
-        setTimeout(() => message.delete().catch(() => { }), 10000);
-        return;
-    }
-
     // Get the ChannelId from our Database or from the Music Player if it's exits
-    if (music.players.get(message.guild!.id) == undefined) {
-        const tempX = musicChannels.indexOf(message.guild!.id);
-        const tempChannelId = await musicChannels[tempX];
-        const tempMessageId = await musicMessageIds[tempX];
+    const tempX = musicGuilds.get(message.guild!.id);
 
-        if (await tempChannelId === message.channel.id) {
-            if (message.id == await tempMessageId) return;
-
-
-            await play(message, dbGuild)
-        }
-    }
-
-
-
-
-    if ((!message.member!.voice.channel || !message.member) && musicChannels.includes(message.channel.id)) {
-        message.channel.send({
-            embeds: [
-                new MessageEmbed({
-                    description: ":x: please Join a Voice Channel!",
-                    color: "DARK_RED"
-                })
-            ]
-        })
+    if (tempX == null)
         return;
-    }
 
-    // Search for Music
-    const res = await music.search(message.content);
-
-    switch (res.loadType) {
-        case "LOAD_FAILED":
-            message.channel.send({
-                embeds: [new MessageEmbed({
-                    description: `: x: Load failed!\nError: ${res.exception?.message}`,
-                    color: "DARK_RED"
-                })]
-            });
+    if (tempX[0] == message.channel.id) {
+        if (message.id == tempX[1])
             return;
 
-        case "NO_MATCHES":
-            message.channel.send({
-                embeds: [new MessageEmbed({
-                    description: `:x: No Matches!`,
-                    color: "DARK_RED"
-                })]
-            });
+        if (message.author.username == client.user?.username) {
+            setTimeout(() => message.delete().catch(() => { }), 10000);
             return;
-    }
-
-
-
-    if (music.players.get(message.guild!.id) == null) {
-        const dbGuild = await getGuild(message.guild!.id)
-        if (await dbGuild?.channelId === message.channel.id) {
-            if (message.id == await dbGuild?.messageId) return;
-
-            if (message.author.bot) {
-                setTimeout(() => message.delete().catch(() => { }), 10000);
-                return;
-            }
-
-            await play(message, dbGuild)
         }
-    }
-    else {
-        const player = music.players.get(message.guild!.id);
 
-        if (player?.channelID === message.channel.id) {
-            if (message.id == player?.messageID) return;
-
-            if (message.author.bot) {
-                setTimeout(() => message.delete().catch(() => { }), 10000);
-                return;
-            }
-
-        }
+        await play(message)
     }
 
     return;
