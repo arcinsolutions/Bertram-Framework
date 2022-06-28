@@ -1,7 +1,14 @@
 import { readFile, writeFile } from "fs/promises";
 import { createInterface } from 'readline';
-import { Collection, Guild, OverwriteResolvable } from 'discord.js';
 
+/**
+ * 
+ * @param key The key you want to save or get
+ * @param type The type of the key
+ * @param options The options of the key
+ * @param question If the key should have a custom question
+ * @param comment If the key is a comment
+ */
 export async function addOrCheckConfigKey(key: string, type: 'string' | 'number', options?: ({ question?: string, comment?: boolean })) {
     // Get the Content from the Config file
     let content = await readFile(`./config.env`, {
@@ -49,7 +56,7 @@ export async function addOrCheckConfigKey(key: string, type: 'string' | 'number'
 
     content += `\n${key} = ${value}`
 
-    console.log("Value accepted!");
+    console.log(`Value accepted for key ${key}!`);
 
     // Writes the File with filled Config-Key
     writeFile('./config.env', content, { encoding: 'utf-8' })

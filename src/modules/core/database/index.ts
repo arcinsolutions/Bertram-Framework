@@ -37,6 +37,11 @@ export async function CoreInit() {
 
 // +++ functions +++
 
+/**
+ * 
+ * @param ID The guild ID
+ * @returns returns all Saved data which is stored in the database about the guild
+ */
 export async function getGuild(ID: string) {
     return await (CoreDatabase.getRepository(Guild).findOneBy({ guildId: ID }) as Promise<Guild>);
 }

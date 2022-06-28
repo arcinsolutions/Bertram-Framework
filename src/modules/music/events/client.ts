@@ -33,11 +33,11 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
             if (newState.member?.id === client.user?.id)
                 return player.destroy();
 
-            let channel: TextChannel | AnyChannel | undefined = await client.channels.cache.get(player.textChannelId);
+            let channel: TextChannel | AnyChannel | undefined = await client.channels.cache.get(player.textChannelId!);
             if (channel == null || client.user == null)
                 return;
 
-            if (oldState.channel.members.size === 1 && oldState.channel.members.find(x => x.id === client.user.id)) {
+            if (oldState.channel.members.size === 1 && oldState.channel.members.find(x => x.id === client.user!.id)) {
                 player.pause(true);
             }
         }
@@ -52,16 +52,17 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 
 client.on("messageCreate", async (message) => {
     // remove all bot messages
-    if (message.author.bot && (await message.channel.id != getGuild(message.guild!.id).channelId) && !musicMessageIds.includes(message.id)) {
+
+    if (message.author.bot && musicChannels.includes(message.channel.id) && !musicMessageIds.includes(message.id)) {
         setTimeout(() => message.delete().catch(() => { }), 10000);
         return;
     }
 
     // Get the ChannelId from our Database or from the Music Player if it's exits
     if (music.players.get(message.guild!.id) == undefined) {
-        const dbGuild = await getGuild(message.guild!.id)
-        const tempChannelId = await dbGuild?.channelId;
-        const tempMessageId = await dbGuild?.messageId;
+        const tempX = musicChannels.indexOf(message.guild!.id);
+        const tempChannelId = await musicChannels[tempX];
+        const tempMessageId = await musicMessageIds[tempX];
 
         if (await tempChannelId === message.channel.id) {
             if (message.id == await tempMessageId) return;
@@ -74,7 +75,7 @@ client.on("messageCreate", async (message) => {
 
 
 
-    if (!message.member!.voice.channel || !message.member) {
+    if ((!message.member!.voice.channel || !message.member) && musicChannels.includes(message.channel.id)) {
         message.channel.send({
             embeds: [
                 new MessageEmbed({

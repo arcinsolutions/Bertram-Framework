@@ -23,7 +23,7 @@ class Setup {
                     image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
                 }),
                 new MessageEmbed({
-                    color: "#45C16C",
+                    color: "DEFAULT",
                     fields: [
                         {
                             name: "<:tick1:989179973657051197><:tick2:989179972373585951>\n<:tick3:989179970729435136><:tick4:989179968904904774>",

@@ -4,7 +4,7 @@ import { client } from '../../../golden';
 import { Guild, MessageEmbed, Message, CommandInteraction } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 import { Guild as baseGuild } from './../../core/database/entities/guild';
-import { CoreDatabase } from './../../core/database/index';
+import { CoreDatabase, getGuild } from './../../core/database/index';
 
 // +++ Vulkava Stuff +++
 
@@ -24,6 +24,11 @@ export const music = new Vulkava({
     }
 })
 
+/**
+ * 
+ * @param interaction The command interaction
+ * @returns the created music Player
+ */
 export async function createMusicPlayer(interaction: CommandInteraction) {
     const player = music.createPlayer({
         guildId: interaction.guild!.id,
@@ -38,9 +43,9 @@ export async function createMusicPlayer(interaction: CommandInteraction) {
 }
 
 export async function setPlayerData(guildId: string, channelId: string, messageId: string) {
-    const guild = await music.getGuild(guildId);
-    guild.channelId = channelId;
-    guild.messageId = messageId;
+    const player = await music.players.get(guildId);
+    player!.channelID = channelId;
+    player!.messageID = messageId;
 }
 
 // --- Vulkava Stuff ---
@@ -51,7 +56,11 @@ export async function setPlayerData(guildId: string, channelId: string, messageI
 export let musicChannels: Array<string> = [];
 export let musicMessageIds: Array<string> = [];
 
-export async function getMusicStuffFromDB() {
+/**
+ * 
+ * @returns Array of music channel ids and Array of music message ids
+ */
+export async function getMusicStuffFromDB(): Promise<string[]> {
     const data = await CoreDatabase.getRepository(baseGuild).createQueryBuilder("guild").getMany()
     data.map(guild => {
         musicChannels.push(guild.channelId)
@@ -64,10 +73,9 @@ export async function getMusicStuffFromDB() {
     // })
 
     console.log(musicMessageIds);
-
-
     console.log(musicChannels);
 
+    return musicChannels && musicMessageIds;
 }
 
 
@@ -77,6 +85,11 @@ export async function getMusicStuffFromDB() {
 
 // +++ Channel stuff +++
 
+/**
+ * 
+ * @param guild Guild object
+ * @returns channel id of music channel
+ */
 export async function createMusicChannel(guild: Guild) {
     const channel = await guild.channels.create('song-requests', {
         type: "GUILD_TEXT",
@@ -135,6 +148,11 @@ export async function createMusicChannel(guild: Guild) {
     return channel;
 }
 
+/**
+ * 
+ * @param message Message object
+ * @param dbGuild Database guild object
+ */
 export async function play(message: Message, dbGuild: musicGuild | Guild) {
     await message.delete().catch(() => { });
 
