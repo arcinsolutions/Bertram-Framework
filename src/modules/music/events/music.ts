@@ -1,7 +1,7 @@
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Node, Player, Track } from 'vulkava';
 import { client } from '../../../golden';
-import { music, musicGuilds, } from './../api/index';
+import { music, musicGuilds, updateMusicEmbed } from './../api/index';
 
 // +++ Node +++
 music.on('nodeConnect', (node: Node) => {
@@ -22,6 +22,8 @@ music.on('nodeResume', (node: Node) => {
 
 // +++ TrackStart +++
 music.on('trackStart', async (player: Player, track: Track) => {
+    return updateMusicEmbed(player.guildId, track);
+
     //Get the Data from our Map
     const tempMusic = musicGuilds.get(player.guildId);
 

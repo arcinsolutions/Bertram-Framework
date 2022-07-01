@@ -1,7 +1,7 @@
-import { Vulkava } from 'vulkava'
+import { Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { Guild, MessageEmbed, Message, CommandInteraction } from 'discord.js';
+import { Guild, MessageEmbed, Message, CommandInteraction, TextChannel } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 import { Guild as baseGuild } from './../../core/database/entities/guild';
 import { CoreDatabase, getGuild } from './../../core/database/index';
@@ -57,7 +57,7 @@ export async function createMusicPlayer(interaction: CommandInteraction) {
  * Get the music Guild from the Database
  * @get [0] = channelId [1] = messageId
  */
-export let musicGuilds: Map<string, Array<string>> = new Map();
+export let musicGuilds: Map<string, Object> = new Map();
 
 /**
  * 
@@ -65,8 +65,13 @@ export let musicGuilds: Map<string, Array<string>> = new Map();
  */
 export async function getMusicStuffFromDB() {
     const data = await CoreDatabase.getRepository(baseGuild).createQueryBuilder("guild").getMany()
+
     data.map(guild => {
-        musicGuilds.set(guild.guildId, [guild.channelId, guild.messageId]);
+        // musicGuilds.set(guild.guildId, [guild.channelId, guild.messageId]);
+        musicGuilds.set(guild.guildId, {
+            channelId: guild.channelId,
+            messageId: guild.messageId
+        });
     });
 
 }
@@ -140,6 +145,7 @@ export async function createMusicChannel(guild: Guild) {
         .execute();
 
     musicGuilds.set(guild.id, [channel.id, message.id]);
+    // TODO CHECK IF GUILD HAS ACTIVE PLAYER --> updateEmbed
     return channel;
 }
 
@@ -160,7 +166,7 @@ export async function play(message: Message) {
             ]
         })
 
-    let player = await music.players.get(message.guild!.id);
+    let player = music.players.get(message.guild!.id);
     if (!player)
         player = music.createPlayer({
             guildId: message.guild!.id,
@@ -221,6 +227,20 @@ export async function play(message: Message) {
     }
 
     if (!player.playing) player.play();
+}
+
+export async function updateMusicEmbed(guildId: string, track: Track) {
+    const musicGuild = musicGuilds.get(guildId);
+    if (musicGuild == null) return;
+
+    const channel = client.channels.cache.get(musicGuild.channelId) as TextChannel;
+    if (channel == null) return;
+
+    const message = await channel.messages.fetch(musicGuild.messageId);
+    if (message == null || message.embeds[0] == undefined) return await channel.send("CHANNEL_IS_BROKEN");
+
+   // Update embed....
+   console.log(track)
 }
 
 // --- Channel Stuff ---
