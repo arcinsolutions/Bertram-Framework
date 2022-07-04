@@ -22,13 +22,15 @@ music.on('nodeResume', (node: Node) => {
 
 // +++ TrackStart +++
 music.on('trackStart', async (player: Player, track: Track) => {
-    return updateMusicEmbed(player.guildId, track);
+    return await updateMusicEmbed(player);
 
     //Get the Data from our Map
-    const tempMusic = musicGuilds.get(player.guildId);
+    const guildData = musicGuilds.get(player.guildId);
+    if (!guildData)
+        return;
 
     //Update Player
-    let channel = client.channels.cache.get(tempMusic[0]) as TextChannel;
+    let channel = client.channels.cache.get(guildData.channelId) as TextChannel;
 
     if (channel === undefined)
         return;
@@ -59,7 +61,7 @@ music.on('trackStart', async (player: Player, track: Track) => {
         ]
     })
 
-    let message = await channel.messages.fetch(tempMusic[1]);
+    let message = await channel.messages.fetch(guildData.messageId);
 
     if (message.embeds === undefined || message.embeds.length < 0)
         return channel.send({

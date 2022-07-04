@@ -7,6 +7,9 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "canvas": "^2.9.3",
+    "format-duration": "^2.0.0",
+    "jimp": "^0.16.1",
     "vulkava": "^1.4.0"
   },
   "type": "module"

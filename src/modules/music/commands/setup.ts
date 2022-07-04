@@ -15,11 +15,11 @@ class Setup {
 
         const tempMusic = musicGuilds.get(interaction.guild!.id);
 
-        if (interaction.guild!.channels.cache.get(tempMusic[0]) === undefined) {
+        if (interaction.guild!.channels.cache.get(tempMusic!.channelId) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new MessageEmbed({
-                    color: "#2F3136",
+                    color: "DARK_GREY",
                     image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
                 }),
                 new MessageEmbed({
@@ -71,7 +71,7 @@ class Setup {
                     },
                     {
                         name: "Channel creation",
-                        value: `There already exists a channel on this server <#${tempMusic[0]}>, but you can create a new one at anytime.`,
+                        value: `There already exists a channel on this server <#${tempMusic?.channelId}>, but you can create a new one at anytime.`,
                         inline: true,
                     },
                     {
@@ -110,7 +110,7 @@ class Setup {
     @ButtonComponent("create")
     async create(interaction: ButtonInteraction) {
         const tempMusic = musicGuilds.get(interaction.guild!.id);
-        interaction.guild?.channels.cache.get(tempMusic[0])?.delete();
+        interaction.guild?.channels.cache.get(tempMusic!.channelId)?.delete();
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({

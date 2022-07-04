@@ -3,18 +3,19 @@ import { client } from "../../../golden";
 import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
 import { DataSource } from 'typeorm';
 
+// +++ On Start +++
 client.once("botReady", async () => {
     if (client.user == null)
         return;
 
     music.start(client.user.id);
-
-    // await addOrCheckConfigKey("Key1", "number")
 })
 
 client.once("DB_Connected", async (DataSource) => {
     getMusicStuffFromDB();
 })
+// --- On Start ---
+
 
 //Important
 client.on("raw", (packet) => {
@@ -33,7 +34,7 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
             if (newState.member?.id === client.user?.id)
                 return player.destroy();
 
-            let channel: TextChannel | AnyChannel | undefined = await client.channels.cache.get(player.textChannelId!);
+            let channel = await client.channels.cache.get(player.textChannelId!) as TextChannel | undefined;
             if (channel == null || client.user == null)
                 return;
 
@@ -52,13 +53,12 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 
 client.on("messageCreate", async (message) => {
     // Get the ChannelId from our Database or from the Music Player if it's exits
-    const tempX = musicGuilds.get(message.guild!.id);
-
-    if (tempX == null)
+    const guildData = musicGuilds.get(message.guild!.id);
+    if (guildData == null)
         return;
 
-    if (tempX[0] == message.channel.id) {
-        if (message.id == tempX[1])
+    if (guildData.channelId == message.channel.id) {
+        if (message.id == guildData.messageId)
             return;
 
         if (message.author.username == client.user?.username) {

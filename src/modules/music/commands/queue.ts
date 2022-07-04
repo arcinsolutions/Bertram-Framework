@@ -1,6 +1,7 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { Discord, Slash } from "discordx";
+import { DefaultQueue } from "vulkava";
 import { music } from "../api";
 
 @Discord()
@@ -18,7 +19,7 @@ class Queue {
                     })
                 ]
             })
-        const queue = player.queue;
+        const queue = player.queue as DefaultQueue;
 
         interaction.reply({
             embeds: [

@@ -51,7 +51,7 @@ class Play {
 
         if (res.loadType === 'PLAYLIST_LOADED') {
             for (const track of res.tracks) {
-                track.setRequester(interaction.user);
+                track.setRequester({ author: interaction.user, id: interaction.user.id });
                 player.queue.push(track);
             }
 
@@ -60,7 +60,7 @@ class Play {
             });
         } else {
             const track = res.tracks[0];
-            track.setRequester(interaction.user);
+            track.setRequester({ author: interaction.user, id: interaction.user.id });
 
             player.queue.push(track);
             interaction.editReply({

@@ -1,10 +1,12 @@
-import { Track, Vulkava } from 'vulkava'
+import { Player, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { Guild, MessageEmbed, Message, CommandInteraction, TextChannel } from 'discord.js';
+import { Guild, MessageEmbed, Message, CommandInteraction, TextChannel, MessageAttachment } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
-import { Guild as baseGuild } from './../../core/database/entities/guild';
 import { CoreDatabase, getGuild } from './../../core/database/index';
+import { createCanvas, loadImage, registerFont } from 'canvas'
+import formatDuration from 'format-duration'
+import Jimp from 'jimp'
 
 // +++ Vulkava Stuff +++
 
@@ -57,21 +59,22 @@ export async function createMusicPlayer(interaction: CommandInteraction) {
  * Get the music Guild from the Database
  * @get [0] = channelId [1] = messageId
  */
-export let musicGuilds: Map<string, Object> = new Map();
+export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
 
 /**
  * 
  * @returns Array of music channel ids and Array of music message ids
  */
 export async function getMusicStuffFromDB() {
-    const data = await CoreDatabase.getRepository(baseGuild).createQueryBuilder("guild").getMany()
+    const data = await CoreDatabase.getRepository(musicGuild).createQueryBuilder("guild").getMany()
 
     data.map(guild => {
-        // musicGuilds.set(guild.guildId, [guild.channelId, guild.messageId]);
-        musicGuilds.set(guild.guildId, {
-            channelId: guild.channelId,
-            messageId: guild.messageId
-        });
+        musicGuilds.set(guild.guildId
+            , {
+                channelId: guild.channelId,
+                messageId: guild.messageId
+            }
+        );
     });
 
 }
@@ -144,8 +147,13 @@ export async function createMusicChannel(guild: Guild) {
         .orUpdate(["guildID", "guildName", "channelId", "messageId"])
         .execute();
 
-    musicGuilds.set(guild.id, [channel.id, message.id]);
+    musicGuilds.set(guild.id, {
+        channelId: channel.id,
+        messageId: message.id
+    });
+
     // TODO CHECK IF GUILD HAS ACTIVE PLAYER --> updateEmbed
+
     return channel;
 }
 
@@ -201,7 +209,7 @@ export async function play(message: Message) {
 
     if (res.loadType === 'PLAYLIST_LOADED') {
         for (const track of res.tracks) {
-            track.setRequester(message.author);
+            track.setRequester({ author: message.author, id: message.author.id });
             player.queue.push(track);
         }
 
@@ -214,7 +222,7 @@ export async function play(message: Message) {
         });
     } else {
         const track = res.tracks[0];
-        track.setRequester(message.author);
+        track.setRequester({ author: message.author, id: message.author.id });
 
         player.queue.push(track);
         message.channel.send({
@@ -229,18 +237,82 @@ export async function play(message: Message) {
     if (!player.playing) player.play();
 }
 
-export async function updateMusicEmbed(guildId: string, track: Track) {
-    const musicGuild = musicGuilds.get(guildId);
-    if (musicGuild == null) return;
+export async function updateMusicEmbed(player: Player) {
+    const guildData = musicGuilds.get(player.guildId);
+    if (!guildData) return;
 
-    const channel = client.channels.cache.get(musicGuild.channelId) as TextChannel;
+    const channel = client.channels.cache.get(guildData.channelId) as TextChannel | undefined;
     if (channel == null) return;
 
-    const message = await channel.messages.fetch(musicGuild.messageId);
+    if (!player.current) return;
+
+    const message = await channel.messages.fetch(guildData.messageId);
     if (message == null || message.embeds[0] == undefined) return await channel.send("CHANNEL_IS_BROKEN");
 
-   // Update embed....
-   console.log(track)
+
+    // Update embed....
+    registerFont("./src/modules/music/assets/Outfit-Regular.ttf", { family: "Outfit" });
+    registerFont("./src/modules/music/assets/Outfit-Bold.ttf", { family: "OutfitBold" });
+    const canvas = createCanvas(1920, 1080);
+    const ctx = canvas.getContext('2d');
+
+    const thumbnail = await Jimp.read(player.current.thumbnail!).then(image => {
+        image.resize(canvas.width, canvas.height).resize(Jimp.AUTO, canvas.height);
+        image.blur(8).background(0x000000).brightness(-0.6);
+        return image;
+    })
+
+    await loadImage((await thumbnail.getBufferAsync(Jimp.MIME_PNG))).then(image => {
+        const ratio = image.width / image.height
+        var width = ((image.width / 100) * (canvas.width / 25))
+        const height = ((image.height / 100) * (canvas.height / 25))
+
+        if ((width / height) != ratio)
+            width = (height * ratio)
+
+        // ctx.drawImage(image, (canvas.width / 2 - width / 2), (canvas.height - height), width, height);
+        ctx.drawImage(image, 25, 25, canvas.width - 50, canvas.height - 50);
+
+        loadImage("./src/modules/music/assets/Music-Test.png").then(img => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        })
+    })
+
+    const requester = await client.users.fetch(player.current.requester.id);
+
+    var a = [player.current.author, ' - ', ' (Official Music Video)', ' (Official Video)'];
+
+    ctx.font = '90px OutfitBold';
+    ctx.fillStyle = '#ffffff';
+
+    ctx.fillText(
+        (player.current.title.includes(player.current.author) ? player.current.title.replace(new RegExp(a.map(function (x) {
+            return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        }).join('|'), 'g'), "") : player.current.title)
+        , 100, 200, (canvas.width - 150)
+    );
+
+    ctx.fillText(player.current.author, 100, 400, (canvas.width - 50));
+    ctx.fillText(await formatDuration(player.current.duration, { leading: true }), 100, 600, (canvas.width - 50));
+    ctx.fillText(String(requester.username), 100, 800, (canvas.width - 50));
+
+
+    message.edit({
+        content: "Loading...",
+        files: [new MessageAttachment(canvas.toBuffer())]
+    }).then(msg => {
+        msg.edit({
+            content: `${player.queue}`,
+            embeds: [
+                new MessageEmbed({
+                    title: ':musical_note: Now Playing',
+                    image: { url: msg.attachments.first()?.url }
+                })
+            ],
+            files: []
+        })
+    })
+
 }
 
 // --- Channel Stuff ---
