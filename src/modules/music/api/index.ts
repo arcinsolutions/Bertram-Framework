@@ -7,6 +7,7 @@ import { CoreDatabase, getGuild } from './../../core/database/index';
 import { createCanvas, loadImage, registerFont } from 'canvas'
 import formatDuration from 'format-duration'
 import Jimp from 'jimp'
+import { BetterQueue } from './structures';
 
 // +++ Vulkava Stuff +++
 
@@ -36,7 +37,8 @@ export async function createMusicPlayer(interaction: CommandInteraction) {
         guildId: interaction.guild!.id,
         voiceChannelId: interaction.member!.voice.channel.id,
         textChannelId: interaction.channel!.id,
-        selfDeaf: true
+        selfDeaf: true,
+        queue: new BetterQueue()
     })
 
     music.emit("playerCreate", player);
@@ -179,7 +181,8 @@ export async function play(message: Message) {
         player = music.createPlayer({
             guildId: message.guild!.id,
             voiceChannelId: message.member!.voice.channel.id,
-            selfDeaf: true
+            selfDeaf: true,
+            queue: new BetterQueue()
         })
 
     // Search for Music
@@ -278,6 +281,7 @@ export async function updateMusicEmbed(player: Player) {
         })
     })
 
+    const queue = await player.queue as BetterQueue;
     const requester = await client.users.fetch(player.current.requester.id);
 
     var a = [player.current.author, ' - ', ' (Official Music Video)', ' (Official Video)'];
@@ -296,13 +300,16 @@ export async function updateMusicEmbed(player: Player) {
     ctx.fillText(await formatDuration(player.current.duration, { leading: true }), 100, 600, (canvas.width - 50));
     ctx.fillText(String(requester.username), 100, 800, (canvas.width - 50));
 
+    console.log(queue.getAllSongDetails());
+
+
 
     message.edit({
         content: "Loading...",
         files: [new MessageAttachment(canvas.toBuffer())]
     }).then(msg => {
         msg.edit({
-            content: `${player.queue}`,
+            content: `lel`,
             embeds: [
                 new MessageEmbed({
                     title: ':musical_note: Now Playing',
