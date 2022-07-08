@@ -1,7 +1,7 @@
-import { AnyChannel, MessageEmbed, TextChannel, VoiceState } from "discord.js";
+import { TextChannel, VoiceState } from "discord.js";
 import { client } from "../../../golden";
 import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
-import { DataSource } from 'typeorm';
+import { registerFont } from 'canvas';
 
 // +++ On Start +++
 client.once("botReady", async () => {
@@ -9,6 +9,9 @@ client.once("botReady", async () => {
         return;
 
     music.start(client.user.id);
+
+    registerFont("./src/modules/music/assets/Outfit-Regular.ttf", { family: "Outfit" });
+    registerFont("./src/modules/music/assets/Outfit-Bold.ttf", { family: "OutfitBold" });
 })
 
 client.once("DB_Connected", async (DataSource) => {

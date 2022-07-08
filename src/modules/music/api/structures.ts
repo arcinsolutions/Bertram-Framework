@@ -1,10 +1,9 @@
 import { User } from 'discord.js';
-import { DefaultQueue, Track } from 'vulkava';
+import { DefaultQueue, Track, UnresolvedTrack, Vulkava } from 'vulkava';
 import { ITrack } from 'vulkava/lib/@types';
 export class BetterQueue extends DefaultQueue {
     constructor() {
         super();
-        this.tracks as BetterTrack[];
     }
 
     public addToBeginning(track: Track) {
@@ -22,9 +21,9 @@ export class BetterQueue extends DefaultQueue {
     public getSongDetails(startIndex: number, endIndex: number) {
         const data = [];
 
-        for (; startIndex < endIndex && this.tracks[startIndex]; startIndex++) {
-            const req = this.tracks[startIndex].requester as User;
-            data.push(`${startIndex + 1}º - \`${this.tracks[startIndex].title}\` (Requester: ${this.tracks[startIndex].requester.id})`)
+        for (; endIndex > startIndex && this.tracks[endIndex]; endIndex--) {
+            const track = this.tracks[endIndex] as BetterTrack;
+            data.push(`**${startIndex + 1}.** ${track.title} - ${track.author} (Requester: ${track.requester.username})`)
         }
         return data.join('\n');
     }
@@ -32,12 +31,20 @@ export class BetterQueue extends DefaultQueue {
     public getAllSongDetails() {
         const data = [];
 
-        for (let i = 0; i < this.tracks.length; i++) {
-            const req = this.tracks[i].requester as User;
-            data.push(`${i + 1}º - \`${this.tracks[i].title}\` (Requester: \`${this.tracks[i].requester.id})`)
+        for (let i = (this.tracks.length - 1); i >= 0; i--) {
+            const track = this.tracks[i] as BetterUnresolvedTrack;
+            data.push(`**${i + 1}.** ${track.title} - ${track.author} (Requester: ${track.requester.username})`)
         }
         return data.join('\n');
     }
+}
+
+export class BetterUnresolvedTrack extends UnresolvedTrack {
+    constructor(vulkava: Vulkava, title: string, author: string, duration?: number | undefined, uri?: string | undefined, source?: string | undefined, isrc?: string | undefined) {
+        super(vulkava, title, author, duration, uri, source, isrc)
+    }
+
+    declare public requester: User;
 }
 
 export class BetterTrack extends Track {
@@ -45,7 +52,5 @@ export class BetterTrack extends Track {
         super(data);
     }
 
-    public setRequester(requester: { author: string, id: string }): void {
-        this.requester = requester;
-    }
+    declare public requester: User;
 }
