@@ -1,4 +1,4 @@
-import { Player, Track, Vulkava } from 'vulkava'
+import { NodeState, Player, Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
 import { Guild, MessageEmbed, Message, CommandInteraction, TextChannel, MessageAttachment } from 'discord.js';
@@ -166,6 +166,7 @@ export async function createMusicChannel(guild: Guild) {
 export async function play(message: Message) {
     await message.delete().catch(() => { });
 
+
     if (!message.member!.voice.channel)
         return await message.channel.send({
             embeds: [
@@ -176,14 +177,26 @@ export async function play(message: Message) {
             ]
         })
 
-    let player = music.players.get(message.guild!.id);
-    if (!player)
-        player = music.createPlayer({
-            guildId: message.guild!.id,
-            voiceChannelId: message.member!.voice.channel.id,
-            selfDeaf: true,
-            queue: new BetterQueue()
+    let player
+    try {
+        player = music.players.get(message.guild!.id);
+        if (!player)
+            player = music.createPlayer({
+                guildId: message.guild!.id,
+                voiceChannelId: message.member!.voice.channel.id,
+                selfDeaf: true,
+                queue: new BetterQueue()
+            })
+    } catch (error) {
+        return await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    description: ":x: there is currently no node available, please try again later",
+                    color: "DARK_RED"
+                })
+            ]
         })
+    }
 
     // Search for Music
     const res = await music.search(message.content, 'youtubemusic');
@@ -208,6 +221,18 @@ export async function play(message: Message) {
     }
 
     //Connect to the Voice Channel
+    if (player.node?.state === NodeState.DISCONNECTED) {
+        await message.channel.send({
+            embeds: [
+                new MessageEmbed({
+                    description: ":x: the node is currently offline, please try again later",
+                    color: "DARK_RED"
+                })
+            ]
+        })
+        return player.destroy();
+    }
+
     player.connect();
 
     if (res.loadType === 'PLAYLIST_LOADED') {

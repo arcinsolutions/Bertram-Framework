@@ -70,6 +70,7 @@ music.addListener("songAdded", (player: Player, track: Track) => {
 })
 
 music.addListener("stop", (player: Player) => {
+    player.destroy();
     return setDefaultMusicEmbed(player);
 })
 

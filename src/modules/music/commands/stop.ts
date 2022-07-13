@@ -20,7 +20,7 @@ class Stop {
                 embeds: [embed.setDescription("No active Player...").setColor("DARK_RED")]
             })
 
-        music.emit("stop", player);
+        await music.emit("stop", player);
 
         interaction.editReply({
             embeds: [embed.setDescription("Player Stopped and Destroyed!").setColor("DARK_GREEN")]
