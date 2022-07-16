@@ -1,8 +1,8 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, MessageActionRow, MessageButton, ButtonInteraction, MessageEmbed } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
-import { createMusicChannel, musicGuilds, updateMusicEmbed } from "../api";
-import { getGuild } from "../../core/database";
+import { musicGuilds } from "../api";
+import { createMusicChannel } from "../api/embed";
 
 @Discord()
 @Category("Music")

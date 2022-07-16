@@ -35,25 +35,25 @@ class NowPlaying {
                 new MessageActionRow({
                     components: [
                         new MessageButton({
-                            customId: "stop",
+                            customId: "music_stop",
                             style: "SECONDARY",
                             emoji: "<:stop:930538012805333122>",
                             disabled: (player ? false : true)
                         }),
                         new MessageButton({
-                            customId: "playpause",
+                            customId: "music_playpause",
                             emoji: "<:playpause:930535466908934144>",
                             style: "SECONDARY",
                             disabled: (player ? false : true)
                         }),
                         new MessageButton({
-                            customId: "skip",
+                            customId: "music_skip",
                             emoji: "<:skip:930535779887874110>",
                             style: "SECONDARY",
                             disabled: (player ? false : true)
                         }),
                         new MessageButton({
-                            customId: "shuffle",
+                            customId: "music_shuffle",
                             emoji: "<:shuffle:930534110185783386>",
                             style: "SECONDARY",
                             disabled: (player ? false : true)
@@ -61,48 +61,6 @@ class NowPlaying {
                     ]
                 })
             ]
-        })
-    }
-
-    @ButtonComponent("stop")
-    async stop(interaction: ButtonInteraction) {
-        const player = await music.players.get(interaction.guild!.id);
-        if (!player)
-            return interaction.reply({
-                embeds: [new MessageEmbed({
-                    description: ":x: No active found!",
-                    color: "DARK_RED"
-                })],
-                ephemeral: true
-            })
-        interaction.update({
-            embeds: [new MessageEmbed({
-                description: ":white_check_mark: Player Stopped and Destroyed!",
-                color: "DARK_GREEN"
-            })],
-            components: []
-        })
-        return player.destroy();
-    }
-
-    @ButtonComponent("playpause")
-    async playPause(interaction: ButtonInteraction) {
-        const player = await music.players.get(interaction.guild!.id);
-        if (!player)
-            return interaction.reply({
-                embeds: [new MessageEmbed({
-                    description: ":x: No active Player found!",
-                    color: "DARK_RED"
-                })],
-                ephemeral: true
-            })
-
-        await player.pause(!player.paused);
-        return interaction.update({
-            embeds: interaction.message.embeds.map(embed => {
-                embed.description = (player.paused ? ("**Paused** |" + embed.description) : (embed.description?.replace("**Paused** |", "")));
-                return embed;
-            })
         })
     }
 }
