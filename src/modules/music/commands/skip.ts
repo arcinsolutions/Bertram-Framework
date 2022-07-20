@@ -1,5 +1,5 @@
 import { Category } from "@discordx/utilities";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 import { music, play } from './../api/index';
 
@@ -12,18 +12,18 @@ class Skip {
         let player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: "No active Player...",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })]
             })
 
         if ((typeof player.queue == 'undefined') || (player.queue.size == 0)) {
             player.skip();
             interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
-                    color: "DARK_RED"
+                    color: Colors.DarkGreen
                 })]
             })
             return setTimeout(() => {
@@ -35,9 +35,9 @@ class Skip {
                 else {
                     music.emit("stop", player);
                     interaction.editReply({
-                        embeds: [new MessageEmbed({
+                        embeds: [new EmbedBuilder({
                             description: "Player Stopped and Destroyed!",
-                            color: "DARK_GREEN"
+                            color: Colors.DarkGreen
                         })]
                     }).then(() => {
                         player?.destroy();
@@ -50,9 +50,9 @@ class Skip {
         player.skip(amount);
 
         interaction.reply({
-            embeds: [new MessageEmbed({
+            embeds: [new EmbedBuilder({
                 description: "Song skiped!",
-                color: "DARK_GREEN"
+                color: Colors.DarkGreen
             })],
             ephemeral: true
         })

@@ -1,8 +1,9 @@
 import { Category } from "@discordx/utilities";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from "discordx";
 import { DefaultQueue } from "vulkava";
 import { music } from "../api";
+import { BetterQueue } from './../api/structures';
 
 @Discord()
 @Category("Music")
@@ -13,20 +14,19 @@ class Queue {
         if (!player)
             return interaction.reply({
                 embeds: [
-                    new MessageEmbed({
+                    new EmbedBuilder({
                         description: ":x: No player found!",
-                        color: "DARK_RED"
+                        color: Colors.DarkRed
                     })
                 ]
             })
-        const queue = player.queue as DefaultQueue;
-
+        const queue = player.queue as BetterQueue;
         interaction.reply({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     title: "Queue",
-                    description: queue.map((song, index) => `${index + 1}. ${song.title}`).join("\n"),
-                    color: "DARK_GREEN"
+                    description: queue.getAllSongDetails(),
+                    color: Colors.DarkGreen
                 })
             ],
             ephemeral: true

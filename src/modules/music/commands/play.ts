@@ -1,6 +1,6 @@
 import { Category } from "@discordx/utilities";
 import { Discord, Slash, SlashOption } from "discordx";
-import { MessageEmbed } from 'discord.js';
+import { Colors, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { createMusicPlayer, music } from './../api/index';
 import { getGuild } from "../../core/database";
@@ -14,8 +14,8 @@ class Play {
             ephemeral: true,
             fetchReply: true
         })
-        const embed = new MessageEmbed({
-            color: "DARK_RED"
+        const embed = new EmbedBuilder({
+            color: Colors.DarkRed
         });
 
         // interaction.deferReply({

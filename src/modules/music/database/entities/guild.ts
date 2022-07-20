@@ -4,8 +4,8 @@ import { Guild } from "../../../core/database/entities/guild";
 @ChildEntity("musicGuild")
 export class musicGuild extends Guild {
     @Column()
-    channelId: string
+    channelId: string = '';
 
     @Column()
-    messageId: string
+    messageId: string = '';
 }

@@ -1,9 +1,8 @@
 import { Category, Description } from "@discordx/utilities";
 import { Discord, Slash } from "discordx";
-import { Interaction, Message, MessageEmbed } from 'discord.js';
+import { Colors, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { client } from "../../../golden";
-import { APIMessage } from "discord-api-types/v10";
 
 @Discord()
 @Category("Information")
@@ -11,11 +10,11 @@ class Stats {
     @Slash("stats")
     @Description("shows you a lot of stats how Golden performs...")
     async stats(interaction: CommandInteraction) {
-        const embed = new MessageEmbed();
+        const embed = new EmbedBuilder();
         const startUsage = process.cpuUsage();
 
         const sent: any = await interaction.reply({
-            embeds: [embed.setDescription(`**Pinging...**`).setColor('DARK_RED')],
+            embeds: [embed.setDescription(`**Pinging...**`).setColor(Colors.DarkRed)],
             fetchReply: true,
             ephemeral: true,
         })
@@ -23,10 +22,11 @@ class Stats {
         const now = Date.now();
         while (Date.now() - now < 500);
 
-        if (client.uptime == null)
-            client.uptime = 0;
+        let totalSeconds = 6000;
 
-        let totalSeconds = client.uptime / 1000;
+        if (client.uptime != null)
+            totalSeconds = client.uptime / 1000;
+
         let days = Math.floor(totalSeconds / 86400);
         totalSeconds %= 86400;
         let hours = Math.floor(totalSeconds / 3600);
@@ -38,59 +38,64 @@ class Stats {
             embeds: [
                 embed
                     .setDescription("")
-                    .setFields(
+                    .addFields(
                         {
                             name: "Uptime",
-                            value: `${days} day${days === 1 ? "" : "s"}, ${hours} hour${hours === 1 ? "" : "s"
-                                }, ${minutes} minute${minutes === 1 ? "" : "s"
-                                } & ${seconds} second${seconds === 1 ? "" : "s"}`,
-                        },
-                        {
-                            name: `Ping`,
-                            value: `${sent.createdTimestamp - interaction.createdTimestamp
-                                }ms`,
-                            inline: true,
-                        },
-                        {
-                            name: "Discord API Ping",
-                            value: `${client.ws.ping}ms`,
-                            inline: true,
-                        },
-                        {
-                            name: "\u200B",
-                            value: `\u200B`,
-                            inline: true,
-                        },
-                        {
-                            name: "CPU usage",
-                            value: `${process.cpuUsage(startUsage).user / 100000} %`,
-                            inline: true,
-                        },
-                        {
-                            name: "RAM usage",
-                            value: `${Math.round(
-                                (process.memoryUsage().heapUsed / 1024 / 1024) * 100
-                            ) / 100
-                                }MB\n`,
-                            inline: true,
-                        },
-                        {
-                            name: "\u200B",
-                            value: `\u200B`,
-                            inline: true,
-                        },
-                        {
-                            name: "Servers",
-                            value: `${client.guilds.cache.size}`,
-                            inline: true,
-                        },
-                        {
-                            name: "Users",
-                            value: `${client.guilds.cache.map((g) => g.memberCount).reduce((a, c) => a + c)}`,
-                            inline: true,
+                            value: `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`,
+                            inline: true
                         }
+                        // {
+                        //     name: "Uptime",
+                        //     value: `${days} day${days === 1 ? "" : "s"}, ${hours} hour${hours === 1 ? "" : "s"
+                        //         }, ${minutes} minute${minutes === 1 ? "" : "s"
+                        //         } & ${seconds} second${seconds === 1 ? "" : "s"}`,
+                        // },
+                        // {
+                        //     name: `Ping`,
+                        //     value: `${sent.createdTimestamp - interaction.createdTimestamp
+                        //         }ms`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "Discord API Ping",
+                        //     value: `${client.ws.ping}ms`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "\u200B",
+                        //     value: `\u200B`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "CPU usage",
+                        //     value: `${process.cpuUsage(startUsage).user / 100000} %`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "RAM usage",
+                        //     value: `${Math.round(
+                        //         (process.memoryUsage().heapUsed / 1024 / 1024) * 100
+                        //     ) / 100
+                        //         }MB\n`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "\u200B",
+                        //     value: `\u200B`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "Servers",
+                        //     value: `${client.guilds.cache.size}`,
+                        //     inline: true,
+                        // },
+                        // {
+                        //     name: "Users",
+                        //     value: `${client.guilds.cache.map((g) => g.memberCount).reduce((a, c) => a + c)}`,
+                        //     inline: true,
+                        // }
                     )
-                    .setColor("DARK_GREEN"),
+                    .setColor(Colors.DarkGreen),
             ]
         });
     }

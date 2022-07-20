@@ -1,6 +1,6 @@
 import { Category } from "@discordx/utilities";
 import { ButtonComponent, Discord, Slash } from "discordx";
-import { ButtonInteraction, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { music } from './../api/index';
 
@@ -20,42 +20,42 @@ class NowPlaying {
 
         if (!currTrack)
             return interaction.editReply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: `:x: no active Player!`,
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })]
             })
 
         return interaction.editReply({
-            embeds: [new MessageEmbed({
+            embeds: [new EmbedBuilder({
                 description: `<:musicnote:930887306045435934> **Now Playing:** ${currTrack.title.includes(currTrack.author) ? currTrack.title : currTrack.title + " - " + currTrack.author}`,
-                color: "DARK_GREEN"
+                color: Colors.DarkGreen
             })],
             components: [
-                new MessageActionRow({
+                new ActionRowBuilder({
                     components: [
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "music_stop",
-                            style: "SECONDARY",
+                            style: ButtonStyle.Secondary,
                             emoji: "<:stop:930538012805333122>",
                             disabled: (player ? false : true)
                         }),
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "music_playpause",
                             emoji: "<:playpause:930535466908934144>",
-                            style: "SECONDARY",
+                            style: ButtonStyle.Secondary,
                             disabled: (player ? false : true)
                         }),
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "music_skip",
                             emoji: "<:skip:930535779887874110>",
-                            style: "SECONDARY",
+                            style: ButtonStyle.Secondary,
                             disabled: (player ? false : true)
                         }),
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "music_shuffle",
                             emoji: "<:shuffle:930534110185783386>",
-                            style: "SECONDARY",
+                            style: ButtonStyle.Secondary,
                             disabled: (player ? false : true)
                         })
                     ]

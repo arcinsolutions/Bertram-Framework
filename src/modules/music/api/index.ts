@@ -1,7 +1,7 @@
 import { NodeState, Player, Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { MessageEmbed, Message, CommandInteraction, TextChannel } from 'discord.js';
+import { Message, CommandInteraction, TextChannel } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 import { CoreDatabase } from './../../core/database/index';
 import { createCanvas, loadImage } from 'canvas'

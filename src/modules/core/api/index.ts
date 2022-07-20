@@ -26,7 +26,7 @@ export async function addOrCheckConfigKey(key: string, type: 'string' | 'number'
                 return;
 
             case (typeof options.question != 'undefined'):
-                questionText = options.question;
+                questionText = options.question!;
                 break;
         }
 
