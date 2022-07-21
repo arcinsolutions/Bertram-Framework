@@ -4,7 +4,7 @@ import { createCanvas, loadImage } from "canvas";
 import { Player } from 'vulkava';
 import { BetterQueue, BetterTrack } from './structures';
 import { musicGuild } from './../database/entities/guild';
-import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, TextChannel } from 'discord.js';
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from 'discord.js';
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -125,8 +125,8 @@ export async function setDefaultMusicEmbed(guildId: string) {
         embeds: [
             new EmbedBuilder({
                 title: ':musical_note: | Join a Voice Channel and add a Song or a Playlist',
-                image: { url: 'attachment://music.png' },
-                footer: { text: `${new Date().toUTCString()}` }
+                footer: { text: `${new Date()}` },
+                image: { url: 'attachment://music_default.png' },
             })
         ],
         components: [actions]
@@ -148,47 +148,48 @@ export async function updateMusicEmbed(player: Player) {
 
     const queue = await player.queue as BetterQueue;
 
-    const attachment = await new MessageAttachment(await createMusicImage(player.current as BetterTrack), "music.png");
+    const attachment = await new AttachmentBuilder(await createMusicImage(player.current as BetterTrack), { name: "music.png", description: "The music image" });
+    const actions = new ActionRowBuilder({
+        components: [
+            new ButtonBuilder({
+                customId: "music_stop",
+                style: ButtonStyle.Secondary,
+                emoji: "⏹"
+            }),
+            new ButtonBuilder({
+                customId: "music_playpause",
+                emoji: "⏯",
+                style: ButtonStyle.Secondary
+            }),
+            new ButtonBuilder({
+                customId: "music_shuffle",
+                emoji: "🔀",
+                style: ButtonStyle.Secondary
+            }),
+            new ButtonBuilder({
+                customId: "music_skip",
+                emoji: "⏭",
+                style: ButtonStyle.Secondary
+            }),
+            new ButtonBuilder({
+                url: player.current.uri,
+                emoji: "🔗",
+                style: ButtonStyle.Link
+            })
+        ]
+    })
 
     message.edit({
         content: queue.getAllSongDetails() == '' ? '**__Queue:__**\nJoin a Voice Channel and add a Song or a Playlist' : `**__Queue:__**\n${queue.getAllSongDetails()}`,
         files: [attachment],
         embeds: [
-            new MessageEmbed({
+            new EmbedBuilder({
                 title: ':musical_note: Now Playing:',
                 image: { url: 'attachment://music.png' },
             })
         ],
         components: [
-            new MessageActionRow({
-                components: [
-                    new MessageButton({
-                        customId: "music_stop",
-                        style: ButtonStyle.Secondary,
-                        emoji: "⏹"
-                    }),
-                    new MessageButton({
-                        customId: "music_playpause",
-                        emoji: "⏯",
-                        style: ButtonStyle.Secondary
-                    }),
-                    new MessageButton({
-                        customId: "music_shuffle",
-                        emoji: "🔀",
-                        style: ButtonStyle.Secondary
-                    }),
-                    new MessageButton({
-                        customId: "music_skip",
-                        emoji: "⏭",
-                        style: ButtonStyle.Secondary
-                    }),
-                    new MessageButton({
-                        url: player.current.uri,
-                        emoji: "🔗",
-                        style: ButtonStyle.Link
-                    })
-                ]
-            })
+            actions
         ]
     })
 }

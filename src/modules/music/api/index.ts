@@ -1,7 +1,7 @@
 import { NodeState, Player, Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { Message, CommandInteraction, TextChannel } from 'discord.js';
+import { Message, CommandInteraction, TextChannel, EmbedBuilder, Colors } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 import { CoreDatabase } from './../../core/database/index';
 import { createCanvas, loadImage } from 'canvas'
@@ -69,9 +69,9 @@ export async function play(message: Message) {
     if (!message.member!.voice.channel)
         return await message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: ":x: please join a voice channel first",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })
             ]
         })
@@ -89,28 +89,28 @@ export async function play(message: Message) {
     } catch (error) {
         return await message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: ":x: there is currently no node available, please try again later",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })
             ]
         })
     }
 
     // Search for Music
-    const res = await music.search(message.content, 'youtubemusic');
+    const res = await music.search(message.content);
 
     switch (res.loadType) {
         case "LOAD_FAILED":
             return message.channel.send({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: `:x: Load failed!\nError: ${res.exception?.message}`
                 })]
             })
         case "NO_MATCHES":
             return message.channel.send({
                 embeds: [
-                    new MessageEmbed({
+                    new EmbedBuilder({
                         description: `:x: No matches!`
                     })
                 ]
@@ -123,9 +123,9 @@ export async function play(message: Message) {
     if (player.node?.state === NodeState.DISCONNECTED) {
         await message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: ":x: the node is currently offline, please try again later",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })
             ]
         })
@@ -143,7 +143,7 @@ export async function play(message: Message) {
 
         message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`
                 })
             ]
@@ -155,7 +155,7 @@ export async function play(message: Message) {
         player.queue.push(track);
         message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: `:white_check_mark: Track added to the queue!`
                 })
             ]
