@@ -3,7 +3,6 @@ import { Discord, Slash, SlashOption } from "discordx";
 import { Colors, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { createMusicPlayer, music } from './../api/index';
-import { getGuild } from "../../core/database";
 
 @Discord()
 @Category("Music")

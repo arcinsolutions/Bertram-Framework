@@ -55,6 +55,8 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 })
 
 client.on("messageCreate", async (message) => {
+    console.log(message.content);
+
     // Get the ChannelId from our Database or from the Music Player if it's exits
     const guildData = musicGuilds.get(message.guild!.id);
     if (guildData == null)

@@ -1,5 +1,5 @@
 import { Category, Description } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
+import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { ButtonComponent, Discord, Slash } from "discordx";
 import { categories, helpText } from "../events/botReady";
 
@@ -99,6 +99,6 @@ function CreateHelpMenuActionRow(page: number) {
             emoji: '<:lastPage:984398886376460339>',
             disabled: (page >= (categories.length - 1)) ? true : false
         })]
-    })
+    }) as any
 }
 

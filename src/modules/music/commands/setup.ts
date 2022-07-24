@@ -1,5 +1,5 @@
 import { Category } from "@discordx/utilities";
-import { CommandInteraction, ButtonInteraction, ButtonStyle, EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder } from "discord.js";
+import { CommandInteraction, ButtonInteraction, ButtonStyle, EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, MessageActionRowComponentBuilder } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
 import { musicGuilds } from "../api";
 import { createMusicChannel } from "../api/embed";
@@ -42,7 +42,7 @@ class Setup {
                     ]
                 })],
                 components: [
-                    new ActionRowBuilder({
+                    new ActionRowBuilder<MessageActionRowComponentBuilder>({
                         components: [
                             new ButtonBuilder({
                                 customId: "abort",
@@ -56,12 +56,12 @@ class Setup {
         }
 
         return await interaction.editReply({
-            embeds: [new MessageEmbed({
-                color: "#2F3136",
+            embeds: [new EmbedBuilder({
+                color: Colors.Default,
                 image: { url: "https://cdn.discordapp.com/attachments/934031298119475271/989234099216601118/1.gif" }
             }),
-            new MessageEmbed({
-                color: "#ED4245",
+            new EmbedBuilder({
+                color: Colors.DarkButNotBlack,
                 fields: [
                     {
                         name: "<:help1:989179967130726480><:help2:989179965209735188>\n<:help3:989179963607486524><:help4:989179961917186108>",
@@ -81,15 +81,15 @@ class Setup {
                 ]
             })],
             components: [
-                new MessageActionRow({
+                new ActionRowBuilder<MessageActionRowComponentBuilder>({
                     components: [
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "abort",
                             style: ButtonStyle.Secondary,
                             emoji: "922932409668874290",
                             label: "Cancel",
                         }),
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "create",
                             style: ButtonStyle.Danger,
                             emoji: "922932409157181440",
@@ -113,12 +113,12 @@ class Setup {
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({
-            embeds: [new MessageEmbed({
-                color: "#2F3136",
+            embeds: [new EmbedBuilder({
+                color: Colors.NotQuiteBlack,
                 image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
             }),
-            new MessageEmbed({
-                color: "#45C16C",
+            new EmbedBuilder({
+                color: Colors.DarkButNotBlack,
                 fields: [
                     {
                         name: "<:tick1:989179973657051197><:tick2:989179972373585951>\n<:tick3:989179970729435136><:tick4:989179968904904774>",
@@ -138,14 +138,14 @@ class Setup {
                 ]
             })],
             components: [
-                new MessageActionRow({
+                new ActionRowBuilder<MessageActionRowComponentBuilder>({
                     components: [
-                        new MessageButton({
+                        new ButtonBuilder({
                             style: ButtonStyle.Link,
                             url: "https://arcin.solutions/",
                             label: "Learn more"
                         }),
-                        new MessageButton({
+                        new ButtonBuilder({
                             customId: "abort",
                             style: ButtonStyle.Success,
                             label: "Woohoo!",
