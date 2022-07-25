@@ -4,7 +4,7 @@ import { createCanvas, loadImage } from "canvas";
 import { Player } from 'vulkava';
 import { BetterQueue, BetterTrack } from './structures';
 import { musicGuild } from './../database/entities/guild';
-import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, TextChannel } from 'discord.js';
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, MessageActionRowComponentBuilder, TextChannel } from 'discord.js';
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -83,7 +83,7 @@ export async function setDefaultMusicEmbed(guildId: string) {
     })
 
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "music_default.png", description: "The default music image" });
-    const actions = new ActionRowBuilder({
+    const actions = new ActionRowBuilder<MessageActionRowComponentBuilder>({
         components: [
             new ButtonBuilder({
                 customId: "music_stop",
@@ -149,7 +149,7 @@ export async function updateMusicEmbed(player: Player) {
     const queue = await player.queue as BetterQueue;
 
     const attachment = await new AttachmentBuilder(await createMusicImage(player.current as BetterTrack), { name: "music.png", description: "The music image" });
-    const actions = new ActionRowBuilder({
+    const actions = new ActionRowBuilder<MessageActionRowComponentBuilder>({
         components: [
             new ButtonBuilder({
                 customId: "music_stop",
