@@ -66,20 +66,6 @@ async function start() {
     await importx(`${folder}/modules/**/{events,commands,api}/*.{ts,js}`).then(() =>
         console.log("[Core] - All files imported")
     );
-    //rest api section
-    // api: prepare server
-    const server: any = await new Koa();
-
-    // api: need to build the api server first
-    await server.build();
-
-    // api: let's start the server now
-    const port = process.env.PORT ?? 3000;
-    await server.listen(port, () => {
-        console.log(`discord api server started on ${port}`);
-        console.log(`visit localhost:${port}/guilds`);
-    });
-
 
     client.login(goldenConfig.DISCORD_TOKEN);
 }
