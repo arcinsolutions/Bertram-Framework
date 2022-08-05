@@ -1,6 +1,6 @@
 import { Category, Description } from "@discordx/utilities";
-import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
-import { ButtonComponent, Discord, Slash } from "discordx";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
+import { ButtonComponent, Discord, Slash } from 'discordx';
 import { categories, helpText } from "../events/botReady";
 
 let helpMenu: EmbedBuilder;

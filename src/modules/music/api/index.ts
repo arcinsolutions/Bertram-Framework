@@ -1,7 +1,7 @@
 import { NodeState, Player, Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { Message, CommandInteraction, TextChannel, EmbedBuilder, Colors } from 'discord.js';
+import { Message, CommandInteraction, TextChannel, EmbedBuilder, Colors, GuildMember } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 import { CoreDatabase } from './../../core/database/index';
 import { createCanvas, loadImage } from 'canvas'
@@ -33,7 +33,7 @@ export const music = new Vulkava({
 export async function createMusicPlayer(interaction: CommandInteraction) {
     const player = music.createPlayer({
         guildId: interaction.guild!.id,
-        voiceChannelId: interaction.member!.voice.channel.id,
+        voiceChannelId: (interaction.member as GuildMember)?.voice.channel!.id,
         textChannelId: interaction.channel!.id,
         selfDeaf: true,
         queue: new BetterQueue()
@@ -140,7 +140,7 @@ export async function play(message: Message) {
     if (res.loadType === 'PLAYLIST_LOADED') {
         for (const track of res.tracks) {
             track.setRequester(message.author);
-            player.queue.push(track);
+            (player.queue as BetterQueue)?.add(track);
             music.emit("songAdded", player, track);
         }
 
@@ -155,7 +155,7 @@ export async function play(message: Message) {
         const track = res.tracks[0];
         track.setRequester(message.author);
 
-        player.queue.push(track);
+        (player.queue as BetterQueue)?.add(track);
         message.channel.send({
             embeds: [
                 new EmbedBuilder({

@@ -1,11 +1,11 @@
 import "reflect-metadata";
-import { Koa } from "@discordx/koa";
 import { log } from "console";
 import { CacheType, GatewayIntentBits, Interaction } from "discord.js";
-import { Client } from "discordx";
 import { exit } from "process";
 import { config } from "dotenv";
 import { dirname, importx, isESM } from "@discordx/importer";
+import { Client } from "discordx";
+
 const env = await config({
     path: "./config.env",
     encoding: 'utf8'

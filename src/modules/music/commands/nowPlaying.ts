@@ -1,6 +1,6 @@
 import { Category } from "@discordx/utilities";
-import { ButtonComponent, Discord, Slash } from "discordx";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder } from 'discord.js';
+import { Discord, Slash } from "discordx";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { music } from './../api/index';
 
@@ -32,7 +32,7 @@ class NowPlaying {
                 color: Colors.DarkGreen
             })],
             components: [
-                new ActionRowBuilder({
+                new ActionRowBuilder<MessageActionRowComponentBuilder>({
                     components: [
                         new ButtonBuilder({
                             customId: "music_stop",
