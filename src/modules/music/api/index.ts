@@ -180,10 +180,15 @@ export async function addSongToQueue(player: Player, track: Track) {
     if (!player.current) return;
 
     const message = await channel.messages.fetch(guildData.messageId);
-    if (message == null || message.embeds[0] == undefined) return await channel.send("CHANNEL_IS_BROKEN");
+    if (message == null || message.embeds[0] == undefined) return await channel.send({
+        embeds: [new EmbedBuilder({
+            description: ':x: the channel is broken, please use **/setup** to fix it',
+            color: Colors.DarkRed
+        })]
+    });
 
     message.edit({
-        content: queue.getAllSongDetails() == '' ? '**__Queue:__**\nSend a URL or a search term to add a song to the queue.' : `**__Queue:__**\n${queue.getAllSongDetails()}`,
+        content: queue.generateFormattedQueue() == '' ? '**__Queue:__**\nSend a URL or a search term to add a song to the queue.' : queue.generateFormattedQueue(),
         files: [],
         embeds: [message.embeds[0]]
     })

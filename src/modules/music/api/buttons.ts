@@ -1,6 +1,7 @@
-import { ButtonInteraction, Colors, EmbedBuilder } from "discord.js";
-import { ButtonComponent, Discord } from "discordx";
+import { ButtonInteraction, Colors, EmbedBuilder, GuildMember } from "discord.js";
+import { ButtonComponent, Discord, Guard } from "discordx";
 import { music } from './index';
+import { BetterQueue } from "./structures";
 
 @Discord()
 class Buttons {
@@ -8,7 +9,7 @@ class Buttons {
     async stop(interaction: ButtonInteraction) {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
-            return interaction.reply({
+            return interaction.followUp({
                 embeds: [new EmbedBuilder({
                     description: ":x: No active found!",
                     color: Colors.DarkRed
@@ -16,9 +17,19 @@ class Buttons {
                 ephemeral: true
             })
 
+        if (!(interaction.member as GuildMember)?.voice.channel)
+            return await interaction.followUp({
+                embeds: [
+                    new EmbedBuilder({
+                        description: ":x: please join a voice channel first",
+                        color: Colors.DarkRed
+                    })
+                ]
+            })
+
         await music.emit("stop", player)
 
-        interaction.reply({
+        interaction.followUp({
             embeds: [new EmbedBuilder({
                 description: ":white_check_mark: Player Stopped and Destroyed!",
                 color: Colors.DarkGreen
@@ -31,7 +42,7 @@ class Buttons {
     async playPause(interaction: ButtonInteraction) {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
-            return interaction.reply({
+            return interaction.followUp({
                 embeds: [new EmbedBuilder({
                     description: ":x: No active Player found!",
                     color: Colors.DarkRed
@@ -39,8 +50,18 @@ class Buttons {
                 ephemeral: true
             })
 
+        if (!(interaction.member as GuildMember)?.voice.channel)
+            return await interaction.followUp({
+                embeds: [
+                    new EmbedBuilder({
+                        description: ":x: please join a voice channel first",
+                        color: Colors.DarkRed
+                    })
+                ]
+            })
+
         await player.pause(!player.paused);
-        return interaction.reply({
+        return interaction.followUp({
             embeds: [new EmbedBuilder({
                 description: 'Player' + (player.paused ? "**paused**" : "**unpaused**") + '!',
                 color: Colors.DarkGreen
@@ -52,16 +73,26 @@ class Buttons {
     async skip(interaction: ButtonInteraction) {
         let player = await music.players.get(interaction.guild!.id);
         if (!player)
-            return interaction.reply({
+            return interaction.followUp({
                 embeds: [new EmbedBuilder({
                     description: "No active Player...",
                     color: Colors.DarkRed
                 })]
             })
 
+        if (!(interaction.member as GuildMember)?.voice.channel)
+            return await interaction.followUp({
+                embeds: [
+                    new EmbedBuilder({
+                        description: ":x: please join a voice channel first",
+                        color: Colors.DarkRed
+                    })
+                ]
+            })
+
         if ((typeof player.queue == 'undefined') || (player.queue.size == 0)) {
             player.skip();
-            interaction.reply({
+            interaction.followUp({
                 embeds: [new EmbedBuilder({
                     description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
                     color: Colors.DarkRed
@@ -90,7 +121,7 @@ class Buttons {
 
         player.skip();
 
-        interaction.reply({
+        interaction.followUp({
             embeds: [new EmbedBuilder({
                 description: "Song skiped!",
                 color: Colors.DarkGreen
@@ -98,4 +129,52 @@ class Buttons {
             ephemeral: true
         })
     }
+
+    @ButtonComponent("music_shuffle")
+    async shuffle(interaction: ButtonInteraction) {
+        let player = await music.players.get(interaction.guild!.id);
+        if (!player)
+            return interaction.followUp({
+                embeds: [new EmbedBuilder({
+                    description: "No active Player...",
+                    color: Colors.DarkRed
+                })]
+            })
+
+        if (!(interaction.member as GuildMember)?.voice.channel)
+            return await interaction.followUp({
+                embeds: [
+                    new EmbedBuilder({
+                        description: ":x: please join a voice channel first",
+                        color: Colors.DarkRed
+                    })
+                ]
+            })
+
+        if ((typeof player.queue == 'undefined') || (player.queue.size <= 1)) {
+            interaction.followUp({
+                embeds: [new EmbedBuilder({
+                    description: "There are no or not enough songs to shuffle!",
+                    color: Colors.DarkRed
+                })]
+            })
+        }
+        else {
+            const queue = player.queue as BetterQueue;
+            await queue.shuffle();
+
+            return await interaction.followUp({
+                embeds: [new EmbedBuilder({
+                    description: "queue Shuffled!",
+                    color: Colors.DarkGreen
+                })]
+            })
+        }
+    }
+
+    //#####################################################################################################################
+    //#####################################################################################################################
+    //#####################################################################################################################
+    //#####################################################################################################################
+
 }

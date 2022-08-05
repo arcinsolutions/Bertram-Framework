@@ -190,7 +190,9 @@ export async function updateMusicEmbed(player: Player) {
     })
 
     message.edit({
-        content: queue.getAllSongDetails() == '' ? '**__Queue:__**\nJoin a Voice Channel and add a Song or a Playlist' : `**__Queue:__**\n${queue.getAllSongDetails()}`,
+        content: queue.generateFormattedQueue() == '' ?
+            '**__Queue:__**\nJoin a Voice Channel and add a Song or a Playlist' :
+            queue.generateFormattedQueue(),
         files: [attachment],
         embeds: [
             new EmbedBuilder({
