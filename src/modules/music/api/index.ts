@@ -97,9 +97,6 @@ export async function play(message: Message) {
         })
     }
 
-    console.log(message.content);
-
-
     // Search for Music
     const res = await music.search(message.content, "youtubemusic");
 
