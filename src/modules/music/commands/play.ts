@@ -1,9 +1,9 @@
 import { Category } from "@discordx/utilities";
-import { Discord, Slash, SlashOption } from "discordx";
-import { MessageEmbed } from 'discord.js';
+import { Discord, Slash, SlashOption } from 'discordx';
+import { Colors, EmbedBuilder, GuildMember } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { createMusicPlayer, music } from './../api/index';
-import { getGuild } from "../../core/database";
+import { BetterQueue } from './../api/structures';
 
 @Discord()
 @Category("Music")
@@ -14,15 +14,15 @@ class Play {
             ephemeral: true,
             fetchReply: true
         })
-        const embed = new MessageEmbed({
-            color: "DARK_RED"
+        const embed = new EmbedBuilder({
+            color: Colors.DarkRed
         });
 
         // interaction.deferReply({
         //     ephemeral: true
         // })
 
-        if (!interaction.member!.voice.channel || !interaction.member)
+        if (!(interaction.member as GuildMember)?.voice.channel || !interaction.member)
             return await interaction.editReply({
                 embeds: [embed.setDescription(":x: please Join a Voice Channel!")]
             })
@@ -52,19 +52,19 @@ class Play {
         if (res.loadType === 'PLAYLIST_LOADED') {
             for (const track of res.tracks) {
                 track.setRequester(interaction.user);
-                player.queue.push(track);
+                (player.queue as BetterQueue)?.add(track);
             }
 
             interaction.editReply({
-                embeds: [embed.setDescription(`Playlist ${res.playlistInfo.name} loaded!`).setColor("DARK_GREEN")]
+                embeds: [embed.setDescription(`Playlist ${res.playlistInfo.name} loaded!`).setColor(Colors.DarkGreen)]
             });
         } else {
             const track = res.tracks[0];
             track.setRequester(interaction.user);
 
-            player.queue.push(track);
+            (player.queue as BetterQueue)?.add(track);
             interaction.editReply({
-                embeds: [embed.setDescription(`Queued **${track.title}**`).setColor("DARK_GREEN")]
+                embeds: [embed.setDescription(`Queued **${track.title}**`).setColor(Colors.DarkGreen)]
             });
         }
 

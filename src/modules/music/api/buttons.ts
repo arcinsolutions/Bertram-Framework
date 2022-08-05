@@ -1,4 +1,4 @@
-import { ButtonInteraction, MessageEmbed } from "discord.js";
+import { ButtonInteraction, Colors, EmbedBuilder } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
 import { music } from './index';
 
@@ -9,9 +9,9 @@ class Buttons {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: ":x: No active found!",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })],
                 ephemeral: true
             })
@@ -19,9 +19,9 @@ class Buttons {
         await music.emit("stop", player)
 
         interaction.reply({
-            embeds: [new MessageEmbed({
+            embeds: [new EmbedBuilder({
                 description: ":white_check_mark: Player Stopped and Destroyed!",
-                color: "DARK_GREEN"
+                color: Colors.DarkGreen
             })],
             components: []
         })
@@ -32,18 +32,18 @@ class Buttons {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: ":x: No active Player found!",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })],
                 ephemeral: true
             })
 
         await player.pause(!player.paused);
         return interaction.reply({
-            embeds: [new MessageEmbed({
+            embeds: [new EmbedBuilder({
                 description: 'Player' + (player.paused ? "**paused**" : "**unpaused**") + '!',
-                color: "DARK_GREEN"
+                color: Colors.DarkGreen
             })]
         })
     }
@@ -53,18 +53,18 @@ class Buttons {
         let player = await music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: "No active Player...",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })]
             })
 
         if ((typeof player.queue == 'undefined') || (player.queue.size == 0)) {
             player.skip();
             interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })]
             })
             return setTimeout(() => {
@@ -75,10 +75,10 @@ class Buttons {
                 }
                 else {
                     music.emit("stop", player);
-                    interaction.reply({
-                        embeds: [new MessageEmbed({
+                    interaction.editReply({
+                        embeds: [new EmbedBuilder({
                             description: "Player Stopped and Destroyed!",
-                            color: "DARK_GREEN"
+                            color: Colors.DarkGreen
                         })]
                     }).then(() => {
                         player?.destroy();
@@ -91,9 +91,9 @@ class Buttons {
         player.skip();
 
         interaction.reply({
-            embeds: [new MessageEmbed({
+            embeds: [new EmbedBuilder({
                 description: "Song skiped!",
-                color: "DARK_GREEN"
+                color: Colors.DarkGreen
             })],
             ephemeral: true
         })

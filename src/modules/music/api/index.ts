@@ -1,7 +1,7 @@
 import { NodeState, Player, Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
-import { MessageEmbed, Message, CommandInteraction, TextChannel } from 'discord.js';
+import { Message, CommandInteraction, TextChannel, EmbedBuilder, Colors, GuildMember } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
 import { CoreDatabase } from './../../core/database/index';
 import { createCanvas, loadImage } from 'canvas'
@@ -33,7 +33,7 @@ export const music = new Vulkava({
 export async function createMusicPlayer(interaction: CommandInteraction) {
     const player = music.createPlayer({
         guildId: interaction.guild!.id,
-        voiceChannelId: interaction.member!.voice.channel.id,
+        voiceChannelId: (interaction.member as GuildMember)?.voice.channel!.id,
         textChannelId: interaction.channel!.id,
         selfDeaf: true,
         queue: new BetterQueue()
@@ -69,9 +69,9 @@ export async function play(message: Message) {
     if (!message.member!.voice.channel)
         return await message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: ":x: please join a voice channel first",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })
             ]
         })
@@ -89,28 +89,28 @@ export async function play(message: Message) {
     } catch (error) {
         return await message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: ":x: there is currently no node available, please try again later",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })
             ]
         })
     }
 
     // Search for Music
-    const res = await music.search(message.content, 'youtubemusic');
+    const res = await music.search(message.content, "youtubemusic");
 
     switch (res.loadType) {
         case "LOAD_FAILED":
             return message.channel.send({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                     description: `:x: Load failed!\nError: ${res.exception?.message}`
                 })]
             })
         case "NO_MATCHES":
             return message.channel.send({
                 embeds: [
-                    new MessageEmbed({
+                    new EmbedBuilder({
                         description: `:x: No matches!`
                     })
                 ]
@@ -123,9 +123,9 @@ export async function play(message: Message) {
     if (player.node?.state === NodeState.DISCONNECTED) {
         await message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: ":x: the node is currently offline, please try again later",
-                    color: "DARK_RED"
+                    color: Colors.DarkRed
                 })
             ]
         })
@@ -137,13 +137,13 @@ export async function play(message: Message) {
     if (res.loadType === 'PLAYLIST_LOADED') {
         for (const track of res.tracks) {
             track.setRequester(message.author);
-            player.queue.push(track);
+            (player.queue as BetterQueue)?.add(track);
             music.emit("songAdded", player, track);
         }
 
         message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`
                 })
             ]
@@ -152,10 +152,10 @@ export async function play(message: Message) {
         const track = res.tracks[0];
         track.setRequester(message.author);
 
-        player.queue.push(track);
+        (player.queue as BetterQueue)?.add(track);
         message.channel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     description: `:white_check_mark: Track added to the queue!`
                 })
             ]

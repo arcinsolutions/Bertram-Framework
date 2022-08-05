@@ -4,8 +4,8 @@ import { Entity, Column, BaseEntity, PrimaryColumn, TableInheritance } from "typ
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export class Guild extends BaseEntity {
     @PrimaryColumn()
-    guildId: string
+    guildId!: string
 
     @Column()
-    guildName: string
+    guildName: string | undefined
 }
