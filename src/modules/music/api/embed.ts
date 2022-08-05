@@ -5,6 +5,7 @@ import { Player } from 'vulkava';
 import { BetterQueue, BetterTrack } from './structures';
 import { musicGuild } from './../database/entities/guild';
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, MessageActionRowComponentBuilder, TextChannel } from 'discord.js';
+import Jimp from 'jimp'
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -78,19 +79,23 @@ export async function setDefaultMusicEmbed(guildId: string) {
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
-    await loadImage("./src/modules/music/assets/Music_Default.png").then(img => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const thumbnail = await Jimp.read("https://source.unsplash.com/random/?wallpapers").then(image => {
+        image.resize(canvas.width, canvas.height).resize(Jimp.AUTO, canvas.height);
+        image.blur(8).background(0xFFFFFF).brightness(-0.6);
+        return image;
+    })
+
+    await loadImage(await thumbnail.getBufferAsync(Jimp.MIME_PNG)).then(img => {
+        ctx.drawImage(img, 25, 25, canvas.width - 50, canvas.height - 50);
+
+        loadImage("./src/modules/music/assets/Music_Default.png").then(img => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        })
     })
 
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "music_default.png", description: "The default music image" });
     const actions = new ActionRowBuilder<MessageActionRowComponentBuilder>({
         components: [
-            new ButtonBuilder({
-                customId: "music_stop",
-                style: ButtonStyle.Secondary,
-                emoji: "⏹",
-                disabled: true
-            }),
             new ButtonBuilder({
                 customId: "music_playpause",
                 emoji: "⏯",
@@ -98,14 +103,20 @@ export async function setDefaultMusicEmbed(guildId: string) {
                 disabled: true
             }),
             new ButtonBuilder({
-                customId: "music_shuffle",
-                emoji: "🔀",
+                customId: "music_stop",
                 style: ButtonStyle.Secondary,
+                emoji: "⏹",
                 disabled: true
             }),
             new ButtonBuilder({
                 customId: "music_skip",
                 emoji: "⏭",
+                style: ButtonStyle.Secondary,
+                disabled: true
+            }),
+            new ButtonBuilder({
+                customId: "music_shuffle",
+                emoji: "🔀",
                 style: ButtonStyle.Secondary,
                 disabled: true
             }),
@@ -125,7 +136,6 @@ export async function setDefaultMusicEmbed(guildId: string) {
         embeds: [
             new EmbedBuilder({
                 title: ':musical_note: | Join a Voice Channel and add a Song or a Playlist',
-                footer: { text: `${new Date()}` },
                 image: { url: 'attachment://music_default.png' },
             })
         ],
@@ -152,23 +162,23 @@ export async function updateMusicEmbed(player: Player) {
     const actions = new ActionRowBuilder<MessageActionRowComponentBuilder>({
         components: [
             new ButtonBuilder({
-                customId: "music_stop",
-                style: ButtonStyle.Secondary,
-                emoji: "⏹"
-            }),
-            new ButtonBuilder({
                 customId: "music_playpause",
                 emoji: "⏯",
                 style: ButtonStyle.Secondary
             }),
             new ButtonBuilder({
-                customId: "music_shuffle",
-                emoji: "🔀",
-                style: ButtonStyle.Secondary
+                customId: "music_stop",
+                style: ButtonStyle.Secondary,
+                emoji: "⏹"
             }),
             new ButtonBuilder({
                 customId: "music_skip",
                 emoji: "⏭",
+                style: ButtonStyle.Secondary
+            }),
+            new ButtonBuilder({
+                customId: "music_shuffle",
+                emoji: "🔀",
                 style: ButtonStyle.Secondary
             }),
             new ButtonBuilder({
