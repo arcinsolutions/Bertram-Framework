@@ -7,5 +7,5 @@ export class Guild extends BaseEntity {
     guildId!: string
 
     @Column()
-    guildName: string | undefined
+    guildName?: string
 }
