@@ -189,14 +189,15 @@ export async function updateMusicEmbed(player: Player) {
         ]
     })
 
+    const formattedQueue = queue.generateFormattedQueue();
+
     message.edit({
-        content: queue.generateFormattedQueue() == '' ?
-            '**__Queue:__**\nJoin a Voice Channel and add a Song or a Playlist' :
-            queue.generateFormattedQueue(),
+        content: (formattedQueue == '' ?
+            '**__Queue:__**\nJoin a Voice Channel and add a Song or a Playlist' : formattedQueue),
         files: [attachment],
         embeds: [
             new EmbedBuilder({
-                title: ':musical_note: Now Playing:',
+                description: '**:musical_note: Now Playing:**',
                 image: { url: 'attachment://music.png' },
             })
         ],
