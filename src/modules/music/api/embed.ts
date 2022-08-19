@@ -6,6 +6,7 @@ import { BetterQueue, BetterTrack } from './structures';
 import { musicGuild } from './../database/entities/guild';
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, MessageActionRowComponentBuilder, TextChannel } from 'discord.js';
 import Jimp from 'jimp'
+import { music_Buttons } from "./buttons";
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -94,41 +95,6 @@ export async function setDefaultMusicEmbed(guildId: string) {
     })
 
     const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "music_default.png", description: "The default music image" });
-    const actions = new ActionRowBuilder<MessageActionRowComponentBuilder>({
-        components: [
-            new ButtonBuilder({
-                customId: "music_playpause",
-                emoji: "⏯",
-                style: ButtonStyle.Secondary,
-                disabled: true
-            }),
-            new ButtonBuilder({
-                customId: "music_stop",
-                style: ButtonStyle.Secondary,
-                emoji: "⏹",
-                disabled: true
-            }),
-            new ButtonBuilder({
-                customId: "music_skip",
-                emoji: "⏭",
-                style: ButtonStyle.Secondary,
-                disabled: true
-            }),
-            new ButtonBuilder({
-                customId: "music_shuffle",
-                emoji: "🔀",
-                style: ButtonStyle.Secondary,
-                disabled: true
-            }),
-            new ButtonBuilder({
-                url: 'https://arcin.solutions',
-                emoji: "🔗",
-                style: ButtonStyle.Link,
-                disabled: true
-            })
-        ]
-    })
-
 
     message.edit({
         content: " ",
@@ -139,7 +105,7 @@ export async function setDefaultMusicEmbed(guildId: string) {
                 image: { url: 'attachment://music_default.png' },
             })
         ],
-        components: [actions]
+        components: [music_Buttons(true, "https://arcin.solutions")]
     })
 }
 
@@ -151,43 +117,15 @@ export async function updateMusicEmbed(player: Player) {
     const channel = client.channels.cache.get(guildData.channelId) as TextChannel | undefined;
     if (channel == null) return;
 
-    if (!player.current) return;
+    if (player.current === null) return;
 
     const message = await channel.messages.fetch(guildData.messageId);
     if (message == null) return await channel.send("CHANNEL_IS_BROKEN");
 
     const queue = await player.queue as BetterQueue;
+    const current = await player.current as BetterTrack;
 
-    const attachment = await new AttachmentBuilder(await createMusicImage(player.current as BetterTrack), { name: "music.png", description: "The music image" });
-    const actions = new ActionRowBuilder<MessageActionRowComponentBuilder>({
-        components: [
-            new ButtonBuilder({
-                customId: "music_playpause",
-                emoji: "⏯",
-                style: ButtonStyle.Secondary
-            }),
-            new ButtonBuilder({
-                customId: "music_stop",
-                style: ButtonStyle.Secondary,
-                emoji: "⏹"
-            }),
-            new ButtonBuilder({
-                customId: "music_skip",
-                emoji: "⏭",
-                style: ButtonStyle.Secondary
-            }),
-            new ButtonBuilder({
-                customId: "music_shuffle",
-                emoji: "🔀",
-                style: ButtonStyle.Secondary
-            }),
-            new ButtonBuilder({
-                url: player.current.uri,
-                emoji: "🔗",
-                style: ButtonStyle.Link
-            })
-        ]
-    })
+    const attachment = await new AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
 
     message.edit({
         content: queue.generateFormattedQueue() == '' ?
@@ -200,8 +138,6 @@ export async function updateMusicEmbed(player: Player) {
                 image: { url: 'attachment://music.png' },
             })
         ],
-        components: [
-            actions
-        ]
+        components: [music_Buttons(false, await current.uri)]
     })
 }

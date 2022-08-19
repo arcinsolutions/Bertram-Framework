@@ -10,42 +10,9 @@ import Jimp from 'jimp'
 import { BetterQueue, BetterTrack } from './structures';
 import { setMusicEmbed } from './embed';
 
+// !IMPORTANT!
 export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
-
-// +++ Vulkava Stuff +++
-export const music = new Vulkava({
-    nodes: [
-        {
-            id: 'arcin1',
-            hostname: 'arcin.solutions',
-            port: 2334,
-            password: 'eriCmEqBitDZv3rnH3Wr'
-        }
-    ],
-    sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {
-        client.guilds.cache.get(guildId)?.shard.send(payload);
-        // With eris
-        // client.guilds.get(guildId)?.shard.sendWS(payload.op, payload.d);
-    }
-})
-// --- Vulkava Stuff ---
-
-export async function createMusicPlayer(interaction: CommandInteraction) {
-    const player = music.createPlayer({
-        guildId: interaction.guild!.id,
-        voiceChannelId: (interaction.member as GuildMember)?.voice.channel!.id,
-        textChannelId: interaction.channel!.id,
-        selfDeaf: true,
-        queue: new BetterQueue()
-    })
-
-    music.emit("playerCreate", player);
-
-    return player;
-}
-
-
-export async function getMusicStuffFromDB() {
+export const getMusicStuffFromDB = async () => {
     const data = await CoreDatabase.getRepository(musicGuild).createQueryBuilder("guild").getMany()
 
     await data.map(guild => {
@@ -61,7 +28,41 @@ export async function getMusicStuffFromDB() {
         setMusicEmbed(guild.guildId)
     })
 }
+// !IMPORTANT!
 
+
+export const music = new Vulkava({
+    nodes: [
+        {
+            id: 'arcin1',
+            hostname: 'arcin.solutions',
+            port: 2334,
+            password: 'eriCmEqBitDZv3rnH3Wr',
+            region: 'EU'
+        }
+    ],
+    sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {
+        client.guilds.cache.get(guildId)?.shard.send(payload);
+        // With eris
+        // client.guilds.get(guildId)?.shard.sendWS(payload.op, payload.d);
+    }
+})
+
+export async function createMusicPlayer(interaction: CommandInteraction) {
+    const player = music.createPlayer({
+        guildId: interaction.guild!.id,
+        voiceChannelId: (interaction.member as GuildMember)?.voice.channel!.id,
+        textChannelId: interaction.channel!.id,
+        selfDeaf: true,
+        queue: new BetterQueue()
+    })
+
+    await music.emit("playerCreated", player)
+
+    console.log(music.listeners("playerCreated"));
+
+    return player;
+}
 
 export async function play(message: Message) {
     await message.delete().catch(() => { });
@@ -80,7 +81,7 @@ export async function play(message: Message) {
     try {
         player = music.players.get(message.guild!.id);
         if (!player)
-            player = music.createPlayer({
+            player = await music.createPlayer({
                 guildId: message.guild!.id,
                 voiceChannelId: message.member!.voice.channel.id,
                 selfDeaf: true,
@@ -144,7 +145,8 @@ export async function play(message: Message) {
         message.channel.send({
             embeds: [
                 new EmbedBuilder({
-                    description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`
+                    description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`,
+                    color: Colors.DarkGreen
                 })
             ]
         });
@@ -156,7 +158,8 @@ export async function play(message: Message) {
         message.channel.send({
             embeds: [
                 new EmbedBuilder({
-                    description: `:white_check_mark: Track added to the queue!`
+                    description: `:white_check_mark: Track added to the queue!`,
+                    color: Colors.DarkGreen
                 })
             ]
         });
