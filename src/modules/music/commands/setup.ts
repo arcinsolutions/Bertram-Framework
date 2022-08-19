@@ -7,7 +7,7 @@ import { createMusicChannel } from "../api/embed";
 @Discord()
 @Category("Music")
 class Setup {
-    @Slash("setup", { description: "Create a song-requests channel" })
+    @Slash({ name: "setup", description: "Create a song-requests channel" })
     async setup(interaction: CommandInteraction) {
         await interaction.deferReply({
             fetchReply: true
@@ -101,12 +101,12 @@ class Setup {
         })
     }
 
-    @ButtonComponent("abort")
+    @ButtonComponent({ id: "abort" })
     async abort(interaction: ButtonInteraction) {
         return interaction.message.delete();
     }
 
-    @ButtonComponent("create")
+    @ButtonComponent({ id: "create" })
     async create(interaction: ButtonInteraction) {
         const tempMusic = musicGuilds.get(interaction.guild!.id);
         interaction.guild?.channels.cache.get(tempMusic!.channelId)?.delete();

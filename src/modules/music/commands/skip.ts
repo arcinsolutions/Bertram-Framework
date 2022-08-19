@@ -7,8 +7,8 @@ import { music, play } from './../api/index';
 @Discord()
 @Category("Music")
 class Skip {
-    @Slash("skip", { description: "Skip the current Song" })
-    async skip(@SlashOption("amount", { description: "let you skip a specific amount of Songs", required: false }) amount: number, interaction: CommandInteraction) {
+    @Slash({ name: "skip", description: "Skip the current Song" })
+    async skip(@SlashOption({ name: "amount", description: "let you skip a specific amount of Songs", required: false }) amount: number, interaction: CommandInteraction) {
         let player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({

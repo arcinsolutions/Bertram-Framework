@@ -7,8 +7,7 @@ import { client } from "../../../golden";
 @Discord()
 @Category("Information")
 class Stats {
-    @Slash("stats")
-    @Description("shows you a lot of stats how Golden performs...")
+    @Slash({ name: "stats", description: "shows you a lot of stats how Golden performs..." })
     async stats(interaction: CommandInteraction) {
         const embed = new EmbedBuilder();
         const startUsage = process.cpuUsage();
