@@ -8,7 +8,7 @@ import { BetterQueue } from './../api/structures';
 @Discord()
 @Category("Music")
 class Queue {
-    @Slash("queue", { description: "Show the current queue" })
+    @Slash({ name: "queue", description: "Show the current queue" })
     async queue(interaction: CommandInteraction) {
         let currPage = 0;
         const player = music.players.get(interaction.guild!.id);
@@ -54,7 +54,7 @@ class Queue {
     }
 
 
-    @ButtonComponent("music_queue_previous")
+    @ButtonComponent({ id: "music_queue_previous" })
     async queuePrevious(interaction: ButtonInteraction) {
         const player = music.players.get(interaction.guild!.id);
         if (!player)
@@ -90,7 +90,7 @@ class Queue {
         })
     }
 
-    @ButtonComponent("music_queue_next")
+    @ButtonComponent({ id: "music_queue_next" })
     async queueNext(interaction: ButtonInteraction) {
         const player = music.players.get(interaction.guild!.id);
         if (!player)

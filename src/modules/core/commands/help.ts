@@ -8,8 +8,7 @@ let helpMenu: EmbedBuilder;
 @Discord()
 @Category("Information")
 class Help {
-    @Slash("help")
-    @Description("Help me, i am under the water. Menu")
+    @Slash({ name: "help", description: "Show the help menu" })
     async help(interaction: CommandInteraction) {
         helpMenu = new EmbedBuilder({
             title: 'Help Menu',

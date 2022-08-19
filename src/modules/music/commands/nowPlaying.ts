@@ -7,7 +7,7 @@ import { music } from './../api/index';
 @Discord()
 @Category("Music")
 class NowPlaying {
-    @Slash("nowplaying", { description: "See what is currently being played." })
+    @Slash({ name: "nowplaying", description: "See what is currently being played." })
     async play(interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true,

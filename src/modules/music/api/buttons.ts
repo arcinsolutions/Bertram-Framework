@@ -44,7 +44,7 @@ export const music_Buttons = (disabled?: boolean, url?: string) => {
 
 @Discord()
 class Buttons {
-    @ButtonComponent("music_stop")
+    @ButtonComponent({ id: "music_stop" })
     async stop(interaction: ButtonInteraction) {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
@@ -77,7 +77,7 @@ class Buttons {
         })
     }
 
-    @ButtonComponent("music_playpause")
+    @ButtonComponent({ id: "music_playpause" })
     async playPause(interaction: ButtonInteraction) {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
@@ -107,7 +107,7 @@ class Buttons {
         })
     }
 
-    @ButtonComponent("music_skip")
+    @ButtonComponent({ id: "music_skip" })
     async skip(interaction: ButtonInteraction) {
         let player = await music.players.get(interaction.guild!.id);
         if (!player)
@@ -167,7 +167,7 @@ class Buttons {
         })
     }
 
-    @ButtonComponent("music_shuffle")
+    @ButtonComponent({ id: "music_shuffle" })
     async shuffle(interaction: ButtonInteraction) {
         let player = await music.players.get(interaction.guild!.id);
         if (!player)

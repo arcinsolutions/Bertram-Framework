@@ -7,7 +7,7 @@ import { music } from './../api/index';
 @Discord()
 @Category("Music")
 class Stop {
-    @Slash("stop", { description: "Stop the current Player" })
+    @Slash({ name: "stop", description: "Stop the current Player" })
     async stop(interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true
