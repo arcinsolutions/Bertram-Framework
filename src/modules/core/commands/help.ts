@@ -8,7 +8,7 @@ let helpMenu: EmbedBuilder;
 @Discord()
 @Category("Information")
 class Help {
-    @Slash({ name: "help", description: "Show the help menu" })
+    @Slash({ name: "help", description: "Show the help menu", })
     async help(interaction: CommandInteraction) {
         helpMenu = new EmbedBuilder({
             title: 'Help Menu',
@@ -25,7 +25,7 @@ class Help {
 
     }
 
-    @ButtonComponent("firstBtn")
+    @ButtonComponent({ id: "firstBtn" })
     async first_Btn(interaction: ButtonInteraction) {
         interaction.update({
             embeds: [helpMenu.setDescription(`${helpText[0]}`)],
@@ -33,7 +33,7 @@ class Help {
         })
     }
 
-    @ButtonComponent("prevBtn")
+    @ButtonComponent({ id: "prevBtn" })
     async prev_Btn(interaction: ButtonInteraction) {
         let prevPage: number = await (helpText.indexOf(`${helpMenu.data.description}`) - 1);
         if (prevPage < 0)
@@ -44,7 +44,7 @@ class Help {
         })
     }
 
-    @ButtonComponent("nextBtn")
+    @ButtonComponent({ id: "nextBtn" })
     async next_Btn(interaction: ButtonInteraction) {
         let nextPage: number = await (helpText.indexOf(`${helpMenu.data.description}`) + 1);
         if (nextPage >= categories.length)
@@ -55,7 +55,7 @@ class Help {
         })
     }
 
-    @ButtonComponent("lastBtn")
+    @ButtonComponent({ id: "lastBtn" })
     async last_Btn(interaction: ButtonInteraction) {
         interaction.update({
             embeds: [helpMenu.setDescription(`${helpText[helpText.length - 1]}`)],

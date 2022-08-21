@@ -5,9 +5,21 @@ import { client, goldenConfig } from './../../../golden';
 import { exit } from "process";
 import { musicGuild } from './../../music/database/entities/guild';
 
-export let CoreDatabase: DataSource;
+let CoreDatabase: DataSource;
 
-export async function CoreInit() {
+export const database = {
+    init: async () => {
+        await initCore();
+    },
+    getDatabase: async () => {
+        return CoreDatabase;
+    },
+    getGuild: async (ID: string) => {
+        return await getGuild(ID);
+    }
+}
+
+async function initCore() {
     if (!goldenConfig || (goldenConfig.DB_HOST || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
         log(
             "Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/spasten-studio/Golden"
@@ -42,7 +54,7 @@ export async function CoreInit() {
  * @param ID The guild ID
  * @returns returns all Saved data which is stored in the database about the guild
  */
-export async function getGuild(ID: string) {
+async function getGuild(ID: string) {
     return await (CoreDatabase.getRepository(Guild).findOneBy({ guildId: ID }) as Promise<Guild>);
 }
 

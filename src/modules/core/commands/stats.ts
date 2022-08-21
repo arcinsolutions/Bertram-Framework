@@ -5,7 +5,7 @@ import { CommandInteraction } from 'discord.js';
 import { client } from "../../../golden";
 
 @Discord()
-@Category("Information")
+@Category('Information')
 class Stats {
     @Slash({ name: "stats", description: "shows you a lot of stats how Golden performs..." })
     async stats(interaction: CommandInteraction) {
