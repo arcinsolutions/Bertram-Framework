@@ -3,17 +3,18 @@ import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../golden';
 import { Message, CommandInteraction, TextChannel, EmbedBuilder, Colors, GuildMember } from 'discord.js';
 import { musicGuild } from '../database/entities/guild';
-import { CoreDatabase } from './../../core/database/index';
 import { createCanvas, loadImage } from 'canvas'
 import formatDuration from 'format-duration'
 import Jimp from 'jimp'
 import { BetterQueue, BetterTrack } from './structures';
 import { setMusicEmbed } from './embed';
+import { core } from '../../core';
+import { DataSource } from 'typeorm';
 
 // !IMPORTANT!
 export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
 export const getMusicStuffFromDB = async () => {
-    const data = await CoreDatabase.getRepository(musicGuild).createQueryBuilder("guild").getMany()
+    const data = await core.database.getDatabase().getRepository(musicGuild).createQueryBuilder("guild").getMany()
 
     await data.map(guild => {
         musicGuilds.set(guild.guildId
@@ -35,7 +36,7 @@ export const music = new Vulkava({
     nodes: [
         {
             id: 'arcin1',
-            hostname: 'arcin.solutions',
+            hostname: '185.234.72.80',
             port: 2334,
             password: 'eriCmEqBitDZv3rnH3Wr',
             region: 'EU'

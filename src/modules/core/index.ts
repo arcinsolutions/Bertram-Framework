@@ -5,5 +5,6 @@ export const core = {
     init: async () => {
         await database.init();
         await help.init();
-    }
+    },
+    database: database
 }

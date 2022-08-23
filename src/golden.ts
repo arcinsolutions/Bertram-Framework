@@ -5,6 +5,7 @@ import { exit } from "process";
 import { config } from "dotenv";
 import { dirname, importx, isESM } from "@discordx/importer";
 import { Client } from "discordx";
+import { core } from "./modules/core";
 
 const env = await config({
     path: "./config.env",
@@ -46,6 +47,9 @@ client.on("ready", async () => {
     //     ...client.guilds.cache.map((g) => g.id)
     // );
     log("Golden started");
+
+    await core.init();
+
     client.emit("botReady");
 
 });
@@ -68,5 +72,5 @@ async function start() {
         console.log("[Core] - All files imported")
     );
 
-    client.login(goldenConfig.DISCORD_TOKEN);
+    await client.login(goldenConfig.DISCORD_TOKEN);
 }

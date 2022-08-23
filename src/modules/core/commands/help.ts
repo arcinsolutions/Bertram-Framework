@@ -1,18 +1,18 @@
-import { Category, Description } from "@discordx/utilities";
+import { Category } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { ButtonComponent, Discord, Slash } from 'discordx';
-import { categories, helpText } from "../events/botReady";
+import { help } from "../help";
 
 let helpMenu: EmbedBuilder;
 
 @Discord()
 @Category("Information")
 class Help {
-    @Slash({ name: "help", description: "Show the help menu", })
+    @Slash({ name: "help", description: "Show the help menu" })
     async help(interaction: CommandInteraction) {
         helpMenu = new EmbedBuilder({
             title: 'Help Menu',
-            description: helpText[0],
+            description: help.getText(0),
             color: Colors.DarkGreen
         })
 
@@ -28,29 +28,29 @@ class Help {
     @ButtonComponent({ id: "firstBtn" })
     async first_Btn(interaction: ButtonInteraction) {
         interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[0]}`)],
+            embeds: [helpMenu.setDescription(`${help.getText(0)}`)],
             components: [CreateHelpMenuActionRow(0)]
         })
     }
 
     @ButtonComponent({ id: "prevBtn" })
     async prev_Btn(interaction: ButtonInteraction) {
-        let prevPage: number = await (helpText.indexOf(`${helpMenu.data.description}`) - 1);
+        let prevPage: number = await (help.findCategory(helpMenu.data.description!) - 1);
         if (prevPage < 0)
             prevPage = 0
         interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[prevPage]}`)],
+            embeds: [helpMenu.setDescription(`${help.getText(prevPage)}`)],
             components: [CreateHelpMenuActionRow(prevPage)]
         })
     }
 
     @ButtonComponent({ id: "nextBtn" })
     async next_Btn(interaction: ButtonInteraction) {
-        let nextPage: number = await (helpText.indexOf(`${helpMenu.data.description}`) + 1);
-        if (nextPage >= categories.length)
-            nextPage = categories.length - 1
+        let nextPage: number = await (help.findCategory(helpMenu.data.description!) + 1);
+        if (nextPage >= help.categories().length())
+            nextPage = help.categories().length() - 1
         interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[nextPage]}`)],
+            embeds: [helpMenu.setDescription(`${help.getText(nextPage)}`)],
             components: [CreateHelpMenuActionRow(nextPage)]
         })
     }
@@ -58,8 +58,8 @@ class Help {
     @ButtonComponent({ id: "lastBtn" })
     async last_Btn(interaction: ButtonInteraction) {
         interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[helpText.length - 1]}`)],
-            components: [CreateHelpMenuActionRow(helpText.length - 1)]
+            embeds: [helpMenu.setDescription(`${help.getText(help.categories().length() - 1)}`)],
+            components: [CreateHelpMenuActionRow(help.categories().length() - 1)]
         })
     }
 
@@ -83,20 +83,20 @@ function CreateHelpMenuActionRow(page: number) {
         new ButtonBuilder({
             style: ButtonStyle.Secondary,
             customId: "currPage",
-            label: categories[(page <= 0 || page > categories.length) ? 0 : page],
+            label: help.categories().get((page <= 0 || page > help.categories().length()) ? 0 : page).name,
             disabled: true
         }),
         new ButtonBuilder({
             style: ButtonStyle.Secondary,
             customId: "nextBtn",
             emoji: '<:arrowright:930879597472518145>',
-            disabled: (page >= (categories.length - 1)) ? true : false
+            disabled: (page >= (help.categories().length() - 1)) ? true : false
         }),
         new ButtonBuilder({
             style: ButtonStyle.Secondary,
             customId: "lastBtn",
             emoji: '<:lastPage:984398886376460339>',
-            disabled: (page >= (categories.length - 1)) ? true : false
+            disabled: (page >= (help.categories().length() - 1)) ? true : false
         })]
     }) as any
 }

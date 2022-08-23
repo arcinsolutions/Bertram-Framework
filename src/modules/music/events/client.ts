@@ -14,7 +14,7 @@ client.once("botReady", async () => {
     registerFont("./src/modules/music/assets/Outfit-Bold.ttf", { family: "OutfitBold" });
 })
 
-client.once("DB_Connected", async (DataSource) => {
+client.once("DB_Connected", async () => {
     getMusicStuffFromDB();
 })
 // --- On Start ---
