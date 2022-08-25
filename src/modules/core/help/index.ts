@@ -45,7 +45,7 @@ const command = {
 export const help = {
     init: async () => {
         await initHelp().then(() => {
-            console.log('Help initialized');
+            console.log('[Core] - Help text generated!');
         });
     },
     categories() {

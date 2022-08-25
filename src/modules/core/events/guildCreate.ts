@@ -1,4 +1,4 @@
-import { client } from '../../../golden';
+import { client } from '../../../bertram';
 import { Guild } from '../database/entities/guild'
 
 // **Import Database Stuff** //

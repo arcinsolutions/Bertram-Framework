@@ -2,7 +2,7 @@ import { Category, Description } from "@discordx/utilities";
 import { Discord, Slash } from 'discordx';
 import { Colors, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
-import { client } from "../../../golden";
+import { client } from "../../../bertram";
 
 @Discord()
 @Category('Information')

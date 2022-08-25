@@ -1,5 +1,5 @@
 import { createMusicImage, music, musicGuilds } from ".";
-import { client } from "../../../golden";
+import { client } from "../../../bertram";
 import { createCanvas, loadImage } from "canvas";
 import { Player } from 'vulkava';
 import { BetterQueue, BetterTrack } from './structures';

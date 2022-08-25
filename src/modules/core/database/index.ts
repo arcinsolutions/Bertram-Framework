@@ -1,7 +1,7 @@
 import { DataSource, DataSourceOptions, Db } from "typeorm";
 import { log } from 'console';
 import { Guild } from "./entities/guild";
-import { client, goldenConfig } from './../../../golden';
+import { client, goldenConfig } from '../../../bertram';
 import { exit } from "process";
 
 let DBsource: DataSource;

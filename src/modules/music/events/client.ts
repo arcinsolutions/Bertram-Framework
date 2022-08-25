@@ -1,5 +1,5 @@
 import { TextChannel, VoiceState } from "discord.js";
-import { client } from "../../../golden";
+import { client } from "../../../bertram";
 import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
 import { registerFont } from 'canvas';
 
