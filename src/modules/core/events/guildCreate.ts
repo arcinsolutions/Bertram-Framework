@@ -1,5 +1,7 @@
 import { client } from '../../../bertram';
 import { Guild } from '../database/entities/guild'
+import { core } from './../index';
+import { Client } from 'discordx';
 
 // **Import Database Stuff** //
 

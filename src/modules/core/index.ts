@@ -3,8 +3,8 @@ import { help } from "./help";
 
 export const core = {
     init: async () => {
+        help.init();
         await database.init();
-        await help.init();
     },
     database: database
 }

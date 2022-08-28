@@ -1,8 +1,8 @@
-import { DataSource, DataSourceOptions, Db } from "typeorm";
 import { log } from 'console';
 import { Guild } from "./entities/guild";
 import { client, goldenConfig } from '../../../bertram';
 import { exit } from "process";
+import { DataSource } from 'typeorm';
 
 let DBsource: DataSource;
 
@@ -19,7 +19,7 @@ export const database = {
 }
 
 async function initCore() {
-    if (!goldenConfig || (goldenConfig.DB_HOST || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
+    if (!goldenConfig || (goldenConfig.DB_Host || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
         log(
             "Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/spasten-studio/Golden"
         );
@@ -35,7 +35,7 @@ async function initCore() {
         database: goldenConfig.DB_Database,
         synchronize: true,
         logging: false,
-        entities: ["src/modules/**/database/entities/*.ts"]
+        entities: ["src/modules/**/database/entities/*.ts"],
     })
 
     await DBsource.initialize().then((connection) => {
@@ -43,7 +43,7 @@ async function initCore() {
         DBsource = connection;
         client.emit("DB_Connected", () => { });
     }).catch((reason: string) => {
-        log(`[Core] -  DB err: ${reason}`)
+        log(`[Core] -  DB ${reason}`)
     })
 }
 
