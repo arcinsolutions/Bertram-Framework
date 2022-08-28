@@ -1,5 +1,5 @@
 import { Category } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, ComponentBuilder, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, ComponentBuilder, EmbedBuilder, MessageActionRowComponentBuilder, MessageOptions } from "discord.js";
 import { ButtonComponent, Discord, Slash } from "discordx";
 import { DefaultQueue } from "vulkava";
 import { music } from "../api";
@@ -52,102 +52,21 @@ class Queue {
             ]
         })
     }
-
-
-    @ButtonComponent({ id: "music_queue_previous" })
-    async queuePrevious(interaction: ButtonInteraction) {
-        const player = music.players.get(interaction.guild!.id);
-        if (!player)
-            return interaction.update({
-                embeds: [
-                    new EmbedBuilder({
-                        description: ":x: No player found!",
-                        color: Colors.DarkRed
-                    })
-                ]
-            })
-
-        const queue = player.queue as BetterQueue;
-        let lenght: number = (Number(await queue.size.toFixed()) / 10);
-        let currPage = 0;
-
-        for (let i = 0; i < lenght; i++) {
-            if (interaction.message.embeds[0].description?.includes(queue.getSongDetails(i * 10, (i * 10) + 10))) {
-                currPage = i;
-                break;
-            }
-        }
-
-        return await interaction.update({
-            embeds: [
-                new EmbedBuilder({
-                    title: "Queue",
-                    description: await queue.getSongDetails(currPage * 10 - 20, currPage * 10 - 10),
-                    color: Colors.DarkGreen
-                })
-            ],
-            components: [await generateMusicQueueComponents(queue, currPage)]
-        })
-    }
-
-    @ButtonComponent({ id: "music_queue_next" })
-    async queueNext(interaction: ButtonInteraction) {
-        const player = music.players.get(interaction.guild!.id);
-        if (!player)
-            return interaction.update({
-                embeds: [
-                    new EmbedBuilder({
-                        description: ":x: No player found!",
-                        color: Colors.DarkRed
-                    })
-                ]
-            })
-
-        const queue = player.queue as BetterQueue;
-        let lenght = (Number(await queue.size.toFixed(0)) / 10);
-        let currPage = 0;
-
-        for (let i = 0; i < lenght; i++) {
-            if (await interaction.message.embeds[0].description?.includes(await queue.getSongDetails(i * 10, (i * 10) + 10))) {
-                currPage = i;
-                break;
-            }
-        }
-
-        return await interaction.update({
-            embeds: [
-                new EmbedBuilder({
-                    title: "Queue",
-                    description: await queue.getSongDetails(currPage * 10 + 10, currPage * 10 + 20),
-                    color: Colors.DarkGreen
-                })
-            ],
-            components: [await generateMusicQueueComponents(queue, currPage + 1)]
-        })
-    }
 }
 
-async function generateMusicQueueComponents(queue: BetterQueue, currPage: number): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>> {
-    const components: ActionRowBuilder<MessageActionRowComponentBuilder> = new ActionRowBuilder<MessageActionRowComponentBuilder>;
-    const lenght = (Number(await queue.size.toFixed(0)) / 10);
 
-    console.log(Number(lenght.toFixed()));
-    console.log(currPage);
+async function GeneratePages(queue: BetterQueue): Promise<MessageOptions[]> {
 
-    components.addComponents(
-        new ButtonBuilder({
-            custom_id: "music_queue_previous",
-            emoji: "⏪",
-            disabled: currPage == 0 ? true : false,
-            style: ButtonStyle.Secondary,
-        }),
-        new ButtonBuilder({
-            custom_id: "music_queue_next",
-            emoji: "⏩",
-            disabled: currPage > Number(lenght.toFixed()) ? true : false,
-            style: ButtonStyle.Secondary,
-        }),
-    )
-
-    return components;
+    const pages = Array.from(Array((queue.getAllSongDetails().length / 20)).keys()).map((i) => {
+        return { embed: queue.getSongDetails(i, i + 10) };
+    });
+    return pages.map((page) => {
+        return {
+            embeds: [new EmbedBuilder({
+                title: 'Help Menu',
+                description: page.embed,
+                color: Colors.DarkGreen
+            })],
+        };
+    });
 }

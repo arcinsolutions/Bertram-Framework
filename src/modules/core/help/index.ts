@@ -12,11 +12,8 @@ const category = {
     get: (category: number) => {
         return categories[category];
     },
-    categories: () => {
+    default: () => {
         return categories;
-    },
-    length: () => {
-        return categories.length;
     }
 }
 
@@ -31,11 +28,11 @@ const command = {
         }
     },
     pushMetaCommand(command: DApplicationCommand & ICategory) {
-        const tempCommand: TypeCommand = ({ name: command.name, category: { name: command.category! }, description: command.description, permissions: command.defaultMemberPermissions, guilds: command.guilds });
+        if (command.category === undefined)
+            return console.log(`Command ${command.name} has no category`);
 
-        if (!categories.includes({ name: command.category! })) {
-            categories.push({ name: command.category! });
-        }
+        if (categories.findIndex((category) => category.name === command.category) === -1)
+            categories.push({ name: command.category });
     },
     get(index: number) {
         return commands[index];
@@ -61,6 +58,9 @@ export const help = {
         }
 
         return "";
+    },
+    getLenght() {
+        return categories.length;
     },
     findCategory(text: string) {
         return HelpText.findIndex(x => x.text == text);

@@ -40,6 +40,13 @@ export const music = new Vulkava({
             port: 2334,
             password: 'eriCmEqBitDZv3rnH3Wr',
             region: 'EU'
+        },
+        {
+            id: 'arcin2',
+            hostname: '78.47.184.165',
+            port: 2332,
+            password: 'tiZDJ7dvZJsDDU2x',
+            region: 'EU'
         }
     ],
     sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {

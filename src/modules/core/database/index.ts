@@ -27,7 +27,7 @@ async function initCore() {
     }
 
     DBsource = await new DataSource({
-        type: "mysql",
+        type: 'mysql',
         host: goldenConfig.DB_Host,
         port: Number(goldenConfig.DB_Port),
         username: goldenConfig.DB_Username,
