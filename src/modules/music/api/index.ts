@@ -9,20 +9,19 @@ import Jimp from 'jimp'
 import { BetterQueue, BetterTrack } from './structures';
 import { setMusicEmbed } from './embed';
 import { core } from '../../core';
-import { DataSource } from 'typeorm';
+import { Guild } from './../../core/database/entities/guild';
 
 // !IMPORTANT!
 export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
+
 export const getMusicStuffFromDB = async () => {
-    const data = await core.database.getDatabase().getRepository(musicGuild).createQueryBuilder("guild").getMany()
+    const data = await core.database.getDatabase().getTreeRepository(musicGuild).find();
 
     await data.map(guild => {
-        musicGuilds.set(guild.guildId
-            , {
-                channelId: guild.channelId,
-                messageId: guild.messageId
-            }
-        );
+        musicGuilds.set(guild.guildId, {
+            channelId: guild.channelId,
+            messageId: guild.messageId
+        });
     });
 
     data.forEach(guild => {
@@ -66,8 +65,6 @@ export async function createMusicPlayer(interaction: CommandInteraction) {
     })
 
     await music.emit("playerCreated", player)
-
-    console.log(music.listeners("playerCreated"));
 
     return player;
 }

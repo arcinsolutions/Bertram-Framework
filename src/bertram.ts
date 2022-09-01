@@ -46,12 +46,11 @@ client.on("ready", async () => {
     // await client.clearApplicationCommands(
     //     ...client.guilds.cache.map((g) => g.id)
     // );
-    log("Golden started");
-
     await core.init();
 
-    client.emit("botReady");
+    await client.emit("botReady");
 
+    log(`[Core] - ${client.user?.username} started successfully`);
 });
 
 client.on("interactionCreate", (interaction: Interaction<CacheType>) => {
@@ -60,10 +59,7 @@ client.on("interactionCreate", (interaction: Interaction<CacheType>) => {
 
 async function start() {
     if (!goldenConfig || goldenConfig.DISCORD_TOKEN == (null || "")) {
-        log(
-            "Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spasten-studio/Golden"
-        );
-        exit(1);
+        throw new TypeError('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/arcinsolutions/Bertram');
     }
 
     //Import Slash Commands

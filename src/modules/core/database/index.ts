@@ -19,12 +19,8 @@ export const database = {
 }
 
 async function initCore() {
-    if (!goldenConfig || (goldenConfig.DB_Host || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined)) {
-        log(
-            "Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/spasten-studio/Golden"
-        );
-        exit(1);
-    }
+    if (!goldenConfig || (goldenConfig.DB_Host || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined))
+        throw new TypeError('Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/arcinsolutions/Bertram');
 
     DBsource = await new DataSource({
         type: 'mysql',

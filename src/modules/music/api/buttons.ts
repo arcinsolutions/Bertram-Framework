@@ -101,7 +101,7 @@ class Buttons {
         await player.pause(!player.paused);
         return interaction.reply({
             embeds: [new EmbedBuilder({
-                description: ':white_check_mark: Player' + (player.paused ? "**paused**" : "**unpaused**") + '!',
+                description: ':white_check_mark: Player' + (player.paused ? " **paused**" : " **unpaused**") + '!',
                 color: Colors.DarkGreen
             })]
         })

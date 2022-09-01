@@ -2,6 +2,7 @@ import { TextChannel, VoiceState } from "discord.js";
 import { client } from "../../../bertram";
 import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
 import { registerFont } from 'canvas';
+import { core } from "../../core";
 
 // +++ On Start +++
 client.once("botReady", async () => {
@@ -14,9 +15,7 @@ client.once("botReady", async () => {
     registerFont("./src/modules/music/assets/Outfit-Bold.ttf", { family: "OutfitBold" });
 })
 
-client.once("DB_Connected", async () => {
-    getMusicStuffFromDB();
-})
+client.once("fetchedGuilds", async () => getMusicStuffFromDB());
 // --- On Start ---
 
 
@@ -56,7 +55,8 @@ client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState)
 
 client.on("messageCreate", async (message) => {
     // Get the ChannelId from our Database or from the Music Player if it's exits
-    const guildData = musicGuilds.get(message.guild!.id);
+    const guildData = await musicGuilds.get(message.guild!.id);
+
     if (guildData == null)
         return;
 

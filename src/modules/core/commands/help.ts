@@ -1,7 +1,7 @@
 import { Pagination, PaginationResolver, PaginationType } from "@discordx/pagination";
 import { Category } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
-import { ButtonComponent, Discord, Slash } from 'discordx';
+import { ButtonComponent, Discord, Slash, MetadataStorage } from 'discordx';
 import { help } from "../help";
 
 let helpMenu: EmbedBuilder;
@@ -11,8 +11,15 @@ let helpMenu: EmbedBuilder;
 class Help {
     @Slash({ name: "help", description: "Show the help menu" })
     async help(interaction: CommandInteraction) {
+        const timeoutEmbed = new EmbedBuilder({
+            title: 'Embed expired',
+            description: `If you want to see all our commands, please use the </help:${interaction.commandId}> command once again.`,
+            footer: { text: 'made by Botis with ❤️' },
+            color: Colors.DarkGold
+        })
+
         const pagination = new Pagination(interaction, await GeneratePages(), {
-            onTimeout: () => interaction.editReply({ embeds: [new EmbedBuilder({ title: 'Timed out', color: Colors.DarkRed })] }),
+            onTimeout: () => interaction.editReply({ embeds: [timeoutEmbed] }),
             start: {
                 label: "⏮️",
                 style: ButtonStyle.Secondary,
@@ -41,13 +48,14 @@ class Help {
 
 async function GeneratePages(): Promise<MessageOptions[]> {
     const pages = Array.from(Array((help.getLenght())).keys()).map((i) => {
-        return { embed: `**__${help.categories().get(i).name}__**\n${help.getText(i)}` };
+        return { title: help.categories().get(i).name, embed: help.getText(i) };
     });
     return pages.map((page) => {
         return {
             embeds: [new EmbedBuilder({
-                title: 'Help Menu',
+                title: 'Category: ' + page.title,
                 description: page.embed,
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by Botis with ❤️' },
                 color: Colors.DarkGreen
             })],
         };

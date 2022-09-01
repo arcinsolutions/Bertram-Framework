@@ -71,7 +71,7 @@ async function initHelp() {
     await MetadataStorage.instance.applicationCommands.forEach(
         (cmd: DApplicationCommand & ICategory) => {
             if (cmd.category === undefined)
-                return console.log(`Command ${cmd.name} has no category`);
+                return console.log(`[Core] - !WARNING! - Command ${cmd.name} has no category`);
 
             command.pushMetaCommand(cmd);
         }
@@ -82,7 +82,7 @@ async function initHelp() {
         MetadataStorage.instance.applicationCommands.forEach(
             (cmd: DApplicationCommand & ICategory) => {
                 if (cmd.category === category.name) {
-                    tempText += `**${cmd.name}**\n:arrow_lower_right: ${cmd.description}\n`;
+                    tempText += `**${cmd.name}**\n⇨ ${cmd.description}\n`; // note sure with the arrows | ◟⌞⨽▸►⇾⇢⇨⇒↳↣→›»
                 }
             }
         );

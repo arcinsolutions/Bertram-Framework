@@ -46,11 +46,12 @@ export async function createMusicChannel(guild: Guild) {
 
     await musicGuild.createQueryBuilder()
         .insert()
+        .into(musicGuild)
         .values({
             guildId: guild.id,
             guildName: guild.name,
             channelId: channel.id,
-            messageId: message.id
+            messageId: message.id,
         })
         .orUpdate(["guildID", "guildName", "channelId", "messageId"])
         .execute();
