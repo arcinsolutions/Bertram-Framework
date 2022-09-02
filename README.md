@@ -1,6 +1,6 @@
 # Bertram Core
 
-## No support for [bun.js](https://bun.sh) currently
+## No support for [bun](https://bun.sh) currently
 
 
 ## Troubleshooting
