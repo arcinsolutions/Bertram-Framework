@@ -4,4 +4,4 @@
 
 
 ## Troubleshooting
-if you have problems with canvas please see [there Wiki](https://github.com/Automattic/node-canvas/wiki/_pages)
+nothing to see here currently.
