@@ -2,10 +2,10 @@ import { TextChannel, VoiceState } from "discord.js";
 import { client } from "../../../bertram";
 import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
 import { registerFont } from 'canvas';
-import { core } from "../../core";
+import { core } from "../../../core";
 
 // +++ On Start +++
-client.once("botReady", async () => {
+client.on("afterLogin", async () => {
     if (client.user == null)
         return;
 
@@ -15,7 +15,7 @@ client.once("botReady", async () => {
     registerFont("./src/modules/music/assets/Outfit-Bold.ttf", { family: "OutfitBold" });
 })
 
-client.once("fetchedGuilds", async () => getMusicStuffFromDB());
+core.client.on("ready", async () => await getMusicStuffFromDB());
 // --- On Start ---
 
 
@@ -25,7 +25,10 @@ client.on("raw", (packet) => {
 })
 
 client.on("voiceStateUpdate", async (oldState: VoiceState, newState: VoiceState) => {
-    if (oldState.client.user?.bot === false)
+    if (typeof newState === 'undefined')
+        return;
+
+    if ((newState.channel == null) || (oldState.client.user?.bot === false))
         return;
 
     const player = music.players.get(oldState.guild.id);

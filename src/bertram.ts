@@ -1,11 +1,8 @@
 import "reflect-metadata";
-import { log } from "console";
 import { CacheType, GatewayIntentBits, Interaction } from "discord.js";
-import { exit } from "process";
 import { config } from "dotenv";
 import { dirname, importx, isESM } from "@discordx/importer";
-import { Client } from "discordx";
-import { core } from "./modules/core";
+import { Client, core } from "./core";
 
 const env = await config({
     path: "./config.env",
@@ -46,11 +43,8 @@ client.on("ready", async () => {
     // await client.clearApplicationCommands(
     //     ...client.guilds.cache.map((g) => g.id)
     // );
-    await core.init();
 
-    await client.emit("botReady");
-
-    log(`[Core] - ${client.user?.username} started successfully`);
+    console.log(`[Core] - ${client.user?.username} started successfully`);
 });
 
 client.on("interactionCreate", (interaction: Interaction<CacheType>) => {

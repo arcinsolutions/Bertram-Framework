@@ -34,7 +34,7 @@ export class BetterQueue extends DefaultQueue {
         return data.join('\n');
     }
 
-    public getAllSongDetails() {
+    get getAllSongDetails() {
         const data = [];
 
         for (let i = (this.tracks.length - 1); i >= 0; i--) {
@@ -45,7 +45,30 @@ export class BetterQueue extends DefaultQueue {
         return data;
     }
 
-    public generateFormattedQueue() {
+    get getQueuePages() {
+        const pages = [];
+        const tracks = this.tracks;
+        const tracksLength = tracks.length;
+        const tracksPerPage = 10;
+        const pagesCount = Math.ceil(tracksLength / tracksPerPage);
+
+        for (let i = 0; i < pagesCount; i++) {
+            const startIndex = i * tracksPerPage;
+            const endIndex = startIndex + tracksPerPage;
+            const data = [];
+
+            for (let i = startIndex; endIndex >= i && this.tracks[i]; i++) {
+                const track = this.tracks[i] as BetterTrack;
+                data.push(`**${i + 1}.** ${track.title} - ${track.author} [${formatDuration(track.duration, { leading: true })}]`)
+            }
+
+            pages.push(data.join('\n'));
+        }
+
+        return pages;
+    }
+
+    get generateFormattedQueue() {
         if (this.tracks.length < 1) return '';
 
         let contentLength = 0;

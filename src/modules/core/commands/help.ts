@@ -1,20 +1,21 @@
-import { Pagination, PaginationResolver, PaginationType } from "@discordx/pagination";
+import { Pagination, PaginationType } from "@discordx/pagination";
 import { Category } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
-import { ButtonComponent, Discord, Slash, MetadataStorage } from 'discordx';
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
+import { Discord, Slash } from 'discordx';
+import { core } from "../../../core";
 import { help } from "../help";
-
-let helpMenu: EmbedBuilder;
 
 @Discord()
 @Category("Information")
 class Help {
-    @Slash({ name: "help", description: "Show the help menu" })
+    @Slash({ name: "help", description: "Show the help menu", nameLocalizations: { de: "hilfe" }, descriptionLocalizations: { de: "Zeigt das Hilfemenü" } })
     async help(interaction: CommandInteraction) {
+        await interaction.deferReply({ ephemeral: true });
+
         const timeoutEmbed = new EmbedBuilder({
             title: 'Embed expired',
-            description: `If you want to see all our commands, please use the </help:${interaction.commandId}> command once again.`,
-            footer: { text: 'made by Botis with ❤️' },
+            description: `If you want to see all our commands, please use the </help:${interaction.id}> command once again.`,
+            footer: { text: 'made by arcin with ❤️' },
             color: Colors.DarkGold
         })
 
@@ -41,21 +42,33 @@ class Help {
             ephemeral: true,
         });
 
-        await pagination.send();
+        try {
+            await pagination.send()
+        } catch (error) {
+            interaction.editReply({
+                embeds: [new EmbedBuilder({
+                    title: 'looks like the help menu is not available yet.',
+                    description: '**Please try again later.**',
+                    footer: { text: 'made by arcin with ❤️' },
+                    color: Colors.DarkGold
+                })]
+            })
+            console.warn('\x1b[31m%s\x1b[0m',error);
+        };
     }
 
 }
 
 async function GeneratePages(): Promise<MessageOptions[]> {
-    const pages = Array.from(Array((help.getLenght())).keys()).map((i) => {
-        return { title: help.categories().get(i).name, embed: help.getText(i) };
+    const pages = Array.from(Array((help.lenght)).keys()).map((i) => {
+        return { title: core.commands.getAllCategories[i].name, embed: help.getText(i) };
     });
     return pages.map((page) => {
         return {
             embeds: [new EmbedBuilder({
                 title: 'Category: ' + page.title,
                 description: page.embed,
-                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by Botis with ❤️' },
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by arcin with ❤️' },
                 color: Colors.DarkGreen
             })],
         };

@@ -1,54 +1,16 @@
-import { DApplicationCommand, IGuild, MetadataStorage } from 'discordx';
-import { TypeCategory } from "../types/category";
-import { TypeCommand } from "../types/command";
+import { DApplicationCommand, MetadataStorage } from 'discordx';
 import { ICategory } from "@discordx/utilities";
-
-const categories: Array<{ name: string }> = [];
-
-const category = {
-    push: (category: TypeCategory) => {
-        categories.push(category);
-    },
-    get: (category: number) => {
-        return categories[category];
-    },
-    default: () => {
-        return categories;
-    }
-}
-
-const commands: Array<TypeCommand> = [];
-
-const command = {
-    push(command: TypeCommand) {
-        commands.push(command);
-
-        if (!categories.includes({ name: command.category.name })) {
-            categories.push({ name: command.category.name });
-        }
-    },
-    pushMetaCommand(command: DApplicationCommand & ICategory) {
-        if (command.category === undefined)
-            return console.log(`Command ${command.name} has no category`);
-
-        if (categories.findIndex((category) => category.name === command.category) === -1)
-            categories.push({ name: command.category });
-    },
-    get(index: number) {
-        return commands[index];
-    }
-}
+import { client } from '../../../bertram';
+import { BertramCommand } from '../../../core/typings';
+import { core } from '../../../core';
 
 export const help = {
-    init: async () => {
-        await initHelp().then(() => {
+    get init() {
+        return initHelp().then(() => {
             console.log('[Core] - Help text generated!');
         });
     },
-    categories() {
-        return category;
-    },
-    getText(category: string | number) {
+    getText(category: string | number): string {
         if (typeof category == "string") {
             return HelpText.find(x => x.category == category)!.text;
         }
@@ -59,35 +21,55 @@ export const help = {
 
         return "";
     },
-    getLenght() {
-        return categories.length;
+    get lenght() {
+        return core.commands.getAllCategories.length;
     },
-    findCategory(text: string) {
+    findCategory(text: string): number {
         return HelpText.findIndex(x => x.text == text);
     }
 }
 
-async function initHelp() {
-    await MetadataStorage.instance.applicationCommands.forEach(
-        (cmd: DApplicationCommand & ICategory) => {
-            if (cmd.category === undefined)
-                return console.log(`[Core] - !WARNING! - Command ${cmd.name} has no category`);
+async function initHelp(): Promise<void> {
+    // TODO: WIP
+    // NEW
+    const commands = core.commands.getAll;
+    const categories = core.commands.getAllCategories;
 
-            command.pushMetaCommand(cmd);
-        }
-    );
-
-    await categories.forEach((category) => {
+    categories.forEach(category => {
         let tempText: string = "";
-        MetadataStorage.instance.applicationCommands.forEach(
-            (cmd: DApplicationCommand & ICategory) => {
-                if (cmd.category === category.name) {
-                    tempText += `**${cmd.name}**\n⇨ ${cmd.description}\n`; // note sure with the arrows | ◟⌞⨽▸►⇾⇢⇨⇒↳↣→›»
-                }
-            }
-        );
+        const commandsInCategory = commands.filter(command => command.category == category.name);
+
+        commandsInCategory.forEach(command => {
+            tempText += `</${command.name}:${command.id}>\n⇾ ${command.description}\n`; // note sure with the arrows | ◟⌞⨽▸►⇾⇢⇨⇒↳↣→›»
+        });
         HelpText.push({ category: category.name, text: tempText });
-    })
+    });
+
+    // OLD
+    // const commands = await client.application?.commands.fetch();
+
+    // await MetadataStorage.instance.applicationCommands.forEach(
+    //     (cmd: DApplicationCommand & ICategory) => {
+    //         if (cmd.category === undefined)
+    //             return console.log(`[Core] - !WARNING! - Command ${cmd.name} has no category`);
+
+    //         command.pushMetaCommand(cmd);
+    //     }
+    // );
+
+    // await categories.forEach((category) => {
+    //     let tempText: string = "";
+    //     MetadataStorage.instance.applicationCommands.forEach(
+    //         (cmd: DApplicationCommand & ICategory) => {
+    //             if (cmd.category === category.name) {
+    //                 const cmdID = commands?.find((command) => command.name == cmd.name)?.id;
+
+    //                 tempText += `</${cmd.name}:${cmdID}>\n⇾ ${cmd.description}\n`; // note sure with the arrows | ◟⌞⨽▸►⇾⇢⇨⇒↳↣→›»
+    //             }
+    //         }
+    //     );
+    //     HelpText.push({ category: category.name, text: tempText });
+    // })
 }
 
 

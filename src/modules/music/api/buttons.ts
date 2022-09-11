@@ -1,3 +1,4 @@
+import { RateLimit, TIME_UNIT } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
 import { music } from './index';
@@ -78,6 +79,13 @@ class Buttons {
     }
 
     @ButtonComponent({ id: "music_playpause" })
+    @Guard(
+        RateLimit(TIME_UNIT.seconds, 10, {
+            ephemeral: true,
+            message: "You can only Pause or Play once every ten seconds!",
+            rateValue: 1
+        })
+    )
     async playPause(interaction: ButtonInteraction) {
         const player = await music.players.get(interaction.guild!.id);
         if (!player)
@@ -108,6 +116,13 @@ class Buttons {
     }
 
     @ButtonComponent({ id: "music_skip" })
+    @Guard(
+        RateLimit(TIME_UNIT.seconds, 5, {
+            ephemeral: true,
+            message: "You can only skip once every five seconds!",
+            rateValue: 1
+        })
+    )
     async skip(interaction: ButtonInteraction) {
         let player = await music.players.get(interaction.guild!.id);
         if (!player)
@@ -168,6 +183,13 @@ class Buttons {
     }
 
     @ButtonComponent({ id: "music_shuffle" })
+    @Guard(
+        RateLimit(TIME_UNIT.seconds, 30, {
+            ephemeral: true,
+            message: "You can only shuffle once every thirty seconds!",
+            rateValue: 1
+        })
+    )
     async shuffle(interaction: ButtonInteraction) {
         let player = await music.players.get(interaction.guild!.id);
         if (!player)
@@ -201,6 +223,7 @@ class Buttons {
         else {
             const queue = player.queue as BetterQueue;
             await queue.shuffle();
+            music.emit('queueShuffled', player);
 
             return await interaction.reply({
                 embeds: [new EmbedBuilder({
@@ -210,10 +233,5 @@ class Buttons {
             })
         }
     }
-
-    //#####################################################################################################################
-    //#####################################################################################################################
-    //#####################################################################################################################
-    //#####################################################################################################################
 
 }

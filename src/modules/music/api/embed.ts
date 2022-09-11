@@ -4,9 +4,11 @@ import { createCanvas, loadImage } from "canvas";
 import { Player } from 'vulkava';
 import { BetterQueue, BetterTrack } from './structures';
 import { musicGuild } from './../database/entities/guild';
-import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Guild, MessageActionRowComponentBuilder, TextChannel } from 'discord.js';
-import Jimp from 'jimp'
+import * as discordJs from 'discord.js';
 import { music_Buttons } from "./buttons";
+import fetch from 'node-fetch';
+import sharp from 'sharp';
+
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -22,11 +24,11 @@ export async function setMusicEmbed(guildID: string) {
 }
 
 
-export async function createMusicChannel(guild: Guild) {
+export async function createMusicChannel(guild: discordJs.Guild) {
     const channel = await guild.channels.create({
         name: 'song-requests',
-        type: ChannelType.GuildText,
-        reason: "Create song-requests channel",
+        type: discordJs.ChannelType.GuildText,
+        reason: "Create song-requests channel for Bertram",
         topic: ":white_check_mark: send a URL or a search term to add a song to the queue",
         permissionOverwrites: [
             {
@@ -34,7 +36,9 @@ export async function createMusicChannel(guild: Guild) {
                 allow: [
                     "ViewChannel",
                     "SendMessages",
-                    "UseExternalEmojis"
+                    "EmbedLinks",
+                    "UseApplicationCommands",
+                    "UseEmbeddedActivities"
                 ]
             }
         ]
@@ -72,7 +76,7 @@ export async function setDefaultMusicEmbed(guildId: string) {
     const guildData = musicGuilds.get(guildId);
     if (!guildData) return;
 
-    const channel = client.channels.cache.get(guildData.channelId) as TextChannel | undefined;
+    const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
     if (channel == null) return;
 
     const message = await channel.messages.fetch(guildData.messageId);
@@ -81,13 +85,12 @@ export async function setDefaultMusicEmbed(guildId: string) {
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
-    const thumbnail = await Jimp.read("https://source.unsplash.com/random/?wallpapers").then(image => {
-        image.resize(canvas.width, canvas.height).resize(Jimp.AUTO, canvas.height);
-        image.blur(8).background(0xFFFFFF).brightness(-0.6);
-        return image;
-    })
+    const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => res.arrayBuffer());
+    const Uint8Buff = new Uint8Array(ImgBuff);
 
-    await loadImage(await thumbnail.getBufferAsync(Jimp.MIME_PNG)).then(img => {
+    const thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+
+    await loadImage(thumbnail).then(img => {
         ctx.drawImage(img, 25, 25, canvas.width - 50, canvas.height - 50);
 
         loadImage("./src/modules/music/assets/Music_Default.png").then(img => {
@@ -95,15 +98,17 @@ export async function setDefaultMusicEmbed(guildId: string) {
         })
     })
 
-    const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "music_default.png", description: "The default music image" });
+    const attachment = new discordJs.AttachmentBuilder(canvas.toBuffer(), { name: "music_default.png", description: "The default music image" });
 
     message.edit({
         content: " ",
         files: [attachment],
         embeds: [
-            new EmbedBuilder({
+            new discordJs.EmbedBuilder({
                 title: ':musical_note: | Join a Voice Channel and add a Song or a Playlist',
                 image: { url: 'attachment://music_default.png' },
+                footer: { text: 'made by arcin with ❤️' },
+                color: discordJs.Colors.DarkButNotBlack
             })
         ],
         components: [music_Buttons(true, "https://arcin.solutions")]
@@ -115,7 +120,7 @@ export async function updateMusicEmbed(player: Player) {
     const guildData = musicGuilds.get(player.guildId);
     if (!guildData) return;
 
-    const channel = client.channels.cache.get(guildData.channelId) as TextChannel | undefined;
+    const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
     if (channel == null) return;
 
     if (player.current === null) return;
@@ -126,18 +131,19 @@ export async function updateMusicEmbed(player: Player) {
     const queue = await player.queue as BetterQueue;
     const current = await player.current as BetterTrack;
 
-    const attachment = await new AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
+    const attachment = await new discordJs.AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
 
-    const formattedQueue = queue.generateFormattedQueue();
+    const formattedQueue = queue.generateFormattedQueue;
 
     message.edit({
         content: (formattedQueue == '' ?
             '**__Queue:__**\nJoin a Voice Channel and add a Song or a Playlist' : formattedQueue),
         files: [attachment],
         embeds: [
-            new EmbedBuilder({
+            new discordJs.EmbedBuilder({
                 description: '**:musical_note: Now Playing:**',
                 image: { url: 'attachment://music.png' },
+                footer: { text: 'made by arcin with ❤️' },
             })
         ],
         components: [music_Buttons(false, await current.uri)]

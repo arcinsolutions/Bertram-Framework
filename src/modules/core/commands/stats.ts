@@ -1,13 +1,12 @@
-import { Category, Description } from "@discordx/utilities";
+import { Category } from "@discordx/utilities";
 import { Discord, Slash } from 'discordx';
-import { Colors, EmbedBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
-import { client } from "../../../bertram";
+import { Colors, EmbedBuilder, CommandInteraction } from 'discord.js';
+import { core } from './../../../core/index';
 
 @Discord()
 @Category('Information')
 class Stats {
-    @Slash({ name: "stats", description: "shows you a lot of stats how Golden performs..." })
+    @Slash({ name: "stats", description: "Shows the stats of the bot", nameLocalizations: { de: "statistiken" }, descriptionLocalizations: { de: "Zeigt die Statistiken des Bots" } })
     async stats(interaction: CommandInteraction) {
         const embed = new EmbedBuilder();
         const startUsage = process.cpuUsage();
@@ -23,8 +22,8 @@ class Stats {
 
         let totalSeconds = 6000;
 
-        if (client.uptime != null)
-            totalSeconds = client.uptime / 1000;
+        if (core.client.uptime != null)
+            totalSeconds = core.client.uptime / 1000;
 
         let days = Math.floor(totalSeconds / 86400);
         totalSeconds %= 86400;
@@ -38,6 +37,7 @@ class Stats {
                 new EmbedBuilder({
                     description: '',
                     color: Colors.DarkGreen,
+                    footer: { text: `made by arcin with ❤️` },
                     fields: [
                         {
                             name: "Uptime",
@@ -53,7 +53,7 @@ class Stats {
                         },
                         {
                             name: "Discord API Ping",
-                            value: `${client.ws.ping}ms`,
+                            value: `${core.client.ws.ping}ms`,
                             inline: true,
                         },
                         {
@@ -81,12 +81,12 @@ class Stats {
                         },
                         {
                             name: "Servers",
-                            value: `${client.guilds.cache.size}`,
+                            value: `${core.client.guilds.cache.size}`,
                             inline: true,
                         },
                         {
                             name: "Users",
-                            value: `${client.guilds.cache.map((g) => g.memberCount).reduce((a, c) => a + c)}`,
+                            value: `${core.client.guilds.cache.map((g) => g.memberCount).reduce((a, c) => a + c)}`,
                             inline: true,
                         }
                     ]

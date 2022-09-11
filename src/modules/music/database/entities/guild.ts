@@ -1,5 +1,5 @@
-import { Entity, Column, ChildEntity } from "typeorm";
-import { Guild } from "../../../core/database/entities/guild";
+import { Column, ChildEntity } from "typeorm";
+import { Guild } from "../../../../core/database/entities/guild";
 
 @ChildEntity("guild")
 export class musicGuild extends Guild {
