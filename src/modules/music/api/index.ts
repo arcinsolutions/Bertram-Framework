@@ -252,11 +252,16 @@ export async function createMusicImage(track: BetterTrack) {
 
     let formattedAuthor = track.author;
     if (formattedAuthor.length >= 45)
-    formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
+        formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
 
     ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
     ctx.fillText(await formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
-    ctx.fillText(String(track.requester.username), 100, 800, (canvas.width - 50));
+    
+    let formattedRequester = String(track.requester.username);
+    if (track.requester.username.length >= 45)
+        formattedRequester = formattedRequester.slice(0, 45 - 1) + "…"  
+    
+    ctx.fillText(formattedRequester, 100, 800, (canvas.width - 50));
 
     return canvas.toBuffer();
 }
