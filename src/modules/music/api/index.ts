@@ -238,10 +238,15 @@ export async function createMusicImage(track: BetterTrack) {
     ctx.font = '90px OutfitBold';
     ctx.fillStyle = '#ffffff';
 
+    let formattedTitle = track.title.includes(track.author) ? track.title.replace(new RegExp(a.map(function (x) {
+        return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    }).join('|'), 'g'), "") : track.title;
+
+    if (formattedTitle.length >= 45)
+        formattedTitle = formattedTitle.slice(0, 45 - 1) + "…"  
+
     ctx.fillText(
-        (track.title.includes(track.author) ? track.title.replace(new RegExp(a.map(function (x) {
-            return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        }).join('|'), 'g'), "") : track.title)
+        (formattedTitle)
         , 100, 200, (canvas.width - 150)
     );
 
