@@ -238,16 +238,30 @@ export async function createMusicImage(track: BetterTrack) {
     ctx.font = '90px OutfitBold';
     ctx.fillStyle = '#ffffff';
 
+    let formattedTitle = track.title.includes(track.author) ? track.title.replace(new RegExp(a.map(function (x) {
+        return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    }).join('|'), 'g'), "") : track.title;
+
+    if (formattedTitle.length >= 45)
+        formattedTitle = formattedTitle.slice(0, 45 - 1) + "…"  
+
     ctx.fillText(
-        (track.title.includes(track.author) ? track.title.replace(new RegExp(a.map(function (x) {
-            return x.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        }).join('|'), 'g'), "") : track.title)
+        (formattedTitle)
         , 100, 200, (canvas.width - 150)
     );
 
-    ctx.fillText(track.author, 100, 400, (canvas.width - 50));
+    let formattedAuthor = track.author;
+    if (formattedAuthor.length >= 45)
+        formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
+
+    ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
     ctx.fillText(await formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
-    ctx.fillText(String(track.requester.username), 100, 800, (canvas.width - 50));
+    
+    let formattedRequester = String(track.requester.username);
+    if (track.requester.username.length >= 45)
+        formattedRequester = formattedRequester.slice(0, 45 - 1) + "…"  
+    
+    ctx.fillText(formattedRequester, 100, 800, (canvas.width - 50));
 
     return canvas.toBuffer();
 }
