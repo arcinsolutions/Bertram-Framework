@@ -250,7 +250,11 @@ export async function createMusicImage(track: BetterTrack) {
         , 100, 200, (canvas.width - 150)
     );
 
-    ctx.fillText(track.author, 100, 400, (canvas.width - 50));
+    let formattedAuthor = track.author;
+    if (formattedAuthor.length >= 45)
+    formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
+
+    ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
     ctx.fillText(await formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
     ctx.fillText(String(track.requester.username), 100, 800, (canvas.width - 50));
 
