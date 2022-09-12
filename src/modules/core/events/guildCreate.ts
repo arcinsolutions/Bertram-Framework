@@ -1,13 +1,13 @@
-import { client } from '../../../golden';
-import { Guild } from '../database/entities/guild'
+import { Guild } from '../../../core/database/entities/guild'
+import { core } from './../../../core/index';
 
 // **Import Database Stuff** //
 
-client.on("guildCreate", async (guild) => {
+core.client.on("guildCreate", async (guild) => {
     const dbGuild = new Guild();
     dbGuild.guildId = guild.id;
     dbGuild.guildName = guild.name;
-    await dbGuild.save().catch(e => {
-        console.log("ERROR COULD NOT SAVE GUILD TO DATABASE");
+    await dbGuild.save().catch(() => {
+        console.log("[Core] - ERROR COULD NOT SAVE GUILD TO DATABASE");
     });
 })

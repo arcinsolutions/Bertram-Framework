@@ -1,104 +1,76 @@
-import { Category, Description } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
-import { ButtonComponent, Discord, Slash } from 'discordx';
-import { categories, helpText } from "../events/botReady";
-
-let helpMenu: EmbedBuilder;
+import { Pagination, PaginationType } from "@discordx/pagination";
+import { Category } from "@discordx/utilities";
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
+import { Discord, Slash } from 'discordx';
+import { core } from "../../../core";
+import { help } from "../help";
 
 @Discord()
 @Category("Information")
 class Help {
-    @Slash("help")
-    @Description("Help me, i am under the water. Menu")
+    @Slash({ name: "help", description: "Show the help menu", nameLocalizations: { de: "hilfe" }, descriptionLocalizations: { de: "Zeigt das Hilfemenü" } })
     async help(interaction: CommandInteraction) {
-        helpMenu = new EmbedBuilder({
-            title: 'Help Menu',
-            description: helpText[0],
-            color: Colors.DarkGreen
+        await interaction.deferReply({ ephemeral: true });
+
+        const timeoutEmbed = new EmbedBuilder({
+            title: 'Embed expired',
+            description: `If you want to see all our commands, please use the </help:${interaction.id}> command once again.`,
+            footer: { text: 'made by arcin with ❤️' },
+            color: Colors.DarkGold
         })
 
-        interaction.reply({
-            embeds: [helpMenu],
-            components: [CreateHelpMenuActionRow(0)],
+        const pagination = new Pagination(interaction, await GeneratePages(), {
+            onTimeout: () => interaction.editReply({ embeds: [timeoutEmbed] }),
+            start: {
+                label: "⏮️",
+                style: ButtonStyle.Secondary,
+            },
+            end: {
+                label: '⏭️',
+                style: ButtonStyle.Secondary
+            },
+            next: {
+                label: '▶️',
+                style: ButtonStyle.Secondary
+            },
+            previous: {
+                label: '◀️',
+                style: ButtonStyle.Secondary
+            },
+            type: PaginationType.Button,
+            time: 5 * 10000,
             ephemeral: true,
-            fetchReply: true
-        })
+        });
 
-    }
-
-    @ButtonComponent("firstBtn")
-    async first_Btn(interaction: ButtonInteraction) {
-        interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[0]}`)],
-            components: [CreateHelpMenuActionRow(0)]
-        })
-    }
-
-    @ButtonComponent("prevBtn")
-    async prev_Btn(interaction: ButtonInteraction) {
-        let prevPage: number = await (helpText.indexOf(`${helpMenu.data.description}`) - 1);
-        if (prevPage < 0)
-            prevPage = 0
-        interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[prevPage]}`)],
-            components: [CreateHelpMenuActionRow(prevPage)]
-        })
-    }
-
-    @ButtonComponent("nextBtn")
-    async next_Btn(interaction: ButtonInteraction) {
-        let nextPage: number = await (helpText.indexOf(`${helpMenu.data.description}`) + 1);
-        if (nextPage >= categories.length)
-            nextPage = categories.length - 1
-        interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[nextPage]}`)],
-            components: [CreateHelpMenuActionRow(nextPage)]
-        })
-    }
-
-    @ButtonComponent("lastBtn")
-    async last_Btn(interaction: ButtonInteraction) {
-        interaction.update({
-            embeds: [helpMenu.setDescription(`${helpText[helpText.length - 1]}`)],
-            components: [CreateHelpMenuActionRow(helpText.length - 1)]
-        })
+        try {
+            await pagination.send()
+        } catch (error) {
+            interaction.editReply({
+                embeds: [new EmbedBuilder({
+                    title: 'looks like the help menu is not available yet.',
+                    description: '**Please try again later.**',
+                    footer: { text: 'made by arcin with ❤️' },
+                    color: Colors.DarkGold
+                })]
+            })
+            console.warn('\x1b[31m%s\x1b[0m',error);
+        };
     }
 
 }
 
-
-function CreateHelpMenuActionRow(page: number) {
-    return new ActionRowBuilder({
-        components: [new ButtonBuilder({
-            customId: "firstBtn",
-            emoji: '<:firstPage:984398945872670760> ',
-            style: ButtonStyle.Secondary,
-            disabled: (page <= 0) ? true : false
-        }),
-        new ButtonBuilder({
-            customId: "prevBtn",
-            emoji: '<:arrowleft:930879597178929153>',
-            style: ButtonStyle.Secondary,
-            disabled: (page <= 0) ? true : false
-        }),
-        new ButtonBuilder({
-            style: ButtonStyle.Secondary,
-            customId: "currPage",
-            label: categories[(page <= 0 || page > categories.length) ? 0 : page],
-            disabled: true
-        }),
-        new ButtonBuilder({
-            style: ButtonStyle.Secondary,
-            customId: "nextBtn",
-            emoji: '<:arrowright:930879597472518145>',
-            disabled: (page >= (categories.length - 1)) ? true : false
-        }),
-        new ButtonBuilder({
-            style: ButtonStyle.Secondary,
-            customId: "lastBtn",
-            emoji: '<:lastPage:984398886376460339>',
-            disabled: (page >= (categories.length - 1)) ? true : false
-        })]
-    }) as any
+async function GeneratePages(): Promise<MessageOptions[]> {
+    const pages = Array.from(Array((help.lenght)).keys()).map((i) => {
+        return { title: core.commands.getAllCategories[i].name, embed: help.getText(i) };
+    });
+    return pages.map((page) => {
+        return {
+            embeds: [new EmbedBuilder({
+                title: 'Category: ' + page.title,
+                description: page.embed,
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by arcin with ❤️' },
+                color: Colors.DarkGreen
+            })],
+        };
+    });
 }
-

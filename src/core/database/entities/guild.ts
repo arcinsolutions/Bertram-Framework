@@ -1,4 +1,4 @@
-import { Entity, Column, BaseEntity, PrimaryColumn, TableInheritance } from "typeorm"
+import { Column, BaseEntity, PrimaryColumn, TableInheritance, Entity } from "typeorm"
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -7,5 +7,5 @@ export class Guild extends BaseEntity {
     guildId!: string
 
     @Column()
-    guildName: string | undefined
+    guildName?: string
 }

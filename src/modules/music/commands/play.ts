@@ -8,8 +8,8 @@ import { BetterQueue } from './../api/structures';
 @Discord()
 @Category("Music")
 class Play {
-    @Slash("play", { description: "let you Play your Favorite song." })
-    async play(@SlashOption("song", { description: "add a Song to the Queue" }) song: string, interaction: CommandInteraction) {
+    @Slash({ name: "play", description: "let you Play your Favorite song." })
+    async play(@SlashOption({ name: "song", description: "add a Song to the Queue" }) song: string, interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true,
             fetchReply: true

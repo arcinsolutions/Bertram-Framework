@@ -1,24 +1,33 @@
 import { Category } from "@discordx/utilities";
 import { CommandInteraction, ButtonInteraction, ButtonStyle, EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, MessageActionRowComponentBuilder } from "discord.js";
 import { Discord, Slash, ButtonComponent } from "discordx";
+import { core } from "../../../core";
 import { musicGuilds } from "../api";
 import { createMusicChannel } from "../api/embed";
 
 @Discord()
 @Category("Music")
 class Setup {
-    @Slash("setup", { description: "Create a song-requests channel" })
+    @Slash({ name: "setup", description: "Create a song-requests channel" })
     async setup(interaction: CommandInteraction) {
         await interaction.deferReply({
             fetchReply: true
         })
         const tempMusic = musicGuilds.get(interaction.guild!.id);
 
+        if (typeof tempMusic === 'undefined') {
+            core.database.addGuild(interaction.guild!);
+            musicGuilds.set(interaction.guild!.id, {
+                channelId: "",
+                messageId: ""
+            });
+        }
+
         if (interaction.guild!.channels.cache.get(tempMusic!.channelId) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
-                    color: Colors.DarkGrey,
+                    color: Colors.DarkerGrey,
                     image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
                 }),
                 new EmbedBuilder({
@@ -101,12 +110,12 @@ class Setup {
         })
     }
 
-    @ButtonComponent("abort")
+    @ButtonComponent({ id: "abort" })
     async abort(interaction: ButtonInteraction) {
         return interaction.message.delete();
     }
 
-    @ButtonComponent("create")
+    @ButtonComponent({ id: "create" })
     async create(interaction: ButtonInteraction) {
         const tempMusic = musicGuilds.get(interaction.guild!.id);
         interaction.guild?.channels.cache.get(tempMusic!.channelId)?.delete();

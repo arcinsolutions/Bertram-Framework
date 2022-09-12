@@ -1,6 +1,6 @@
 import { Node, Player, Track } from 'vulkava';
 import { setDefaultMusicEmbed, updateMusicEmbed } from '../api/embed';
-import { addSongToQueue, music } from './../api/index';
+import { music, updateQueueEmbed } from './../api/index';
 
 // +++ Node +++
 music.on('nodeConnect', (node: Node) => {
@@ -19,7 +19,7 @@ music.on('nodeResume', (node: Node) => {
 // +++ Track / Queue +++
 
 // +++ TrackStart +++
-music.on('trackStart', (player: Player, track: Track) => {
+music.on('trackStart', (player: Player) => {
     return updateMusicEmbed(player);
 });
 // --- TrackStart ---
@@ -42,6 +42,7 @@ music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
 
 // +++ QueueEnd +++
 music.on('queueEnd', async (player: Player) => {
+    player.destroy();
     return await setDefaultMusicEmbed(player.guildId);
 })
 // --- QueueEnd ---
@@ -66,13 +67,17 @@ music.on('warn', (node: Node, msg: string) => {
 
 // +++ Other / Custom Events +++
 
-music.addListener("songAdded", (player: Player, track: Track) => {
-    return addSongToQueue(player, track);
+music.addListener("songAdded", (player: Player) => {
+    return updateQueueEmbed(player);
 })
 
 music.addListener("stop", (player: Player) => {
     player.destroy();
     return setDefaultMusicEmbed(player.guildId);
+})
+
+music.addListener('queueShuffled', (player: Player) => {
+    return updateQueueEmbed(player);
 })
 
 // --- Other / Custom Events ---

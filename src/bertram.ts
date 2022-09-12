@@ -1,10 +1,8 @@
 import "reflect-metadata";
-import { log } from "console";
 import { CacheType, GatewayIntentBits, Interaction } from "discord.js";
-import { exit } from "process";
 import { config } from "dotenv";
 import { dirname, importx, isESM } from "@discordx/importer";
-import { Client } from "discordx";
+import { Client, core } from "./core";
 
 const env = await config({
     path: "./config.env",
@@ -45,9 +43,8 @@ client.on("ready", async () => {
     // await client.clearApplicationCommands(
     //     ...client.guilds.cache.map((g) => g.id)
     // );
-    log("Golden started");
-    client.emit("botReady");
 
+    console.log(`[Core] - ${client.user?.username} started successfully`);
 });
 
 client.on("interactionCreate", (interaction: Interaction<CacheType>) => {
@@ -56,10 +53,7 @@ client.on("interactionCreate", (interaction: Interaction<CacheType>) => {
 
 async function start() {
     if (!goldenConfig || goldenConfig.DISCORD_TOKEN == (null || "")) {
-        log(
-            "Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spasten-studio/Golden"
-        );
-        exit(1);
+        throw new TypeError('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/arcinsolutions/Bertram');
     }
 
     //Import Slash Commands
@@ -68,5 +62,5 @@ async function start() {
         console.log("[Core] - All files imported")
     );
 
-    client.login(goldenConfig.DISCORD_TOKEN);
+    await client.login(goldenConfig.DISCORD_TOKEN);
 }
