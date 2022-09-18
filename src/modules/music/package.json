@@ -1,7 +1,7 @@
 {
-  "name": "golden_music",
-  "version": "0.0.5",
-  "description": "The Music System for our Bot",
+  "name": "bertram_music",
+  "version": "0.5.0",
+  "description": "The Music System for the official Bertram Bot",
   "main": "index.js",
   "author": "Botis#0666, Raved#8329",
   "license": "MIT",
