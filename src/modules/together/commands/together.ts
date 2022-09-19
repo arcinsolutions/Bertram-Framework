@@ -18,8 +18,6 @@ enum games {
     puttparty = 'Puttparty',
     sketchheads = 'Sketchheads',
     ocho = 'Ocho',
-    puttpartyqa = 'Puttpartyqa',
-    sketchyartist = 'Sketchyartist',
     land = 'Land',
     meme = 'Meme',
     askaway = 'Askaway',
