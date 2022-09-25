@@ -21,7 +21,7 @@ export const client = new Client({
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent
     ],
-    botGuilds: goldenConfig?.RELEASE ? undefined : [(client) => client.guilds.cache.map((guild) => guild.id)]
+    botGuilds: goldenConfig?.RELEASE ? undefined : [(client) => client.guilds.cache.map((guild) => guild.id)],
 });
 
 start();
