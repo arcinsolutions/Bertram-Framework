@@ -1,20 +1,28 @@
 import { Category, EnumChoice } from "@discordx/utilities";
 import { Colors, CommandInteraction, EmbedBuilder } from "discord.js";
-import { Discord, Slash, SlashChoice } from "discordx";
+import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
 import { music } from './../api/index';
 
 enum mode {
-    none = "0",
-    Track = "1",
-    Queue = "2",
+    None = 'none',
+    Track = 'track',
+    Queue = 'queue',
 }
 
 @Discord()
 @Category("Music")
 class Loop {
     @Slash({ name: "loop", description: "Loop the current song or queue" })
-    async loop(@SlashChoice(...EnumChoice(mode)) mode :string, interaction: CommandInteraction) {
+    private async loop(
+        @SlashChoice(...EnumChoice(mode))
+        @SlashOption({ description: "The mode to loop", required: true, name: "mode" })
+        modeOption : string,
+
+        interaction: CommandInteraction) {
         const player = music.players.get(interaction.guildId!);
+        await interaction.deferReply({
+            ephemeral: true
+        })
 
         if (!player) {
             return interaction.editReply({
@@ -27,7 +35,7 @@ class Loop {
             });
         }
 
-        if (mode === "0") {
+        if (modeOption === mode.None) {
             player.setTrackLoop(false);
             player.setQueueLoop(false);
             return interaction.editReply({
@@ -40,7 +48,7 @@ class Loop {
             });
         }
 
-        if (mode === "1") {
+        if (modeOption === mode.Track) {
             player.setTrackLoop(true);
             player.setQueueLoop(false);
             return interaction.editReply({
@@ -53,7 +61,7 @@ class Loop {
             });
         }
 
-        if (mode === "2") {
+        if (modeOption === mode.Queue) {
             player.setTrackLoop(false);
             player.setQueueLoop(true);
             return interaction.editReply({
