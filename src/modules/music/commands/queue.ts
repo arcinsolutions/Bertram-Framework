@@ -1,7 +1,6 @@
 import { Category } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, ComponentBuilder, EmbedBuilder, MessageActionRowComponentBuilder, MessageOptions } from "discord.js";
-import { ButtonComponent, Discord, Slash } from "discordx";
-import { DefaultQueue } from "vulkava";
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
+import { Discord, Slash } from "discordx";
 import { music } from "../api";
 import { BetterQueue } from './../api/structures';
 import { Pagination } from '@discordx/pagination';

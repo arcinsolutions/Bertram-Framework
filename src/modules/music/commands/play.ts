@@ -1,6 +1,6 @@
 import { Category } from "@discordx/utilities";
 import { Discord, Slash, SlashOption } from 'discordx';
-import { Colors, EmbedBuilder, GuildMember } from 'discord.js';
+import { ApplicationCommandOptionType, Colors, EmbedBuilder, GuildMember } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { createMusicPlayer, music } from './../api/index';
 import { BetterQueue } from './../api/structures';
@@ -9,7 +9,7 @@ import { BetterQueue } from './../api/structures';
 @Category("Music")
 class Play {
     @Slash({ name: "play", description: "let you Play your Favorite song." })
-    async play(@SlashOption({ name: "song", description: "add a Song to the Queue" }) song: string, interaction: CommandInteraction) {
+    async play(@SlashOption({ name: "song", description: "add a Song to the Queue", type: ApplicationCommandOptionType.String, required: true  }) song: string, interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true,
             fetchReply: true

@@ -1,5 +1,5 @@
 import { Discord, Slash, SlashOption } from "discordx";
-import { EmbedBuilder } from 'discord.js';
+import { ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
 import { music } from './../api/index';
 import { Colors } from 'discord.js';
@@ -9,7 +9,7 @@ import { Category } from "@discordx/utilities";
 @Category("Music")
 class Seek {
     @Slash({ name: "seek", description: "Seek to a specific time in the current song" })
-    async seek(@SlashOption({ description: "the millisecond you want too skip to.", name: "time" }) ms: number, interaction: CommandInteraction) {
+    async seek(@SlashOption({ description: "the millisecond you want too skip to.", name: "time", type: ApplicationCommandOptionType.String, required: true }) ms: number, interaction: CommandInteraction) {
         const player = music.players.get(interaction.guildId!);
 
         if (!player)

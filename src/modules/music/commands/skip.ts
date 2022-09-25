@@ -1,5 +1,5 @@
 import { Category } from "@discordx/utilities";
-import { Colors, CommandInteraction, EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 import { music, play } from './../api/index';
 
@@ -8,7 +8,7 @@ import { music, play } from './../api/index';
 @Category("Music")
 class Skip {
     @Slash({ name: "skip", description: "Skip the current Song" })
-    async skip(@SlashOption({ name: "amount", description: "let you skip a specific amount of Songs", required: false }) amount: number, interaction: CommandInteraction) {
+    async skip(@SlashOption({ name: "amount", description: "let you skip a specific amount of Songs", required: false, type: ApplicationCommandOptionType.Integer }) amount: number, interaction: CommandInteraction) {
         let player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
