@@ -1,6 +1,3 @@
 {
-  "packages": [
-    "src/modules/*"
-  ],
   "version": "independent"
 }
