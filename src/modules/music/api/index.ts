@@ -34,13 +34,13 @@ export const getMusicStuffFromDB = async () => {
 
 export const music = new Vulkava({
     nodes: [
-        {
-            id: 'arcin1',
-            hostname: '185.234.72.80',
-            port: 2334,
-            password: 'eriCmEqBitDZv3rnH3Wr',
-            region: 'EU'
-        },
+        // {
+        //     id: 'arcin1',
+        //     hostname: '185.234.72.80',
+        //     port: 2334,
+        //     password: 'eriCmEqBitDZv3rnH3Wr',
+        //     region: 'EU'
+        // },
         {
             id: 'arcin2',
             hostname: '78.47.184.165',
@@ -172,6 +172,7 @@ export async function play(message: discordJs.Message) {
         music.emit("songAdded", player, track);
     }
 
+    core
     if (!player.playing) player.play();
 }
 

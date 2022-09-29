@@ -1,9 +1,9 @@
 import { Category } from "@discordx/utilities";
-import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from "discordx";
 import { music } from "../api";
 import { BetterQueue } from './../api/structures';
-import { Pagination } from '@discordx/pagination';
+import { Pagination, PaginationItem } from '@discordx/pagination';
 import { PaginationType } from '@discordx/pagination';
 
 @Discord()
@@ -76,7 +76,7 @@ class Queue {
 
 }
 
-async function GeneratePages(queue: BetterQueue): Promise<MessageOptions[]> {
+async function GeneratePages(queue: BetterQueue): Promise<PaginationItem[]> {
     const pages = Array.from(queue.getQueuePages);
 
     // const pages = Array.from(Array((Math.max(queue.size / 10))).keys()).map((i) => {

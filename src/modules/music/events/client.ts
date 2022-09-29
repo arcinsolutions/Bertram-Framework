@@ -2,20 +2,20 @@ import { TextChannel, VoiceState } from "discord.js";
 import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
 import { registerFont } from 'canvas';
 import { core } from "../../../core";
-import { setTimeout } from "timers/promises";
-import { Client, Discord, On, Once } from 'discordx';
+import { Discord, On, Once } from 'discordx';
 import type { ArgsOf } from "discordx";
+import { setTimeout } from "timers";
 
 @Discord()
 class Events {
-    @Once({event: "ready"})
+    @Once({ event: "ready" })
     private async onReady() {
         await getMusicStuffFromDB();
     }
 
-    @On({event: "voiceStateUpdate"})
+    @On({ event: "voiceStateUpdate" })
     private async onVoiceStateUpdate([newState, oldState]: ArgsOf<'voiceStateUpdate'>) {
-        if (typeof newState === 'undefined')
+        if (typeof newState === 'undefined' || typeof oldState === 'undefined' || typeof newState.client === 'undefined' || typeof oldState.client === 'undefined')
             return;
 
         if ((newState.channel == null) || (oldState.client.user?.bot === false))
@@ -46,29 +46,23 @@ class Events {
         }
     }
 
-    @On({ event: "messageCreate"})
-    private async onMessageCreate([message]: ArgsOf<'messageCreate'>) {
-        // Get the ChannelId from our Database or from the Music Player if it's exits
-        const guildData = await musicGuilds.get(message.guild!.id);
-
-        if (guildData == null)
+    @On({ event: "messageCreate" })
+    private onMessageCreate([message]: ArgsOf<'messageCreate'>) {
+        if ((message.content === '') && (message.author.username !== core.client.user?.username))
             return;
 
-        if (guildData.channelId == message.channel.id) {
-            if (message.id == guildData.messageId)
-                return;
+        // Get the ChannelId from our Database or from the Music Player if it exits
+        const guildData = musicGuilds.get(message.guild!.id);
 
-            if (message.author.username == core.client.user?.username) {
-                await setTimeout(10000, async () => {
-                    await message.delete()
-                })
-                return;
-            }
+        if ((guildData == null) || (guildData.channelId != message.channel.id) || (message.id == guildData.messageId))
+            return;
 
-            await play(message)
+        if (message.author.id === core.client.user!.id) {
+            setTimeout(() => message.delete(), 5000);
+            return;
         }
 
-        return;
+        play(message)
     }
 }
 

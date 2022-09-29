@@ -1,5 +1,5 @@
 import { Category, EnumChoice } from "@discordx/utilities";
-import { Colors, CommandInteraction, EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
 import { music } from './../api/index';
 
@@ -15,7 +15,7 @@ class Loop {
     @Slash({ name: "loop", description: "Loop the current song or queue" })
     private async loop(
         @SlashChoice(...EnumChoice(mode))
-        @SlashOption({ description: "The mode to loop", required: true, name: "mode" })
+        @SlashOption({ name: "mode", description: "The mode to loop", required: true, type: ApplicationCommandOptionType.String })
         modeOption : string,
 
         interaction: CommandInteraction) {
