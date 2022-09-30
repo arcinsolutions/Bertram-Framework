@@ -1,0 +1,16 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "Example module for the Bertram module system",
+  "author": "Botis#0666",
+  "homepage": "https://github.com/arcinsolutions/Golden_TS-Core#readme",
+  "license": "ISC",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcinsolutions/Golden_TS-Core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arcinsolutions/Golden_TS-Core/issues"
+  }
+}

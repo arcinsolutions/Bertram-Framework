@@ -223,11 +223,11 @@ class Buttons {
         else {
             const queue = player.queue as BetterQueue;
             await queue.shuffle();
-            music.emit('queueShuffled', player);
+            await music.emit('queueShuffled', player);
 
-            return await interaction.reply({
+            return interaction.reply({
                 embeds: [new EmbedBuilder({
-                    description: ":white_check_mark: queue Shuffled!",
+                    description: ":white_check_mark: Queue shuffled!",
                     color: Colors.DarkGreen
                 })]
             })

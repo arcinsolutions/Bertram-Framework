@@ -1,8 +1,9 @@
 import "reflect-metadata";
-import { CacheType, GatewayIntentBits, Interaction } from "discord.js";
+import { CacheType, GatewayIntentBits, Interaction, Partials } from "discord.js";
 import { config } from "dotenv";
 import { dirname, importx, isESM } from "@discordx/importer";
 import { Client, core } from "./core";
+import { NotBot } from "@discordx/utilities";
 
 const env = await config({
     path: "./config.env",
@@ -21,6 +22,8 @@ export const client = new Client({
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent
     ],
+    // guards: [NotBot],
+    botId: "Bertram",
     botGuilds: goldenConfig?.RELEASE ? undefined : [(client) => client.guilds.cache.map((guild) => guild.id)],
 });
 

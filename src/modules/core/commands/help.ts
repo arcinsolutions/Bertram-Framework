@@ -1,6 +1,6 @@
-import { Pagination, PaginationType } from "@discordx/pagination";
+import { Pagination, PaginationItem, PaginationType } from "@discordx/pagination";
 import { Category } from "@discordx/utilities";
-import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from 'discordx';
 import { core } from "../../../core";
 import { help } from "../help";
@@ -59,7 +59,7 @@ class Help {
 
 }
 
-async function GeneratePages(): Promise<MessageOptions[]> {
+async function GeneratePages(): Promise<PaginationItem[]> {
     const pages = Array.from(Array((help.lenght)).keys()).map((i) => {
         return { title: core.commands.getAllCategories[i].name, embed: help.getText(i) };
     });

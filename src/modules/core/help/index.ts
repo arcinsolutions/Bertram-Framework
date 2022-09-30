@@ -31,7 +31,6 @@ export const help = {
 
 async function initHelp(): Promise<void> {
     // TODO: WIP
-    // NEW
     const commands = core.commands.getAll;
     const categories = core.commands.getAllCategories;
 
@@ -44,32 +43,6 @@ async function initHelp(): Promise<void> {
         });
         HelpText.push({ category: category.name, text: tempText });
     });
-
-    // OLD
-    // const commands = await client.application?.commands.fetch();
-
-    // await MetadataStorage.instance.applicationCommands.forEach(
-    //     (cmd: DApplicationCommand & ICategory) => {
-    //         if (cmd.category === undefined)
-    //             return console.log(`[Core] - !WARNING! - Command ${cmd.name} has no category`);
-
-    //         command.pushMetaCommand(cmd);
-    //     }
-    // );
-
-    // await categories.forEach((category) => {
-    //     let tempText: string = "";
-    //     MetadataStorage.instance.applicationCommands.forEach(
-    //         (cmd: DApplicationCommand & ICategory) => {
-    //             if (cmd.category === category.name) {
-    //                 const cmdID = commands?.find((command) => command.name == cmd.name)?.id;
-
-    //                 tempText += `</${cmd.name}:${cmdID}>\n⇾ ${cmd.description}\n`; // note sure with the arrows | ◟⌞⨽▸►⇾⇢⇨⇒↳↣→›»
-    //             }
-    //         }
-    //     );
-    //     HelpText.push({ category: category.name, text: tempText });
-    // })
 }
 
 

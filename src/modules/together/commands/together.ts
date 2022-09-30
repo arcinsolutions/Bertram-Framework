@@ -1,6 +1,6 @@
 import { Category, EnumChoice } from "@discordx/utilities";
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
-import { Colors, CommandInteraction, EmbedBuilder, GuildMember, GuildPremiumTier } from "discord.js";
+import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder, GuildMember, GuildPremiumTier } from "discord.js";
 import { together } from "../api";
 
 enum games {
@@ -30,7 +30,7 @@ class Together {
     @Slash({ name: "together", description: "Start a together session" })
     private async together(
         @SlashChoice(...EnumChoice(games))
-        @SlashOption({ description: "The game to play", required: true, name: "game" })
+        @SlashOption({name: 'game', description: 'The game you want to play', required: true, type: ApplicationCommandOptionType.String})
         game: string,
 
         interaction: CommandInteraction
