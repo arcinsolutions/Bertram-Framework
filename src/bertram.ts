@@ -1,11 +1,10 @@
 import "reflect-metadata";
-import { CacheType, GatewayIntentBits, Interaction, Partials } from "discord.js";
+import { CacheType, GatewayIntentBits, Interaction } from "discord.js";
 import { config } from "dotenv";
 import { dirname, importx, isESM } from "@discordx/importer";
-import { Client, core } from "./core";
-import { NotBot } from "@discordx/utilities";
+import { Client } from "./core/index.js";
 
-const env = await config({
+const env = config({
     path: "./config.env",
     encoding: 'utf8'
 });

@@ -1,12 +1,12 @@
-import { client } from '../bertram';
-import { commands } from "./commands";
+import { client } from '../bertram.js';
+import { commands } from "./commands.js";
 import { Client as ClientTS, ClientOptions, DApplicationCommand, InitCommandOptions } from 'discordx';
-import { BertramEvents } from './typings';
-import { Awaitable, Client as ClientJS } from 'discord.js';
-import * as Config from 'conf'
-import { database } from './database/index';
+import { BertramEvents } from './typings/index.js';
+import { Awaitable } from 'discord.js';
+import Config from 'conf';
+import {database} from './database/index.js';
 
-const _nconf = new Config.default();
+const _nconf = new Config.default;
 
 export const core = {
     get init() {
@@ -14,7 +14,7 @@ export const core = {
     },
     get client() { return client },
     get commands() { return commands },
-    get database() { return database },
+    get database() { return database},
     get config() { return _nconf },
     // set addConfig()
 }

@@ -1,13 +1,13 @@
 import { NodeState, Player, Track, Vulkava } from 'vulkava'
 import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
-import { client } from '../../../bertram';
+import { client } from '../../../bertram.js';
 import * as discordJs from 'discord.js';
-import { musicGuild } from '../database/entities/guild';
+import { musicGuild } from '../database/entities/guild.js';
 import { createCanvas, loadImage } from 'canvas'
 import formatDuration from 'format-duration'
-import { BetterQueue, BetterTrack } from './structures';
-import { setMusicEmbed } from './embed';
-import { core } from './../../../core/index';
+import { BetterQueue, BetterTrack } from './structures.js';
+import { setMusicEmbed } from './embed.js';
+import { core } from './../../../core/index.js';
 import sharp from 'sharp';
 import fetch from 'node-fetch';
 

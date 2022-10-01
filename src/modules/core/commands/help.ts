@@ -2,8 +2,8 @@ import { Pagination, PaginationItem, PaginationType } from "@discordx/pagination
 import { Category } from "@discordx/utilities";
 import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from 'discordx';
-import { core } from "../../../core";
-import { help } from "../help";
+import { help } from './../help/index.js';
+import { core } from './../../../core/index.js';
 
 @Discord()
 @Category("Information")

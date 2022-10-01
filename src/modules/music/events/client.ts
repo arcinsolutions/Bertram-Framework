@@ -1,10 +1,11 @@
-import { TextChannel, VoiceState } from "discord.js";
-import { getMusicStuffFromDB, music, musicGuilds, play } from "../api";
+import { TextChannel } from "discord.js";
+import { getMusicStuffFromDB, music, musicGuilds, play } from "../api/index.js";
 import { registerFont } from 'canvas';
-import { core } from "../../../core";
+import { core } from "../../../core/index.js";
 import { Discord, On, Once } from 'discordx';
 import type { ArgsOf } from "discordx";
 import { setTimeout } from "timers";
+import { IncomingDiscordPayload } from "vulkava/lib/@types/index.js";
 
 @Discord()
 class Events {
@@ -83,7 +84,7 @@ core.client.once("afterLogin", async () => {
 
 
 //Important
-core.client.on("raw", (packet) => {
+core.client.on("raw", (packet: IncomingDiscordPayload) => {
     music.handleVoiceUpdate(packet);
 })
 

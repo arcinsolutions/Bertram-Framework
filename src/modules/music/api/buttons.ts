@@ -1,8 +1,8 @@
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
-import { music } from './index';
-import { BetterQueue } from "./structures";
+import { music } from './index.js';
+import { BetterQueue } from "./structures.js";
 
 export const music_Buttons = (disabled?: boolean, url?: string) => {
     return new ActionRowBuilder<MessageActionRowComponentBuilder>(

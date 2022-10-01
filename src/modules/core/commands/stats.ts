@@ -1,7 +1,7 @@
 import { Category } from "@discordx/utilities";
 import { Discord, Slash } from 'discordx';
 import { Colors, EmbedBuilder, CommandInteraction } from 'discord.js';
-import { core } from './../../../core/index';
+import { core } from './../../../core/index.js';
 
 @Discord()
 @Category('Information')

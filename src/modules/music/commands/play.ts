@@ -2,8 +2,8 @@ import { Category } from "@discordx/utilities";
 import { Discord, Slash, SlashOption } from 'discordx';
 import { ApplicationCommandOptionType, Colors, EmbedBuilder, GuildMember } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
-import { createMusicPlayer, music } from './../api/index';
-import { BetterQueue } from './../api/structures';
+import { createMusicPlayer, music } from './../api/index.js';
+import { BetterQueue } from './../api/structures.js';
 
 @Discord()
 @Category("Music")

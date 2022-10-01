@@ -1,8 +1,4 @@
-import { DApplicationCommand, MetadataStorage } from 'discordx';
-import { ICategory } from "@discordx/utilities";
-import { client } from '../../../bertram';
-import { BertramCommand } from '../../../core/typings';
-import { core } from '../../../core';
+import { core } from '../../../core/index.js';
 
 export const help = {
     get init() {

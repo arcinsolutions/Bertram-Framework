@@ -1,7 +1,7 @@
 import { Category, EnumChoice } from "@discordx/utilities";
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
 import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder, GuildMember, GuildPremiumTier } from "discord.js";
-import { together } from "../api";
+import { together } from "../api/index.js";
 
 enum games {
     youtube = 'Youtube',

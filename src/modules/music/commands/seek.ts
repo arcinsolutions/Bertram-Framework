@@ -1,7 +1,7 @@
 import { Discord, Slash, SlashOption } from "discordx";
 import { ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
-import { music } from './../api/index';
+import { music } from './../api/index.js';
 import { Colors } from 'discord.js';
 import { Category } from "@discordx/utilities";
 

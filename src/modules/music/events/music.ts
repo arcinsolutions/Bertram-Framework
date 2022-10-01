@@ -1,6 +1,6 @@
 import { Node, Player, Track } from 'vulkava';
-import { setDefaultMusicEmbed, updateMusicEmbed } from '../api/embed';
-import { music, updateQueueEmbed } from './../api/index';
+import { setDefaultMusicEmbed, updateMusicEmbed } from '../api/embed.js';
+import { music, updateQueueEmbed } from './../api/index.js';
 
 // +++ Node +++
 music.on('nodeConnect', (node: Node) => {

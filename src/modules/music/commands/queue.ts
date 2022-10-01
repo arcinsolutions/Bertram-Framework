@@ -1,8 +1,8 @@
 import { Category } from "@discordx/utilities";
 import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from "discordx";
-import { music } from "../api";
-import { BetterQueue } from './../api/structures';
+import { music } from "../api/index.js";
+import { BetterQueue } from './../api/structures.js';
 import { Pagination, PaginationItem } from '@discordx/pagination';
 import { PaginationType } from '@discordx/pagination';
 

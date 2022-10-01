@@ -1,9 +1,9 @@
 import { Category, PermissionGuard } from "@discordx/utilities";
 import { CommandInteraction, ButtonInteraction, ButtonStyle, EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, MessageActionRowComponentBuilder, PermissionFlagsBits } from "discord.js";
 import { Discord, Slash, ButtonComponent, Guard } from "discordx";
-import { core } from "../../../core";
-import { musicGuilds } from "../api";
-import { createMusicChannel } from "../api/embed";
+import { core } from "../../../core/index.js";
+import { musicGuilds } from "../api/index.js";
+import { createMusicChannel } from "../api/embed.js";
 
 @Discord()
 @Category("Music")

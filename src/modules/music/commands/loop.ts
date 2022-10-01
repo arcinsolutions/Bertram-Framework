@@ -1,7 +1,7 @@
 import { Category, EnumChoice } from "@discordx/utilities";
 import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
-import { music } from './../api/index';
+import { music } from './../api/index.js';
 
 enum mode {
     None = 'none',

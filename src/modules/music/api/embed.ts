@@ -1,11 +1,11 @@
-import { createMusicImage, music, musicGuilds } from ".";
-import { client } from "../../../bertram";
-import { createCanvas, loadImage } from "canvas";
+import { createMusicImage, music, musicGuilds } from "./index.js";
+import { client } from "../../../bertram.js";
+import { loadImage, createCanvas } from "canvas";
 import { Player } from 'vulkava';
-import { BetterQueue, BetterTrack } from './structures';
-import { musicGuild } from './../database/entities/guild';
+import { BetterQueue, BetterTrack } from './structures.js';
+import { musicGuild } from './../database/entities/guild.js';
 import * as discordJs from 'discord.js';
-import { music_Buttons } from "./buttons";
+import { music_Buttons } from "./buttons.js";
 import fetch from 'node-fetch';
 import sharp from 'sharp';
 
@@ -82,13 +82,14 @@ export async function setDefaultMusicEmbed(guildId: string) {
     const message = await channel.messages.fetch(guildData.messageId);
     if (message == null) return await channel.send("CHANNEL_IS_BROKEN");
 
+    // const canvas = createCanvas(1920, 1080);
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
-    const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => res.arrayBuffer());
+    const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => {return res.arrayBuffer()});
     const Uint8Buff = new Uint8Array(ImgBuff);
 
-    const thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+    const thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
 
     await loadImage(thumbnail).then(img => {
         ctx.drawImage(img, 25, 25, canvas.width - 50, canvas.height - 50);

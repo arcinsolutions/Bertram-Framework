@@ -1,6 +1,6 @@
 import { ClientEvents } from "discord.js";
 import { IGuild } from "discordx";
-import { Client } from '..';
+import { Client } from "../index.js";
 
 
 export type BertramCommand = { id: string, name: string, description: string, category: string, guilds?: IGuild[] };

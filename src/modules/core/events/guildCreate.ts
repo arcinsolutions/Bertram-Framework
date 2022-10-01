@@ -1,9 +1,9 @@
-import { Guild } from '../../../core/database/entities/guild'
-import { core } from './../../../core/index';
+import { Guild } from '../../../core/database/entities/guild.js';
+import { core } from './../../../core/index.js';
 
 // **Import Database Stuff** //
 
-core.client.on("guildCreate", async (guild) => {
+core.client.on("guildCreate", async (guild: { id: string; name: string | undefined; }) => {
     const dbGuild = new Guild();
     dbGuild.guildId = guild.id;
     dbGuild.guildName = guild.name;
