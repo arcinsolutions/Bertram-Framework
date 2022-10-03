@@ -4,6 +4,6 @@ import { Discord, On } from "discordx";
 class events {
     @On({event: "ready"})
     private async onReady() {
-        console.log("Bot is ready!");
+        console.log("[Core | Example] - Bot is ready!");
     }
 }

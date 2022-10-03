@@ -1,8 +1,9 @@
 import "reflect-metadata";
-import { CacheType, GatewayIntentBits, Interaction } from "discord.js";
+import { ActivityType, CacheType, GatewayIntentBits, Interaction } from "discord.js";
 import { config } from "dotenv";
-import { dirname, importx, isESM } from "@discordx/importer";
+import { dirname, isESM } from "@discordx/importer";
 import { Client } from "./core/index.js";
+import { importx } from "@discordx/importer";
 
 const env = config({
     path: "./config.env",
@@ -10,8 +11,12 @@ const env = config({
 });
 export const goldenConfig = env.parsed;
 
+if (typeof goldenConfig === 'undefined' || goldenConfig.DISCORD_TOKEN == (null || "")) {
+    throw new TypeError('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/arcinsolutions/Bertram');
+}
+
 //Init Golden Client
-export const client = new Client({
+export const client = await Client.build({
     shards: "auto",
     intents: [
         GatewayIntentBits.Guilds,
@@ -47,6 +52,9 @@ client.on("ready", async () => {
     // );
 
     console.log(`[Core] - ${client.user?.username} started successfully`);
+
+    // Set Activity
+    client.user!.setPresence({ status: "online", activities: [{ name: "/help", type: ActivityType.Listening }] });
 });
 
 client.on("interactionCreate", (interaction: Interaction<CacheType>) => {
@@ -54,15 +62,11 @@ client.on("interactionCreate", (interaction: Interaction<CacheType>) => {
 });
 
 async function start() {
-    if (!goldenConfig || goldenConfig.DISCORD_TOKEN == (null || "")) {
-        throw new TypeError('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/arcinsolutions/Bertram');
-    }
-
     //Import Slash Commands
     const folder = isESM ? dirname(import.meta.url) : __dirname;
     await importx(`${folder}/modules/**/{events,commands,api}/*.{ts,js}`).then(() =>
         console.log("[Core] - All files imported")
     );
 
-    await client.login(goldenConfig.DISCORD_TOKEN);
+    await client.login(goldenConfig!.DISCORD_TOKEN);
 }

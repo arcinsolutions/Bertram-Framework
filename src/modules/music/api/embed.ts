@@ -15,7 +15,7 @@ import sharp from 'sharp';
 // --------------------------------------------------
 
 export async function setMusicEmbed(guildID: string) {
-    const player = await music.players.get(guildID)
+    const player = music.players.get(guildID)
 
     if (player == undefined)
         setDefaultMusicEmbed(guildID)
@@ -112,7 +112,7 @@ export async function setDefaultMusicEmbed(guildId: string) {
                 color: discordJs.Colors.DarkButNotBlack
             })
         ],
-        components: [music_Buttons(true, "https://arcin.solutions")]
+        components: [music_Buttons(true, "https://arcin.solutions", false)]
     })
 }
 
@@ -129,10 +129,10 @@ export async function updateMusicEmbed(player: Player) {
     const message = await channel.messages.fetch(guildData.messageId);
     if (message == null) return await channel.send("CHANNEL_IS_BROKEN");
 
-    const queue = await player.queue as BetterQueue;
-    const current = await player.current as BetterTrack;
+    const queue = player.queue as BetterQueue;
+    const current = player.current as BetterTrack;
 
-    const attachment = await new discordJs.AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
+    const attachment = new discordJs.AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
 
     const formattedQueue = queue.generateFormattedQueue;
 
@@ -147,6 +147,6 @@ export async function updateMusicEmbed(player: Player) {
                 footer: { text: 'made by arcin with ❤️' },
             })
         ],
-        components: [music_Buttons(false, await current.uri)]
+        components: [music_Buttons(false, current.uri, player.paused)]
     })
 }

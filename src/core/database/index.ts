@@ -1,15 +1,15 @@
 import { Guild as JSGuild } from "discord.js";
 import { DataSource } from "typeorm";
-import { goldenConfig } from "../../bertram";
-import { core } from '../index';
-import { Guild as DBGuild } from './entities/guild';
+import { goldenConfig } from "../../bertram.js";
+import { Guild as DBGuild } from './entities/guild.js';
+import { Client } from './../index.js';
 
 let DBsource: DataSource;
 let isDBConnected: Boolean = false;
 
 export const database = {
-    get init() {
-        return initCore();
+    init: (client: Client) => {
+        return initCore(client);
     },
     get get() {
         return DBsource;
@@ -20,7 +20,7 @@ export const database = {
 }
 
 
-async function initCore() {
+async function initCore(client: Client) {
     if (!goldenConfig || (goldenConfig.DB_Host || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined))
         throw new TypeError('Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/arcinsolutions/Bertram');
 
@@ -39,11 +39,11 @@ async function initCore() {
         ],
     })
 
-    await DBsource.initialize().then((connection) => {
+    return await DBsource.initialize().then((connection) => {
         console.log("[Core] - DB Connected.")
         DBsource = connection;
         isDBConnected = connection.isInitialized;
-        core.client.emit("DB_Connected", () => { });
+        client.emit("DB_Connected", () => {});
     }).catch((reason: string) => {
         throw new TypeError(`Fatal: DB Connection failed\n${reason}`);
     })

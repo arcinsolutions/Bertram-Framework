@@ -1,28 +1,42 @@
 import { client } from '../bertram.js';
 import { commands } from "./commands.js";
 import { Client as ClientTS, ClientOptions, DApplicationCommand, InitCommandOptions } from 'discordx';
-import { BertramEvents } from './typings/index.js';
+import { BertramEvents, CoreEvents } from './typings/index.js';
 import { Awaitable } from 'discord.js';
-import Config from 'conf';
-import {database} from './database/index.js';
+import { database } from './database/index.js';
+import { config as coreConfig } from './config/index.js';
+import pkg from 'eventemitter2';
 
-const _nconf = new Config.default;
+export const coreEvent = new pkg.EventEmitter2();
 
 export const core = {
-    get init() {
-        return database.init;
+    async init() {
+        await coreConfig.init();
     },
     get client() { return client },
     get commands() { return commands },
-    get database() { return database},
-    get config() { return _nconf },
-    // set addConfig()
+    get database() { return database },
+    get config() { return coreConfig },
+    emit(event: keyof CoreEvents, ...args: []) {
+        coreEvent.emit(event, ...args);
+    },
+    on(event: keyof CoreEvents, listener: (...args: any[]) => void) {
+        coreEvent.on(event, listener);
+    },
+    once(event: keyof CoreEvents, listener: (...args: any[]) => void) {
+        coreEvent.once(event, listener);
+    }
 }
 
-export class Client extends ClientTS {    
+export class Client extends ClientTS {
     constructor(options: ClientOptions) {
-        core.init;
         super(options);
+    }
+
+    public static async build(options: ClientOptions): Promise<Client> {
+        const client = new Client(options);
+        await database.init(client);
+        return client;
     }
 
     public emit<K extends keyof BertramEvents>(event: K, ...args: BertramEvents[K]): boolean;
@@ -42,7 +56,6 @@ export class Client extends ClientTS {
     public once(event: any, listener: any): this {
         return super.once(event, listener);
     }
-    
 
     initApplicationCommands(options?: { global?: InitCommandOptions | undefined; guild?: InitCommandOptions | undefined; } | undefined): Promise<void> {
         super.initApplicationCommands(options);
@@ -62,14 +75,16 @@ export class Client extends ClientTS {
     }
 
     async login(token: string, log?: boolean | undefined): Promise<string> {
+        await coreEvent.emitAsync('addConfig');
+        await core.init();
         await this.build(log);
         if (log ?? !this.silent) {
             console.log(`[Core] - ${this.user?.username ?? this.botId} connecting to discord...\n`);
         }
-        await super.emit('beforeLogin');
+        super.emit('beforeLogin');
         const _client = await super.login(token, log);
         await commands.init;
-        await super.emit('afterLogin', client);
+        super.emit('afterLogin', client);
         return _client;
     }
 }

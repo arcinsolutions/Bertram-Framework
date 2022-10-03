@@ -1,5 +1,5 @@
-import { NodeState, Player, Track, Vulkava } from 'vulkava'
-import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
+import { NodeState, Player, Vulkava } from 'vulkava'
+import { NodeOptions, OutgoingDiscordPayload } from 'vulkava/lib/@types';
 import { client } from '../../../bertram.js';
 import * as discordJs from 'discord.js';
 import { musicGuild } from '../database/entities/guild.js';
@@ -10,6 +10,7 @@ import { setMusicEmbed } from './embed.js';
 import { core } from './../../../core/index.js';
 import sharp from 'sharp';
 import fetch from 'node-fetch';
+import { config } from './../../../core/config/index.js';
 
 // !IMPORTANT!
 export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
@@ -17,7 +18,7 @@ export let musicGuilds: Map<string, { channelId: string, messageId: string }> = 
 export const getMusicStuffFromDB = async () => {
     const data = await core.database.get.getTreeRepository(musicGuild).find();
 
-    await data.map(guild => {
+    data.map(guild => {
         musicGuilds.set(guild.guildId, {
             channelId: guild.channelId,
             messageId: guild.messageId
@@ -31,30 +32,43 @@ export const getMusicStuffFromDB = async () => {
 }
 // !IMPORTANT!
 
+const nodes: NodeOptions[] = getNodesFromConfig();
 
 export const music = new Vulkava({
-    nodes: [
-        // {
-        //     id: 'arcin1',
-        //     hostname: '185.234.72.80',
-        //     port: 2334,
-        //     password: 'eriCmEqBitDZv3rnH3Wr',
-        //     region: 'EU'
-        // },
-        {
-            id: 'arcin2',
-            hostname: '78.47.184.165',
-            port: 2332,
-            password: 'tiZDJ7dvZJsDDU2x',
-            region: 'EU'
-        }
-    ],
+    nodes: nodes,
     sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {
         client.guilds.cache.get(guildId)?.shard.send(payload);
         // With eris
         // client.guilds.get(guildId)?.shard.sendWS(payload.op, payload.d);
     }
 })
+
+function getNodesFromConfig() {
+    const nodeAmount = config.get('nodes') as number;
+    const nodes: NodeOptions[] = [];
+
+    for (let index = 1; index <= nodeAmount; index++) {
+        const node = config.get(`node:${index}`) as { id: string; hostname: string; port: number; password: string; region: string; };
+        // console.log(node);
+        nodes.push({
+            id: node.id,
+            hostname: node.hostname,
+            port: Number(node.port),
+            password: node.password,
+            region: node.region as "EU" | "USA" | undefined
+        });
+    }
+
+    if (nodes.length == 0) {
+        nodes.push({
+            id: 'temp',
+            hostname: 'localhost',
+            port: 2333,
+            password: 'password',
+        });
+    }
+    return nodes;
+}
 
 export async function createMusicPlayer(interaction: discordJs.CommandInteraction) {
     const player = music.createPlayer({
@@ -65,7 +79,7 @@ export async function createMusicPlayer(interaction: discordJs.CommandInteractio
         queue: new BetterQueue()
     })
 
-    await music.emit("playerCreated", player)
+    music.emit("playerCreated", player)
 
     return player;
 }
@@ -87,7 +101,7 @@ export async function play(message: discordJs.Message) {
     try {
         player = music.players.get(message.guild!.id);
         if (!player)
-            player = await music.createPlayer({
+            player = music.createPlayer({
                 guildId: message.guild!.id,
                 voiceChannelId: message.member!.voice.channel.id,
                 selfDeaf: true,
@@ -177,7 +191,7 @@ export async function play(message: discordJs.Message) {
 }
 
 export async function updateQueueEmbed(player: Player) {
-    const queue = await player.queue as BetterQueue;
+    const queue = player.queue as BetterQueue;
     if (queue.size <= 0)
         return;
 
@@ -256,7 +270,7 @@ export async function createMusicImage(track: BetterTrack) {
         formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
 
     ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
-    ctx.fillText(await formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
+    ctx.fillText(formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
     
     let formattedRequester = String(track.requester.username);
     if (track.requester.username.length >= 45)
