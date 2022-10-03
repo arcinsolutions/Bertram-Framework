@@ -20,13 +20,6 @@ core.once('addConfig', async () => {
             continue;
         }
 
-        // {
-        //     id: 'arcin2',
-        //         hostname: '78.47.184.165',
-        //             port: 2332,
-        //                 password: 'tiZDJ7dvZJsDDU2x',
-        //                     region: 'EU'
-        // }
         config.add(`node:${value}:id`, { type: 'number', message: `What is the id for node ${value}?` });
         config.add(`node:${value}:hostname`, { type: 'input', message: `What is the hostname / IP for node ${value}?` });
         config.add(`node:${value}:port`, { type: 'number', message: `What is the port for node ${value}?` });
