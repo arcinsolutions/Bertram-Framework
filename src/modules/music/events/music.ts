@@ -24,7 +24,10 @@ music.on('trackStart', (player: Player) => {
 });
 // --- TrackStart ---
 
-
+// +++ TrackPaused +++
+music.addListener('songPause', (player: Player) => {
+    return updateMusicEmbed(player);
+});
 
 // +++ TrackEnd +++
 // music.on('trackEnd', (player: Player, track: Track, reason: string) => {

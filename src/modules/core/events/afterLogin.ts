@@ -6,10 +6,9 @@ core.client.once('afterLogin', async (client) => {
     const guilds = await client.guilds.fetch();
 
     const interval = setInterval(async () => {
-        if (!core.database.source.connected)
-            return;
+        if (!core.database.connected) return;
 
-        const db = core.database();
+        const db = core.database.get;
         // add each guild to DB if not already there
         guilds.forEach(async (guild: { id: string; name: string | undefined; }) => {
             const dbGuild = await db.getRepository(Guild).findOne({ where: { guildId: guild.id } });

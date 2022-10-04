@@ -288,3 +288,4 @@ pnpm-lock.yaml
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/node,dotenv,webstorm,visualstudiocode,yarn
+config.json

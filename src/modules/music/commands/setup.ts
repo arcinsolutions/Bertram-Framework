@@ -122,7 +122,7 @@ class Setup {
 
     @ButtonComponent({ id: "abort" })
     async abort(interaction: ButtonInteraction) {
-        return interaction.message.delete();
+        return interaction.message.delete().catch(() => { });
     }
 
     @ButtonComponent({ id: "create" })

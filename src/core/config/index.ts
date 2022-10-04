@@ -1,62 +1,64 @@
-import { BertramDataType, BertramQuestionType } from '../typings';
-import { core } from './../index';
-import * as nconf from 'nconf';
-import inquirer from 'inquirer';
-import { readFile } from 'fs';
+import nconf from 'nconf';
+import inquirer, { QuestionCollection } from 'inquirer';
+import { format } from 'util';
 
-const configMap = new Map<string, { dataType: BertramDataType, questionType: BertramQuestionType, message: string }>();
+nconf.argv().env().file({ file: './config.json' });
 
-// export const config = {
-//     get init() {
-//     },
-// }
+const configMap = new Map<string, { question: QuestionCollection }>();
 
-core.client.on('checkConfig', () => {
-    
-})
+export const config = {
+    async init() {
+        // set up config map
+        return await configInit();
+    },
 
-core.client.on('addConfig', (key, dataType, questionType, message) => {
-    if (configMap.has(key)) {
-        throw new TypeError(`[Core] - !ERROR! - Config with key ${key} already exists!`);
+    get(key: string) {
+        return nconf.get(key);
+    },
+    add(key: string, question: QuestionCollection ) {
+        if (!configMap.has(key))
+            configMap.set(key, { question });
+        else
+            console.log(format('[WARNING] - a Key %s is already defined by someone else', key));
+    },
+    save(key: string, value: any) {
+        nconf.set(key, value);
+        nconf.save(() => {});
+    }
+}
+
+async function configInit() {
+    await askForConfigValue();
+    return;
+}
+
+async function askForConfigValue() {
+    const questions: Array<{name: string, question: QuestionCollection}> = [];
+    for (const [key, value] of configMap.entries()) {
+        if (nconf.get(key) != null)
+            continue;
+
+        questions.push({
+            name: key,
+            question: value.question
+        })
     }
 
-    configMap.set(key, { dataType, questionType, message });
-})
+    if (questions.length === 0) {
+        console.log('[Core] - All config values are set!\n[Core] - Starting up...');
+        return;
+    }
 
-core.client.on('beforeLogin', async () => {
-    nconf.argv().env().file({ file: './config.json' });
+    const answers = await inquirer.prompt(questions);
 
-    const questions = Array.from(configMap.keys()).map(key => {
-        const config = configMap.get(key);
-        if (!config) return;
+    // set config values
+    for (const [key, value] of Object.entries(answers)) {
+        await nconf.set(key, value);
+    }
 
-        return {
-            type: config.questionType,
-            name: key,
-            message: config.message,
-            default: nconf.get(key),
-            validate: (input: any) => {
-                if (config.dataType == 'number') {
-                    if (isNaN(input)) return 'Please enter a number!';
-                }
-
-                return true;
-            }
-        }
+    console.log('[Core] - All config values are set!');
+    return await nconf.save(() => { 
+        console.log('[Core] - Config saved'); 
+        throw new Error('please restart the bot to make sure all configurations are applied correctly!'); 
     });
-
-    console.log(questions);
-    // configMap.forEach(async (value, key) => {
-    //     inquirer.prompt([
-    //         question
-    //     ]).then(async (answers) => {
-    //         nconf.set(key, answers[key]);
-    //     })
-    // })
-
-    // nconf.save(function (err) {
-    //     readFile('./config.json', function (err, data) {
-    //         console.dir(JSON.parse(data.toString()))
-    //     })
-    // })
-})
+}
