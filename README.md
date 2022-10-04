@@ -10,7 +10,7 @@
 
 - ### 👾Development Features
   - easy config usage
-  - easy datanase usage
+  - easy database usage
   - module based
   - more events
 
