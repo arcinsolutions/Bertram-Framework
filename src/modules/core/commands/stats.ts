@@ -37,7 +37,6 @@ class Stats {
                 new EmbedBuilder({
                     description: '',
                     color: Colors.DarkGreen,
-                    footer: { text: `made by arcin with ❤️` },
                     fields: [
                         {
                             name: "Uptime",

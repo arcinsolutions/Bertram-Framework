@@ -21,7 +21,6 @@ class Seek {
                 embeds: [new EmbedBuilder({
                     title: 'No active Player',
                     description: 'please use this Command only if a Song is currently Playing.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -33,7 +32,6 @@ class Seek {
                 embeds: [new EmbedBuilder({
                     title: 'No active Track',
                     description: 'please use this Command only if a Song is currently Playing.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -44,7 +42,6 @@ class Seek {
                 embeds: [new EmbedBuilder({
                     title: 'Invalid Time',
                     description: 'please use a time that is smaller than the duration of the current track.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -56,7 +53,6 @@ class Seek {
             embeds: [new EmbedBuilder({
                 title: 'Seeked',
                 description: `Seeked to ${ms}ms.`,
-                footer: { text: 'made by arcin with ❤️' },
                 color: Colors.DarkGreen
             })]
         });

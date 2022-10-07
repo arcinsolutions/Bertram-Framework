@@ -19,7 +19,6 @@ class Shuffle {
                 embeds: [new EmbedBuilder({
                     title: 'No active Player',
                     description: 'please use this Command only if at least **one** song is currently Playing.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -32,7 +31,6 @@ class Shuffle {
                 embeds: [new EmbedBuilder({
                     title: 'No active Song in Queue',
                     description: 'please use this Command only if at least **one** song is in the queue.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -45,7 +43,6 @@ class Shuffle {
             embeds: [new EmbedBuilder({
                 title: 'Shuffled',
                 description: `Shuffled the current queue`,
-                footer: { text: 'made by arcin with ❤️' },
                 color: Colors.DarkGreen
             })]
         });

@@ -16,7 +16,6 @@ class Setup {
                 color: Colors.DarkRed,
                 title: "Missing permissions",
                 description: "You need the `Manage Channels` permission to use this command.",
-                footer: { text: 'made by arcin with ❤️' }
             })]
         }))
     async setup(interaction: CommandInteraction) {

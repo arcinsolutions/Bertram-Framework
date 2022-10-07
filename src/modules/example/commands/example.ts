@@ -3,7 +3,7 @@ import { Colors, CommandInteraction, EmbedBuilder } from 'discord.js';
 import { Category } from "@discordx/utilities";
 
 @Discord()
-@Category("Example")
+@Category("Fun")
 class Example {
     @Slash({ name: "example", description: "Example command" })
     private async example(interaction: CommandInteraction) {
@@ -15,7 +15,6 @@ class Example {
             embeds: [new EmbedBuilder({
                 title: 'Example',
                 description: 'This is an example command',
-                footer: { text: 'made by arcin with ❤️' },
                 color: Colors.DarkGreen
             })]
         });

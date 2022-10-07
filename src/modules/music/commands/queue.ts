@@ -18,7 +18,6 @@ class Queue {
         const timeoutEmbed = new EmbedBuilder({
             title: 'Embed expired',
             description: `If you want to see all our commands, please use the </help:${interaction.commandId}> command once again.`,
-            footer: { text: 'made by arcin with ❤️' },
             color: Colors.DarkGold
         })
 
@@ -29,7 +28,6 @@ class Queue {
                 embeds: [new EmbedBuilder({
                     title: 'No active Player',
                     description: 'please use this Command only if atleast **one** song is in the queue.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -42,7 +40,6 @@ class Queue {
                 embeds: [new EmbedBuilder({
                     title: 'No Songs in Queue',
                     description: 'please use this Command only if atleast **one** song is in the queue.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -87,7 +84,7 @@ async function GeneratePages(queue: BetterQueue): Promise<PaginationItem[]> {
             embeds: [new EmbedBuilder({
                 title: 'Queue',
                 description: page,
-                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by arcin with ❤️' },
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length },
                 color: Colors.DarkGreen
             })],
         };

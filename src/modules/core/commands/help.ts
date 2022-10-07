@@ -15,7 +15,6 @@ class Help {
         const timeoutEmbed = new EmbedBuilder({
             title: 'Embed expired',
             description: `If you want to see all our commands, please use the </help:${interaction.id}> command once again.`,
-            footer: { text: 'made by arcin with ❤️' },
             color: Colors.DarkGold
         })
 
@@ -49,7 +48,6 @@ class Help {
                 embeds: [new EmbedBuilder({
                     title: 'looks like the help menu is not available yet.',
                     description: '**Please try again later.**',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkGold
                 })]
             })
@@ -68,7 +66,7 @@ async function GeneratePages(): Promise<PaginationItem[]> {
             embeds: [new EmbedBuilder({
                 title: 'Category: ' + page.title,
                 description: page.embed,
-                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by arcin with ❤️' },
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length },
                 color: Colors.DarkGreen
             })],
         };
