@@ -11,8 +11,8 @@ export const commands = {
     get init() {
         return fetchCommands();
     },
-    get(name?: string, id?: string) {
-        return _commands.find(command => command.name === name || command.id === id);
+    get(options: {name?: string, id?: string}) {
+        return _commands.find(command => command.name === options.name || command.id === options.id);
     },
     get getAll() {
         return _commands;

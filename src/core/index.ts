@@ -35,7 +35,6 @@ export class Client extends ClientTS {
 
     public static async build(options: ClientOptions): Promise<Client> {
         const client = new Client(options);
-        await database.init(client);
         return client;
     }
 
@@ -77,6 +76,7 @@ export class Client extends ClientTS {
     async login(token: string, log?: boolean | undefined): Promise<string> {
         await coreEvent.emitAsync('addConfig');
         await core.init();
+        await database.init(client);
         await this.build(log);
         if (log ?? !this.silent) {
             console.log(`[Core] - ${this.user?.username ?? this.botId} connecting to discord...\n`);

@@ -118,18 +118,27 @@ export async function play(message: discordJs.Message) {
         })
     }
 
+    await addSongToPlayer(message.content, message.author, player, message.channel as discordJs.TextChannel);
+
+    if (!player.playing) player.play();
+}
+
+export async function addSongToPlayer(searchTerm: string, author: discordJs.User, player: Player, channel?: discordJs.TextChannel) {
     // Search for Music
-    const res = await music.search(message.content, "youtubemusic");
+    const res = await music.search(searchTerm, "youtubemusic");
+
+    if (typeof channel === 'undefined')
+        channel = client.channels.cache.get(player.textChannelId!) as discordJs.TextChannel;
 
     switch (res.loadType) {
         case "LOAD_FAILED":
-            return message.channel.send({
+            return channel.send({
                 embeds: [new discordJs.EmbedBuilder({
                     description: `:x: Load failed!\nError: ${res.exception?.message}`
                 })]
             })
         case "NO_MATCHES":
-            return message.channel.send({
+            return channel.send({
                 embeds: [
                     new discordJs.EmbedBuilder({
                         description: `:x: No matches!`
@@ -142,7 +151,7 @@ export async function play(message: discordJs.Message) {
 
     //Connect to the Voice Channel
     if (player.node?.state === NodeState.DISCONNECTED) {
-        await message.channel.send({
+        await channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
                     description: ":x: the node is currently offline, please try again later",
@@ -157,12 +166,12 @@ export async function play(message: discordJs.Message) {
 
     if (res.loadType === 'PLAYLIST_LOADED') {
         for (const track of res.tracks) {
-            track.setRequester(message.author);
+            track.setRequester(author);
             (player.queue as BetterQueue)?.add(track);
             music.emit("songAdded", player, track);
         }
 
-        message.channel.send({
+        channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
                     description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`,
@@ -172,10 +181,10 @@ export async function play(message: discordJs.Message) {
         });
     } else {
         const track = res.tracks[0];
-        track.setRequester(message.author);
+        track.setRequester(author);
 
         (player.queue as BetterQueue)?.add(track);
-        message.channel.send({
+        channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
                     description: `:white_check_mark: Track added to the queue!`,
@@ -185,9 +194,6 @@ export async function play(message: discordJs.Message) {
         });
         music.emit("songAdded", player, track);
     }
-
-    core
-    if (!player.playing) player.play();
 }
 
 export async function updateQueueEmbed(player: Player) {
