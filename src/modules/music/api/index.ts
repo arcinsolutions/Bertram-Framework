@@ -103,6 +103,7 @@ export async function play(message: discordJs.Message) {
         if (!player)
             player = music.createPlayer({
                 guildId: message.guild!.id,
+                textChannelId: message.channel.id,
                 voiceChannelId: message.member!.voice.channel.id,
                 selfDeaf: true,
                 queue: new BetterQueue()
@@ -128,7 +129,10 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
     const res = await music.search(searchTerm, "youtubemusic");
 
     if (typeof channel === 'undefined')
-        channel = client.channels.cache.get(player.textChannelId!) as discordJs.TextChannel;
+        channel = await client.channels.cache.get(player.textChannelId!) as discordJs.TextChannel | undefined;
+
+    if (typeof channel === 'undefined')
+        return;
 
     switch (res.loadType) {
         case "LOAD_FAILED":

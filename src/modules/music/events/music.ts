@@ -33,16 +33,20 @@ music.addListener('songPause', (player: Player) => {
 });
 
 // +++ TrackEnd +++
-music.on('trackEnd', async (player: Player, track: Track) => {
-    const currTrack = track as BetterTrack; 
-    if (currTrack.autoplay) {
-        await addSongToPlayer(`https://www.youtube.com/watch?v=${track.identifier}&list=RD${track.identifier}`, core.client.user!, player);
-        return updateMusicEmbed(player);
-    }
+// music.on('trackEnd', async (player: Player, track: Track) => {
+//     const currTrack = track as BetterTrack; 
+//     if (currTrack.autoplay) {
+//         //get channel from player
+//         // const channel = await core.client.channels.fetch(player.textChannelId!);
+//         // console.log(channel?.id);
 
-    // return updateMusicEmbed(player);
-    //Update Player
-})
+//         await addSongToPlayer(`https://www.youtube.com/watch?v=${track.identifier}&list=RD${track.identifier}`, core.client.user!, player);
+//         return updateMusicEmbed(player);
+//     }
+
+//     // return updateMusicEmbed(player);
+//     //Update Player
+// })
 // --- TrackEnd ---
 
 

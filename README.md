@@ -5,12 +5,12 @@
 - ### 🦾current Features
   - Easy to use
   - Easy to setup
-  - Autoplay
   - 24/7 music
   - Songs request channel
   - supports Apple Music, Spotify, Soundcloud, YouTube and YouTube Music
 
 - ### 📈comming Features
+  - Autoplay
   - Record your voice Channel
   - Ticket System
   - Log

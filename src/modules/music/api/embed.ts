@@ -217,11 +217,11 @@ export async function updateMusicEmbedFooter(player: Player, options?: {loop?: "
     
     if (typeof options !== 'undefined') {
         if (typeof options.loop !== 'undefined') {
-            footerOptionsText += `| Loop: ${options.loop}`;
+            footerOptionsText += `Loop: ${options.loop}`;
         }
-        if (typeof options.autoplay !== 'undefined') {
-            footerOptionsText += `| ${options.autoplay}` ? '| Autoplay activated' : '';
-        }
+        // if (typeof options.autoplay !== 'undefined') {
+        //     footerOptionsText += `${options.autoplay}` ? '| Autoplay activated' : '';
+        // }
     }
 
     message.edit({
