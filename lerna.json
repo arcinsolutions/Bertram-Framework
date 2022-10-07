@@ -1,6 +1,6 @@
 {
+  "version": "independent",
   "packages": [
     "src/modules/*"
-  ],
-  "version": "independent"
+  ]
 }

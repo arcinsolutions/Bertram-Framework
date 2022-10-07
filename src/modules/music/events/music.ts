@@ -1,6 +1,9 @@
+import { Client } from 'discordx';
 import { Node, Player, Track } from 'vulkava';
-import { setDefaultMusicEmbed, updateMusicEmbed } from '../api/embed';
-import { music, updateQueueEmbed } from './../api/index';
+import { setDefaultMusicEmbed, updateMusicEmbed, updateMusicEmbedButtons } from '../api/embed.js';
+import { addSongToPlayer, music, updateQueueEmbed } from './../api/index.js';
+import { core } from './../../../core/index.js';
+import { BetterTrack } from './../api/structures.js';
 
 // +++ Node +++
 music.on('nodeConnect', (node: Node) => {
@@ -24,11 +27,24 @@ music.on('trackStart', (player: Player) => {
 });
 // --- TrackStart ---
 
-
+// +++ TrackPaused +++
+music.addListener('songPause', (player: Player) => {
+    return updateMusicEmbedButtons(player);
+});
 
 // +++ TrackEnd +++
-// music.on('trackEnd', (player: Player, track: Track, reason: string) => {
-//     return updateMusicEmbed(player);
+// music.on('trackEnd', async (player: Player, track: Track) => {
+//     const currTrack = track as BetterTrack; 
+//     if (currTrack.autoplay) {
+//         //get channel from player
+//         // const channel = await core.client.channels.fetch(player.textChannelId!);
+//         // console.log(channel?.id);
+
+//         await addSongToPlayer(`https://www.youtube.com/watch?v=${track.identifier}&list=RD${track.identifier}`, core.client.user!, player);
+//         return updateMusicEmbed(player);
+//     }
+
+//     // return updateMusicEmbed(player);
 //     //Update Player
 // })
 // --- TrackEnd ---
@@ -42,7 +58,6 @@ music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
 
 // +++ QueueEnd +++
 music.on('queueEnd', async (player: Player) => {
-    player.destroy();
     return await setDefaultMusicEmbed(player.guildId);
 })
 // --- QueueEnd ---

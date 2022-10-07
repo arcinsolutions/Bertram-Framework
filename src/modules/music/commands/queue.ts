@@ -1,10 +1,9 @@
 import { Category } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, CommandInteraction, ComponentBuilder, EmbedBuilder, MessageActionRowComponentBuilder, MessageOptions } from "discord.js";
-import { ButtonComponent, Discord, Slash } from "discordx";
-import { DefaultQueue } from "vulkava";
-import { music } from "../api";
-import { BetterQueue } from './../api/structures';
-import { Pagination } from '@discordx/pagination';
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
+import { Discord, Slash } from "discordx";
+import { music } from "../api/index.js";
+import { BetterQueue } from './../api/structures.js';
+import { Pagination, PaginationItem } from '@discordx/pagination';
 import { PaginationType } from '@discordx/pagination';
 
 @Discord()
@@ -19,7 +18,6 @@ class Queue {
         const timeoutEmbed = new EmbedBuilder({
             title: 'Embed expired',
             description: `If you want to see all our commands, please use the </help:${interaction.commandId}> command once again.`,
-            footer: { text: 'made by arcin with ❤️' },
             color: Colors.DarkGold
         })
 
@@ -30,7 +28,6 @@ class Queue {
                 embeds: [new EmbedBuilder({
                     title: 'No active Player',
                     description: 'please use this Command only if atleast **one** song is in the queue.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -43,7 +40,6 @@ class Queue {
                 embeds: [new EmbedBuilder({
                     title: 'No Songs in Queue',
                     description: 'please use this Command only if atleast **one** song is in the queue.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -77,7 +73,7 @@ class Queue {
 
 }
 
-async function GeneratePages(queue: BetterQueue): Promise<MessageOptions[]> {
+async function GeneratePages(queue: BetterQueue): Promise<PaginationItem[]> {
     const pages = Array.from(queue.getQueuePages);
 
     // const pages = Array.from(Array((Math.max(queue.size / 10))).keys()).map((i) => {
@@ -88,7 +84,7 @@ async function GeneratePages(queue: BetterQueue): Promise<MessageOptions[]> {
             embeds: [new EmbedBuilder({
                 title: 'Queue',
                 description: page,
-                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by arcin with ❤️' },
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length },
                 color: Colors.DarkGreen
             })],
         };

@@ -1,0 +1,13 @@
+{
+  "name": "bertram_together",
+  "version": "0.5.0",
+  "description": "The Together System for the official Bertram Bot",
+  "main": "index.js",
+  "author": "Botis#0666",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "discord-together": "^1.3.31"
+  }
+}

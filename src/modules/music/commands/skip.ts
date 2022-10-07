@@ -1,14 +1,18 @@
 import { Category } from "@discordx/utilities";
-import { Colors, CommandInteraction, EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
-import { music, play } from './../api/index';
+import { music, play } from './../api/index.js';
 
 
 @Discord()
 @Category("Music")
 class Skip {
     @Slash({ name: "skip", description: "Skip the current Song" })
-    async skip(@SlashOption({ name: "amount", description: "let you skip a specific amount of Songs", required: false }) amount: number, interaction: CommandInteraction) {
+    async skip(
+        @SlashOption({ name: "amount", description: "let you skip a specific amount of Songs", required: false, type: ApplicationCommandOptionType.Integer })
+        amount: number,
+
+        interaction: CommandInteraction) {
         let player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
@@ -18,44 +22,45 @@ class Skip {
                 })]
             })
 
-        if ((typeof player.queue == 'undefined') || (player.queue.size == 0)) {
-            player.skip();
+        if ((typeof player.queue !== 'undefined') && (player.queue.size == 0)) {
+            player.skip(amount);
+            music.emit("stop", player);
             interaction.reply({
                 embeds: [new EmbedBuilder({
-                    description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
+                    description: "Song skiped!",
                     color: Colors.DarkGreen
-                })]
+                })],
+                ephemeral: true
             })
-            return setTimeout(() => {
-                player = music.players.get(interaction.guild!.id);
 
-                if (player?.current != null || player?.queue.size! > 0) {
-                    return interaction.deleteReply();
-                }
-                else {
-                    music.emit("stop", player);
-                    interaction.editReply({
-                        embeds: [new EmbedBuilder({
-                            description: "Player Stopped and Destroyed!",
-                            color: Colors.DarkGreen
-                        })]
-                    }).then(() => {
-                        player?.destroy();
-                    })
-                    return;
-                }
-            }, 5000);
         }
 
-        player.skip(amount);
-
+        player.skip();
         interaction.reply({
             embeds: [new EmbedBuilder({
-                description: "Song skiped!",
+                description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
                 color: Colors.DarkGreen
-            })],
-            ephemeral: true
+            })]
         })
+        return setTimeout(() => {
+            player = music.players.get(interaction.guild!.id);
+
+            if (player?.current != null || player?.queue.size! > 0) {
+                return interaction.deleteReply();
+            }
+            else {
+                music.emit("stop", player);
+                interaction.editReply({
+                    embeds: [new EmbedBuilder({
+                        description: "Player Stopped and Destroyed!",
+                        color: Colors.DarkGreen
+                    })]
+                }).then(() => {
+                    player?.destroy();
+                })
+                return;
+            }
+        }, 5000);
     }
 
 }

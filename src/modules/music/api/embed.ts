@@ -1,21 +1,21 @@
-import { createMusicImage, music, musicGuilds } from ".";
-import { client } from "../../../bertram";
-import { createCanvas, loadImage } from "canvas";
+import { createMusicImage, music, musicGuilds } from "./index.js";
+import { client } from "../../../bertram.js";
+import { loadImage, createCanvas } from "canvas";
 import { Player } from 'vulkava';
-import { BetterQueue, BetterTrack } from './structures';
-import { musicGuild } from './../database/entities/guild';
+import { BetterQueue, BetterTrack } from './structures.js';
+import { musicGuild } from './../database/entities/guild.js';
 import * as discordJs from 'discord.js';
-import { music_Buttons } from "./buttons";
+import { music_Buttons } from "./buttons.js";
 import fetch from 'node-fetch';
 import sharp from 'sharp';
-
+import { commands } from './../../../core/commands.js';
 
 // --------------------------------------------------
 // --------------------------------------------------
 // --------------------------------------------------
 
 export async function setMusicEmbed(guildID: string) {
-    const player = await music.players.get(guildID)
+    const player = music.players.get(guildID)
 
     if (player == undefined)
         setDefaultMusicEmbed(guildID)
@@ -79,16 +79,22 @@ export async function setDefaultMusicEmbed(guildId: string) {
     const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
     if (channel == null) return;
 
-    const message = await channel.messages.fetch(guildData.messageId);
-    if (message == null) return await channel.send("CHANNEL_IS_BROKEN");
+    const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
+
+    if (message == null)
+        return await channel.send({
+            embeds: [getBrokenChannelEmbed()]
+        });
+
+    // const canvas = createCanvas(1920, 1080);
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
-    const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => res.arrayBuffer());
+    const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => { return res.arrayBuffer() });
     const Uint8Buff = new Uint8Array(ImgBuff);
 
-    const thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+    const thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
 
     await loadImage(thumbnail).then(img => {
         ctx.drawImage(img, 25, 25, canvas.width - 50, canvas.height - 50);
@@ -107,14 +113,21 @@ export async function setDefaultMusicEmbed(guildId: string) {
             new discordJs.EmbedBuilder({
                 title: ':musical_note: | Join a Voice Channel and add a Song or a Playlist',
                 image: { url: 'attachment://music_default.png' },
-                footer: { text: 'made by arcin with ❤️' },
                 color: discordJs.Colors.DarkButNotBlack
             })
         ],
-        components: [music_Buttons(true, "https://arcin.solutions")]
+        components: [music_Buttons(true, "https://arcin.solutions", false)]
     })
 }
 
+
+function getBrokenChannelEmbed(): discordJs.APIEmbed | discordJs.JSONEncodable<discordJs.APIEmbed> {
+    return new discordJs.EmbedBuilder({
+        title: 'Something went wrong',
+        description: `Looks like this channel is broken.\nPlease use the ${(commands.get({ name: 'setup' }) === undefined) ? '/setup' : `</setup:${commands.get({ name: 'setup' })!.id}>`} command.`,
+        color: discordJs.Colors.DarkRed,
+    });
+}
 
 export async function updateMusicEmbed(player: Player) {
     const guildData = musicGuilds.get(player.guildId);
@@ -125,13 +138,17 @@ export async function updateMusicEmbed(player: Player) {
 
     if (player.current === null) return;
 
-    const message = await channel.messages.fetch(guildData.messageId);
-    if (message == null) return await channel.send("CHANNEL_IS_BROKEN");
+    const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
-    const queue = await player.queue as BetterQueue;
-    const current = await player.current as BetterTrack;
+    if (message == null)
+        return channel.send({
+            embeds: [getBrokenChannelEmbed()]
+        });
 
-    const attachment = await new discordJs.AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
+    const queue = player.queue as BetterQueue;
+    const current = player.current as BetterTrack;
+
+    const attachment = new discordJs.AttachmentBuilder(await createMusicImage(current), { name: "music.png", description: "The music image" });
 
     const formattedQueue = queue.generateFormattedQueue;
 
@@ -143,9 +160,77 @@ export async function updateMusicEmbed(player: Player) {
             new discordJs.EmbedBuilder({
                 description: '**:musical_note: Now Playing:**',
                 image: { url: 'attachment://music.png' },
-                footer: { text: 'made by arcin with ❤️' },
             })
         ],
-        components: [music_Buttons(false, await current.uri)]
+        components: [music_Buttons(false, current.uri, player.paused)]
+    })
+}
+
+async function getMusicEmbedMessage(channel: discordJs.TextChannel, guildData: { channelId: string; messageId: string; }) {
+    try {
+        return await channel.messages.fetch(guildData.messageId);
+    } catch (error) {
+        return null
+        // channel.send({ embeds: [brokenEmbedMsg] });
+    }
+}
+
+export async function updateMusicEmbedButtons(player: Player) {
+    const guildData = musicGuilds.get(player.guildId);
+    if (!guildData) return;
+
+    const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
+    if (channel == null) return;
+
+    const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
+
+    if (message == null)
+        return await channel.send({
+            embeds: [getBrokenChannelEmbed()]
+        });
+
+    if (player.current === null) return;
+
+    message.edit({
+        components: [music_Buttons(false, player.current.uri, player.paused)]
+    })
+}
+
+export async function updateMusicEmbedFooter(player: Player, options?: {loop?: "Track" | "Queue", autoplay?: boolean} )
+{
+    const guildData = musicGuilds.get(player.guildId);
+    if (!guildData) return;
+
+    const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
+    if (channel == null) return;
+
+    const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
+
+    if (message == null)
+        return await channel.send({
+            embeds: [getBrokenChannelEmbed()]
+        });
+
+    if (player.current === null) return;
+
+    let footerOptionsText = '';
+    
+    if (typeof options !== 'undefined') {
+        if (typeof options.loop !== 'undefined') {
+            footerOptionsText += `Loop: ${options.loop}`;
+        }
+        // if (typeof options.autoplay !== 'undefined') {
+        //     footerOptionsText += `${options.autoplay}` ? '| Autoplay activated' : '';
+        // }
+    }
+
+    message.edit({
+        embeds: [
+            new discordJs.EmbedBuilder({
+                description: '**:musical_note: Now Playing:**',
+                image: { url: 'attachment://music.png' },
+                footer: { text: footerOptionsText }
+            })
+        ]
     })
 }

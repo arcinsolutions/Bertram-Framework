@@ -1,7 +1,7 @@
 import { Category } from "@discordx/utilities";
 import { Discord, Slash } from 'discordx';
 import { Colors, EmbedBuilder, CommandInteraction } from 'discord.js';
-import { core } from './../../../core/index';
+import { core } from './../../../core/index.js';
 
 @Discord()
 @Category('Information')
@@ -37,7 +37,6 @@ class Stats {
                 new EmbedBuilder({
                     description: '',
                     color: Colors.DarkGreen,
-                    footer: { text: `made by arcin with ❤️` },
                     fields: [
                         {
                             name: "Uptime",

@@ -1,9 +1,9 @@
-import { Pagination, PaginationType } from "@discordx/pagination";
+import { Pagination, PaginationItem, PaginationType } from "@discordx/pagination";
 import { Category } from "@discordx/utilities";
-import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder, MessageOptions } from "discord.js";
+import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash } from 'discordx';
-import { core } from "../../../core";
-import { help } from "../help";
+import { help } from './../help/index.js';
+import { core } from './../../../core/index.js';
 
 @Discord()
 @Category("Information")
@@ -15,7 +15,6 @@ class Help {
         const timeoutEmbed = new EmbedBuilder({
             title: 'Embed expired',
             description: `If you want to see all our commands, please use the </help:${interaction.id}> command once again.`,
-            footer: { text: 'made by arcin with ❤️' },
             color: Colors.DarkGold
         })
 
@@ -49,7 +48,6 @@ class Help {
                 embeds: [new EmbedBuilder({
                     title: 'looks like the help menu is not available yet.',
                     description: '**Please try again later.**',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkGold
                 })]
             })
@@ -59,7 +57,7 @@ class Help {
 
 }
 
-async function GeneratePages(): Promise<MessageOptions[]> {
+async function GeneratePages(): Promise<PaginationItem[]> {
     const pages = Array.from(Array((help.lenght)).keys()).map((i) => {
         return { title: core.commands.getAllCategories[i].name, embed: help.getText(i) };
     });
@@ -68,7 +66,7 @@ async function GeneratePages(): Promise<MessageOptions[]> {
             embeds: [new EmbedBuilder({
                 title: 'Category: ' + page.title,
                 description: page.embed,
-                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length + ' | made by arcin with ❤️' },
+                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length },
                 color: Colors.DarkGreen
             })],
         };

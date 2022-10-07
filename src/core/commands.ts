@@ -1,7 +1,8 @@
-import { core } from './index';
-import { BertramCommand } from './typings';
+import { core } from './index.js';
+import { BertramCommand } from './typings/index.js';
 import { DApplicationCommand, MetadataStorage } from 'discordx';
 import { ICategory } from '@discordx/utilities';
+import { ApplicationCommand } from 'discord.js';
 
 const _commands: Array<BertramCommand> = [];
 const _categories: Array<{ name: string }> = [];
@@ -10,8 +11,8 @@ export const commands = {
     get init() {
         return fetchCommands();
     },
-    get(name?: string, id?: string) {
-        return _commands.find(command => command.name === name || command.id === id);
+    get(options: {name?: string, id?: string}) {
+        return _commands.find(command => command.name === options.name || command.id === options.id);
     },
     get getAll() {
         return _commands;
@@ -27,7 +28,7 @@ async function fetchCommands(): Promise<void> {
     if (typeof commands === "undefined")
         throw new TypeError("[Core] - !ERROR! - no Commands found!");
 
-    commands.forEach(element => {
+    commands.forEach((element: ApplicationCommand) => {
         const MetaCommand = MetadataStorage.instance.applicationCommands.find(command => command.name === element.name) as DApplicationCommand & ICategory;
 
         if (typeof MetaCommand !== "undefined")
@@ -36,7 +37,9 @@ async function fetchCommands(): Promise<void> {
 
                 if (_categories.findIndex((category) => category.name === MetaCommand.category) === -1)
                     _categories.push({ name: MetaCommand.category });
-            } else
+            }
+
+            else
                 throw new TypeError(`[Core] - !ERROR! - Command ${element.name} has no category!`);
     });
 }

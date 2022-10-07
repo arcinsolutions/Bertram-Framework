@@ -2,7 +2,7 @@ import { Category } from "@discordx/utilities";
 import { Discord, Slash } from "discordx";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
 import { CommandInteraction } from 'discord.js';
-import { music } from './../api/index';
+import { music } from './../api/index.js';
 
 @Discord()
 @Category("Music")

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+cd ./src/modules && git clone "$1"

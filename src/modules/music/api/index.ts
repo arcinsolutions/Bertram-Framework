@@ -1,15 +1,16 @@
-import { NodeState, Player, Track, Vulkava } from 'vulkava'
-import { OutgoingDiscordPayload } from 'vulkava/lib/@types';
-import { client } from '../../../bertram';
+import { NodeState, Player, Vulkava } from 'vulkava'
+import { NodeOptions, OutgoingDiscordPayload } from 'vulkava/lib/@types';
+import { client } from '../../../bertram.js';
 import * as discordJs from 'discord.js';
-import { musicGuild } from '../database/entities/guild';
+import { musicGuild } from '../database/entities/guild.js';
 import { createCanvas, loadImage } from 'canvas'
 import formatDuration from 'format-duration'
-import { BetterQueue, BetterTrack } from './structures';
-import { setMusicEmbed } from './embed';
-import { core } from './../../../core/index';
+import { BetterQueue, BetterTrack } from './structures.js';
+import { setMusicEmbed } from './embed.js';
+import { core } from './../../../core/index.js';
 import sharp from 'sharp';
 import fetch from 'node-fetch';
+import { config } from './../../../core/config/index.js';
 
 // !IMPORTANT!
 export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
@@ -17,7 +18,7 @@ export let musicGuilds: Map<string, { channelId: string, messageId: string }> = 
 export const getMusicStuffFromDB = async () => {
     const data = await core.database.get.getTreeRepository(musicGuild).find();
 
-    await data.map(guild => {
+    data.map(guild => {
         musicGuilds.set(guild.guildId, {
             channelId: guild.channelId,
             messageId: guild.messageId
@@ -31,30 +32,43 @@ export const getMusicStuffFromDB = async () => {
 }
 // !IMPORTANT!
 
+const nodes: NodeOptions[] = getNodesFromConfig();
 
 export const music = new Vulkava({
-    nodes: [
-        {
-            id: 'arcin1',
-            hostname: '185.234.72.80',
-            port: 2334,
-            password: 'eriCmEqBitDZv3rnH3Wr',
-            region: 'EU'
-        },
-        {
-            id: 'arcin2',
-            hostname: '78.47.184.165',
-            port: 2332,
-            password: 'tiZDJ7dvZJsDDU2x',
-            region: 'EU'
-        }
-    ],
+    nodes: nodes,
     sendWS: (guildId: string, payload: OutgoingDiscordPayload) => {
         client.guilds.cache.get(guildId)?.shard.send(payload);
         // With eris
         // client.guilds.get(guildId)?.shard.sendWS(payload.op, payload.d);
     }
 })
+
+function getNodesFromConfig() {
+    const nodeAmount = config.get('nodes') as number;
+    const nodes: NodeOptions[] = [];
+
+    for (let index = 1; index <= nodeAmount; index++) {
+        const node = config.get(`node:${index}`) as { id: string; hostname: string; port: number; password: string; region: string; };
+        // console.log(node);
+        nodes.push({
+            id: node.id,
+            hostname: node.hostname,
+            port: Number(node.port),
+            password: node.password,
+            region: node.region as "EU" | "USA" | undefined
+        });
+    }
+
+    if (nodes.length == 0) {
+        nodes.push({
+            id: 'temp',
+            hostname: 'localhost',
+            port: 2333,
+            password: 'password',
+        });
+    }
+    return nodes;
+}
 
 export async function createMusicPlayer(interaction: discordJs.CommandInteraction) {
     const player = music.createPlayer({
@@ -65,7 +79,7 @@ export async function createMusicPlayer(interaction: discordJs.CommandInteractio
         queue: new BetterQueue()
     })
 
-    await music.emit("playerCreated", player)
+    music.emit("playerCreated", player)
 
     return player;
 }
@@ -87,8 +101,9 @@ export async function play(message: discordJs.Message) {
     try {
         player = music.players.get(message.guild!.id);
         if (!player)
-            player = await music.createPlayer({
+            player = music.createPlayer({
                 guildId: message.guild!.id,
+                textChannelId: message.channel.id,
                 voiceChannelId: message.member!.voice.channel.id,
                 selfDeaf: true,
                 queue: new BetterQueue()
@@ -104,18 +119,30 @@ export async function play(message: discordJs.Message) {
         })
     }
 
+    await addSongToPlayer(message.content, message.author, player, message.channel as discordJs.TextChannel);
+
+    if (!player.playing) player.play();
+}
+
+export async function addSongToPlayer(searchTerm: string, author: discordJs.User, player: Player, channel?: discordJs.TextChannel) {
     // Search for Music
-    const res = await music.search(message.content, "youtubemusic");
+    const res = await music.search(searchTerm, "youtubemusic");
+
+    if (typeof channel === 'undefined')
+        channel = await client.channels.cache.get(player.textChannelId!) as discordJs.TextChannel | undefined;
+
+    if (typeof channel === 'undefined')
+        return;
 
     switch (res.loadType) {
         case "LOAD_FAILED":
-            return message.channel.send({
+            return channel.send({
                 embeds: [new discordJs.EmbedBuilder({
                     description: `:x: Load failed!\nError: ${res.exception?.message}`
                 })]
             })
         case "NO_MATCHES":
-            return message.channel.send({
+            return channel.send({
                 embeds: [
                     new discordJs.EmbedBuilder({
                         description: `:x: No matches!`
@@ -128,7 +155,7 @@ export async function play(message: discordJs.Message) {
 
     //Connect to the Voice Channel
     if (player.node?.state === NodeState.DISCONNECTED) {
-        await message.channel.send({
+        await channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
                     description: ":x: the node is currently offline, please try again later",
@@ -143,12 +170,12 @@ export async function play(message: discordJs.Message) {
 
     if (res.loadType === 'PLAYLIST_LOADED') {
         for (const track of res.tracks) {
-            track.setRequester(message.author);
+            track.setRequester(author);
             (player.queue as BetterQueue)?.add(track);
             music.emit("songAdded", player, track);
         }
 
-        message.channel.send({
+        channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
                     description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`,
@@ -158,10 +185,10 @@ export async function play(message: discordJs.Message) {
         });
     } else {
         const track = res.tracks[0];
-        track.setRequester(message.author);
+        track.setRequester(author);
 
         (player.queue as BetterQueue)?.add(track);
-        message.channel.send({
+        channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
                     description: `:white_check_mark: Track added to the queue!`,
@@ -171,12 +198,10 @@ export async function play(message: discordJs.Message) {
         });
         music.emit("songAdded", player, track);
     }
-
-    if (!player.playing) player.play();
 }
 
 export async function updateQueueEmbed(player: Player) {
-    const queue = await player.queue as BetterQueue;
+    const queue = player.queue as BetterQueue;
     if (queue.size <= 0)
         return;
 
@@ -255,7 +280,7 @@ export async function createMusicImage(track: BetterTrack) {
         formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
 
     ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
-    ctx.fillText(await formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
+    ctx.fillText(formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
     
     let formattedRequester = String(track.requester.username);
     if (track.requester.username.length >= 45)

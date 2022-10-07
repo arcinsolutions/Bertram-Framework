@@ -1,16 +1,16 @@
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
-import { music } from './index';
-import { BetterQueue } from "./structures";
+import { music } from './index.js';
+import { BetterQueue } from "./structures.js";
 
-export const music_Buttons = (disabled?: boolean, url?: string) => {
+export const music_Buttons = (disabled?: boolean, url?: string, playerPaused?: Boolean) => {
     return new ActionRowBuilder<MessageActionRowComponentBuilder>(
         {
             components: [
                 new ButtonBuilder({
                     customId: "music_playpause",
-                    emoji: "⏯",
+                    emoji: playerPaused ? "▶️" : "⏸",
                     style: ButtonStyle.Secondary,
                     disabled
                 }),
@@ -47,7 +47,7 @@ export const music_Buttons = (disabled?: boolean, url?: string) => {
 class Buttons {
     @ButtonComponent({ id: "music_stop" })
     async stop(interaction: ButtonInteraction) {
-        const player = await music.players.get(interaction.guild!.id);
+        const player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
                 embeds: [new EmbedBuilder({
@@ -67,27 +67,27 @@ class Buttons {
                 ]
             })
 
-        await music.emit("stop", player)
+        music.emit("stop", player)
 
-        interaction.reply({
+        await interaction.deferUpdate();
+        return interaction.channel!.send({
             embeds: [new EmbedBuilder({
                 description: ":white_check_mark: Player Stopped and Destroyed!",
                 color: Colors.DarkGreen
-            })],
-            components: []
+            })]
         })
     }
 
     @ButtonComponent({ id: "music_playpause" })
     @Guard(
-        RateLimit(TIME_UNIT.seconds, 10, {
+        RateLimit(TIME_UNIT.seconds, 5, {
             ephemeral: true,
-            message: "You can only Pause or Play once every ten seconds!",
+            message: "You can only Pause or Play once every **5 seconds!**",
             rateValue: 1
         })
     )
     async playPause(interaction: ButtonInteraction) {
-        const player = await music.players.get(interaction.guild!.id);
+        const player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
                 embeds: [new EmbedBuilder({
@@ -106,10 +106,12 @@ class Buttons {
                 ephemeral: true
             })
 
-        await player.pause(!player.paused);
-        return interaction.reply({
+        player.pause(!player.paused);
+        music.emit('songPause', player);
+        await interaction.deferUpdate();
+        return interaction.channel!.send({
             embeds: [new EmbedBuilder({
-                description: ':white_check_mark: Player' + (player.paused ? " **paused**" : " **unpaused**") + '!',
+                description: !player.paused ? ":arrow_forward: **Resumed** the current Song!" : ":pause_button: **Paused** the current Song!",
                 color: Colors.DarkGreen
             })]
         })
@@ -119,12 +121,12 @@ class Buttons {
     @Guard(
         RateLimit(TIME_UNIT.seconds, 5, {
             ephemeral: true,
-            message: "You can only skip once every five seconds!",
+            message: "You can only skip once every **5 seconds**!",
             rateValue: 1
         })
     )
     async skip(interaction: ButtonInteraction) {
-        let player = await music.players.get(interaction.guild!.id);
+        let player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
                 embeds: [new EmbedBuilder({
@@ -142,56 +144,56 @@ class Buttons {
                 })],
                 ephemeral: true
             })
-
-        if ((typeof player.queue == 'undefined') || (player.queue.size == 0)) {
-            player.skip();
-            interaction.reply({
-                embeds: [new EmbedBuilder({
-                    description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in 5 Seconds if you dont request a Song!",
-                    color: Colors.DarkOrange
-                })]
-            })
-            return setTimeout(() => {
-                player = music.players.get(interaction.guild!.id);
-
-                if (player?.current != null || player?.queue.size! > 0) {
-                    return interaction.deleteReply();
-                }
-                else {
-                    music.emit("stop", player);
-                    interaction.editReply({
-                        embeds: [new EmbedBuilder({
-                            description: ":white_check_mark: Player Stopped and Destroyed!",
-                            color: Colors.DarkGreen
-                        })]
-                    }).then(() => {
-                        player?.destroy();
-                    })
-                    return;
-                }
-            }, 5000);
-        }
-
+        
         player.skip();
 
-        interaction.reply({
+        if ((player.queue !== undefined) && (player.queue.size != 0)) {
+            music.emit("stop", player);
+            await interaction.deferUpdate();
+            return interaction.channel!.send({
+                embeds: [new EmbedBuilder({
+                    description: "Song skiped!",
+                    color: Colors.DarkGreen
+                })]
+            })
+        }
+
+        await interaction.deferUpdate();
+        const tmpMsg = await interaction.channel!.send({
             embeds: [new EmbedBuilder({
-                description: "Song skiped!",
-                color: Colors.DarkGreen
+                description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
+                color: Colors.DarkOrange
             })]
         })
+        await setTimeout(async () => {
+            player = music.players.get(interaction.guild!.id);
+
+            if (player?.current != null || player?.queue.size! > 0) {
+                return tmpMsg.deletable ? tmpMsg.delete() : null;
+            }
+            else {
+                music.emit("stop", player);
+                return interaction.channel!.send({
+                    embeds: [new EmbedBuilder({
+                        description: ":white_check_mark: Player Stopped and Destroyed!",
+                        color: Colors.DarkGreen
+                    })]
+                })
+            }
+        }, 10000);
+        return;
     }
 
     @ButtonComponent({ id: "music_shuffle" })
     @Guard(
-        RateLimit(TIME_UNIT.seconds, 30, {
+        RateLimit(TIME_UNIT.seconds, 10, {
             ephemeral: true,
-            message: "You can only shuffle once every thirty seconds!",
+            message: "You can only shuffle once every **10 seconds!**",
             rateValue: 1
         })
     )
     async shuffle(interaction: ButtonInteraction) {
-        let player = await music.players.get(interaction.guild!.id);
+        let player = music.players.get(interaction.guild!.id);
         if (!player)
             return interaction.reply({
                 embeds: [new EmbedBuilder({
@@ -222,12 +224,13 @@ class Buttons {
         }
         else {
             const queue = player.queue as BetterQueue;
-            await queue.shuffle();
+            queue.shuffle();
             music.emit('queueShuffled', player);
-
-            return await interaction.reply({
+            
+            await interaction.deferUpdate();
+            return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
-                    description: ":white_check_mark: queue Shuffled!",
+                    description: ":white_check_mark: Queue shuffled!",
                     color: Colors.DarkGreen
                 })]
             })
