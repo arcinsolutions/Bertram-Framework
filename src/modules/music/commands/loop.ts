@@ -1,6 +1,7 @@
 import { Category, EnumChoice } from "@discordx/utilities";
 import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
+import { updateMusicEmbedFooter } from "../api/embed.js";
 import { music } from './../api/index.js';
 
 enum mode {
@@ -29,7 +30,6 @@ class Loop {
                 embeds: [new EmbedBuilder({
                     title: 'No active Player',
                     description: 'please use this Command only if a is currently being played.',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -38,11 +38,11 @@ class Loop {
         if (modeOption === mode.None) {
             player.setTrackLoop(false);
             player.setQueueLoop(false);
+            updateMusicEmbedFooter(player);
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     title: 'Loop Disabled',
                     description: 'Loop has been disabled',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkGreen
                 })]
             });
@@ -51,11 +51,11 @@ class Loop {
         if (modeOption === mode.Track) {
             player.setTrackLoop(true);
             player.setQueueLoop(false);
+            updateMusicEmbedFooter(player, {loop: 'Track'});
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     title: 'Loop Enabled',
                     description: 'Loop has been enabled for the current track',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkGreen
                 })]
             });
@@ -64,11 +64,11 @@ class Loop {
         if (modeOption === mode.Queue) {
             player.setTrackLoop(false);
             player.setQueueLoop(true);
+            updateMusicEmbedFooter(player, { loop: 'Queue' });
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     title: 'Loop Enabled',
                     description: 'Loop has been enabled for the current queue',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkGreen
                 })]
             });

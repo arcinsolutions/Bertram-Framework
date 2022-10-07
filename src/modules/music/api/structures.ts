@@ -109,4 +109,5 @@ export class BetterTrack extends Track {
     }
 
     declare public requester: User;
+    declare public autoplay: boolean;
 }

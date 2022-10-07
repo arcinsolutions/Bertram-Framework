@@ -1,6 +1,9 @@
+import { Client } from 'discordx';
 import { Node, Player, Track } from 'vulkava';
-import { setDefaultMusicEmbed, updateMusicEmbed } from '../api/embed.js';
-import { music, updateQueueEmbed } from './../api/index.js';
+import { setDefaultMusicEmbed, updateMusicEmbed, updateMusicEmbedButtons } from '../api/embed.js';
+import { addSongToPlayer, music, updateQueueEmbed } from './../api/index.js';
+import { core } from './../../../core/index.js';
+import { BetterTrack } from './../api/structures.js';
 
 // +++ Node +++
 music.on('nodeConnect', (node: Node) => {
@@ -26,14 +29,20 @@ music.on('trackStart', (player: Player) => {
 
 // +++ TrackPaused +++
 music.addListener('songPause', (player: Player) => {
-    return updateMusicEmbed(player);
+    return updateMusicEmbedButtons(player);
 });
 
 // +++ TrackEnd +++
-// music.on('trackEnd', (player: Player, track: Track, reason: string) => {
-//     return updateMusicEmbed(player);
-//     //Update Player
-// })
+music.on('trackEnd', async (player: Player, track: Track) => {
+    const currTrack = track as BetterTrack; 
+    if (currTrack.autoplay) {
+        await addSongToPlayer(`https://www.youtube.com/watch?v=${track.identifier}&list=RD${track.identifier}`, core.client.user!, player);
+        return updateMusicEmbed(player);
+    }
+
+    // return updateMusicEmbed(player);
+    //Update Player
+})
 // --- TrackEnd ---
 
 
