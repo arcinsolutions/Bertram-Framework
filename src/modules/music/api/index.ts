@@ -56,7 +56,7 @@ function getNodesFromConfig() {
             port: Number(node.port),
             password: node.password,
             region: node.region as "EU" | "USA" | undefined,
-            secure: node.secure
+            secure: Boolean(node.secure)
         });
     }
 
