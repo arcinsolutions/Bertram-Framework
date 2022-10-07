@@ -25,5 +25,6 @@ core.once('addConfig', async () => {
         config.add(`node:${value}:port`, { type: 'number', message: `What is the port for node ${value}?` });
         config.add(`node:${value}:password`, { type: 'password', message: `What is the password for node ${value}?`, mask: '*' });
         config.add(`node:${value}:region`, { type: 'input', message: `What is the region for node ${value}?`, default: 'EU'});
+        config.add(`node:${value}:secure`, { type: 'confirm', message: `Is node ${value} secure?`, default: true });
     }
 })
