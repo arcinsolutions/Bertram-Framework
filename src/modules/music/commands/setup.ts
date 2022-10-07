@@ -36,10 +36,6 @@ class Setup {
             const channel = await createMusicChannel(interaction.guild!);
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
-                    color: Colors.DarkerGrey,
-                    image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
-                }),
-                new EmbedBuilder({
                     color: Colors.Default,
                     fields: [
                         {
@@ -75,10 +71,6 @@ class Setup {
 
         return await interaction.editReply({
             embeds: [new EmbedBuilder({
-                color: Colors.Default,
-                image: { url: "https://cdn.discordapp.com/attachments/934031298119475271/989234099216601118/1.gif" }
-            }),
-            new EmbedBuilder({
                 color: Colors.DarkButNotBlack,
                 fields: [
                     {
