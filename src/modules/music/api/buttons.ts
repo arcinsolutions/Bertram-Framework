@@ -144,43 +144,44 @@ class Buttons {
                 })],
                 ephemeral: true
             })
+        
+        player.skip();
 
-        if ((typeof player.queue == 'undefined') || (player.queue.size == 0)) {
-            player.skip();
+        if ((player.queue !== undefined) && (player.queue.size != 0)) {
+            music.emit("stop", player);
             await interaction.deferUpdate();
-            const tmpMsg = await interaction.channel!.send({
+            return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
-                    description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
-                    color: Colors.DarkOrange
+                    description: "Song skiped!",
+                    color: Colors.DarkGreen
                 })]
             })
-            return setTimeout(async () => {
-                player = music.players.get(interaction.guild!.id);
-
-                if (player?.current != null || player?.queue.size! > 0) {
-                    return tmpMsg.deletable ? tmpMsg.delete() : null;
-                }
-                else {
-                    music.emit("stop", player);
-                    await interaction.deferUpdate();
-                    return interaction.channel!.send({
-                        embeds: [new EmbedBuilder({
-                            description: ":white_check_mark: Player Stopped and Destroyed!",
-                            color: Colors.DarkGreen
-                        })]
-                    })
-                }
-            }, 10000);
         }
 
-        player.skip();
         await interaction.deferUpdate();
-        return interaction.channel!.send({
+        const tmpMsg = await interaction.channel!.send({
             embeds: [new EmbedBuilder({
-                description: "Song skiped!",
-                color: Colors.DarkGreen
+                description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
+                color: Colors.DarkOrange
             })]
         })
+        await setTimeout(async () => {
+            player = music.players.get(interaction.guild!.id);
+
+            if (player?.current != null || player?.queue.size! > 0) {
+                return tmpMsg.deletable ? tmpMsg.delete() : null;
+            }
+            else {
+                music.emit("stop", player);
+                return interaction.channel!.send({
+                    embeds: [new EmbedBuilder({
+                        description: ":white_check_mark: Player Stopped and Destroyed!",
+                        color: Colors.DarkGreen
+                    })]
+                })
+            }
+        }, 10000);
+        return;
     }
 
     @ButtonComponent({ id: "music_shuffle" })

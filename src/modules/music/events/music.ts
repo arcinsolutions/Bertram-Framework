@@ -58,7 +58,6 @@ music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
 
 // +++ QueueEnd +++
 music.on('queueEnd', async (player: Player) => {
-    player.destroy();
     return await setDefaultMusicEmbed(player.guildId);
 })
 // --- QueueEnd ---

@@ -59,7 +59,7 @@ class Events {
             return;
 
         if (message.author.id === core.client.user!.id) {
-            setTimeout(() => message.delete().catch(() => { }), 5000);
+            setTimeout(() => message.delete().catch(() => { }), 10000);
             return;
         }
 
