@@ -25,7 +25,7 @@ enum games {
 }
 
 @Discord()
-@Category("Together")
+@Category("Fun")
 class Together {
     @Slash({ name: "together", description: "Start a together session" })
     private async together(
@@ -43,7 +43,6 @@ class Together {
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     description: '**:x: please use this Command only on a Guild!**',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -53,7 +52,6 @@ class Together {
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     description: ':x: | You need to be in a voice channel to use this command',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -63,7 +61,6 @@ class Together {
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     description: '**:x: | You need to be in a server with a premium tier to play games other than YouTube or Checkers**',
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkRed
                 })]
             });
@@ -74,7 +71,6 @@ class Together {
                 embeds: [new EmbedBuilder({
                     title: `${game} Together`,
                     description: `Click [here](${invite.code}) to join the together session\nor this Link: ${invite.code}`,
-                    footer: { text: 'made by arcin with ❤️' },
                     color: Colors.DarkGreen
                 })]
             });
