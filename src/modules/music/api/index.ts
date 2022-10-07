@@ -48,14 +48,15 @@ function getNodesFromConfig() {
     const nodes: NodeOptions[] = [];
 
     for (let index = 1; index <= nodeAmount; index++) {
-        const node = config.get(`node:${index}`) as { id: string; hostname: string; port: number; password: string; region: string; };
+        const node = config.get(`node:${index}`) as { id: string; hostname: string; port: number; password: string; region: string; secure: boolean };
         // console.log(node);
         nodes.push({
             id: node.id,
             hostname: node.hostname,
             port: Number(node.port),
             password: node.password,
-            region: node.region as "EU" | "USA" | undefined
+            region: node.region as "EU" | "USA" | undefined,
+            secure: node.secure
         });
     }
 
