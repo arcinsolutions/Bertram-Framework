@@ -80,9 +80,9 @@ class Buttons {
 
     @ButtonComponent({ id: "music_playpause" })
     @Guard(
-        RateLimit(TIME_UNIT.seconds, 5, {
+        RateLimit(TIME_UNIT.seconds, 3, {
             ephemeral: true,
-            message: "You can only Pause or Play once every **5 seconds!**",
+            message: "You can only Pause or Play once every **3 seconds!**",
             rateValue: 1
         })
     )
@@ -119,9 +119,9 @@ class Buttons {
 
     @ButtonComponent({ id: "music_skip" })
     @Guard(
-        RateLimit(TIME_UNIT.seconds, 5, {
+        RateLimit(TIME_UNIT.seconds, 3, {
             ephemeral: true,
-            message: "You can only skip once every **5 seconds**!",
+            message: "You can only skip once every **3 seconds**!",
             rateValue: 1
         })
     )
