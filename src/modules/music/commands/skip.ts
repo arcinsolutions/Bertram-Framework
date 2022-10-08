@@ -24,7 +24,6 @@ class Skip {
 
         if ((typeof player.queue !== 'undefined') && (player.queue.size == 0)) {
             player.skip(amount);
-            music.emit("stop", player);
             interaction.reply({
                 embeds: [new EmbedBuilder({
                     description: "Song skiped!",

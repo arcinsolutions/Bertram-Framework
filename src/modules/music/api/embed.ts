@@ -39,7 +39,13 @@ export async function createMusicChannel(guild: discordJs.Guild) {
                     "EmbedLinks",
                     "UseApplicationCommands",
                     "UseEmbeddedActivities"
-                ]
+                ],
+            },
+            {
+                id: guild.roles.botRoleFor(client.user!)?.id!,
+                allow: [
+                    "AttachFiles"
+                ],
             }
         ]
     })
@@ -81,13 +87,14 @@ export async function setDefaultMusicEmbed(guildId: string) {
 
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
+    if (!checkHasMusicChannelPermissions(channel))
+        return channel.send({ embeds: [getBrokenChannelEmbed()] });
 
     if (message == null)
         return await channel.send({
             embeds: [getBrokenChannelEmbed()]
         });
 
-    // const canvas = createCanvas(1920, 1080);
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
@@ -145,6 +152,9 @@ export async function updateMusicEmbed(player: Player) {
             embeds: [getBrokenChannelEmbed()]
         });
 
+    if (!checkHasMusicChannelPermissions(channel))
+        return channel.send({ embeds: [getBrokenChannelEmbed()] });
+
     const queue = player.queue as BetterQueue;
     const current = player.current as BetterTrack;
 
@@ -196,8 +206,7 @@ export async function updateMusicEmbedButtons(player: Player) {
     })
 }
 
-export async function updateMusicEmbedFooter(player: Player, options?: {loop?: "Track" | "Queue", autoplay?: boolean} )
-{
+export async function updateMusicEmbedFooter(player: Player, options?: { loop?: "Track" | "Queue", autoplay?: boolean }) {
     const guildData = musicGuilds.get(player.guildId);
     if (!guildData) return;
 
@@ -214,7 +223,7 @@ export async function updateMusicEmbedFooter(player: Player, options?: {loop?: "
     if (player.current === null) return;
 
     let footerOptionsText = '';
-    
+
     if (typeof options !== 'undefined') {
         if (typeof options.loop !== 'undefined') {
             footerOptionsText += `Loop: ${options.loop}`;
@@ -233,4 +242,15 @@ export async function updateMusicEmbedFooter(player: Player, options?: {loop?: "
             })
         ]
     })
+}
+
+async function checkHasMusicChannelPermissions(channel: discordJs.TextChannel) {
+    const permissions = channel.permissionsFor(client.user!);
+    try {
+        if (permissions == null || !permissions.has(discordJs.PermissionFlagsBits.AttachFiles) ||
+            !permissions.has(discordJs.PermissionFlagsBits.EmbedLinks) || !permissions.has(discordJs.PermissionFlagsBits.ManageMessages))
+            return false
+    } catch (error) {
+        return true
+    }
 }
