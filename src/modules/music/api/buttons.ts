@@ -148,7 +148,6 @@ class Buttons {
         player.skip();
 
         if ((player.queue !== undefined) && (player.queue.size != 0)) {
-            music.emit("stop", player);
             await interaction.deferUpdate();
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
