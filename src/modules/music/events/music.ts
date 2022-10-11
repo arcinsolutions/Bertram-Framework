@@ -87,6 +87,7 @@ music.addListener("songAdded", (player: Player) => {
 })
 
 music.addListener("stop", (player: Player) => {
+    if (player === undefined) return;
     player.destroy();
     return setDefaultMusicEmbed(player.guildId);
 })
