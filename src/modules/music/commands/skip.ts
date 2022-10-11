@@ -35,6 +35,9 @@ class Skip {
         }
 
         player.skip();
+
+        if (player.trackRepeat || player.queueRepeat) return;
+
         interaction.reply({
             embeds: [new EmbedBuilder({
                 description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
@@ -43,9 +46,10 @@ class Skip {
         })
         return setTimeout(() => {
             player = music.players.get(interaction.guild!.id);
+            if (player === undefined) return;
 
             if (player?.current != null || player?.queue.size! > 0) {
-                return interaction.deleteReply();
+                return interaction.deleteReply().catch(() => {});
             }
             else {
                 music.emit("stop", player);

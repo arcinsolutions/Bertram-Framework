@@ -146,9 +146,9 @@ class Buttons {
             })
         
         player.skip();
+        await interaction.deferUpdate();
 
         if ((player.queue !== undefined) && (player.queue.size != 0)) {
-            await interaction.deferUpdate();
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
                     description: "Song skiped!",
@@ -157,7 +157,8 @@ class Buttons {
             })
         }
 
-        await interaction.deferUpdate();
+        if (player.trackRepeat || player.queueRepeat) return;
+
         const tmpMsg = await interaction.channel!.send({
             embeds: [new EmbedBuilder({
                 description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
@@ -166,9 +167,10 @@ class Buttons {
         })
         await setTimeout(async () => {
             player = music.players.get(interaction.guild!.id);
+            if (player === undefined) return;
 
             if (player?.current != null || player?.queue.size! > 0) {
-                return tmpMsg.deletable ? tmpMsg.delete() : null;
+                return tmpMsg.deletable ? tmpMsg.delete().catch(() => {}) : null;
             }
             else {
                 music.emit("stop", player);
