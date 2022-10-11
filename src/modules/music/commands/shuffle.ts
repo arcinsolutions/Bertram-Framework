@@ -12,6 +12,10 @@ import { Category } from "@discordx/utilities";
 class Shuffle {
     @Slash({ name: "shuffle", description: "Shuffle the current queue" })
     async shuffle(interaction: CommandInteraction) {
+        await interaction.deferReply({
+            ephemeral: true
+        })
+
         const player = music.players.get(interaction.guildId!);
 
         if (!player) {
