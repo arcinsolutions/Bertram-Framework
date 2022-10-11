@@ -35,33 +35,6 @@ class Skip {
             })
 
         }
-
-        interaction.reply({
-            embeds: [new EmbedBuilder({
-                description: "No Songs in Queue, Player will get destroyed in 5 Seconds if you dont request a Song!",
-                color: Colors.DarkGreen
-            })]
-        })
-        return setTimeout(() => {
-            player = music.players.get(interaction.guild!.id);
-            if (player === undefined) return;
-
-            if (player?.current != null || player?.queue.size! > 0) {
-                return interaction.deleteReply().catch(() => {});
-            }
-            else {
-                music.emit("stop", player);
-                interaction.channel!.send({
-                    embeds: [new EmbedBuilder({
-                        description: "Player Stopped and Destroyed!",
-                        color: Colors.DarkGreen
-                    })]
-                }).then(() => {
-                    player?.destroy();
-                })
-                return;
-            }
-        }, 5000);
     }
 
 }
