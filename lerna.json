@@ -2,5 +2,7 @@
   "version": "independent",
   "packages": [
     "src/modules/*"
-  ]
+  ],
+  "npmClient": "pnpm",
+  "useWorkspaces": true
 }
