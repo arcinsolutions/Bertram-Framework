@@ -22,9 +22,11 @@ class Skip {
                 })]
             })
 
-        if ((typeof player.queue !== 'undefined') && (player.queue.size == 0)) {
-            player.skip(amount);
-            interaction.reply({
+        if (!amount) amount = 1;
+        player.skip(amount);
+
+        if (player.current && player.queue && player.queue.size > 0 || player.trackRepeat || player.queueRepeat) {
+            return interaction.reply({
                 embeds: [new EmbedBuilder({
                     description: "Song skiped!",
                     color: Colors.DarkGreen
@@ -33,10 +35,6 @@ class Skip {
             })
 
         }
-
-        player.skip();
-
-        if (player.trackRepeat || player.queueRepeat) return;
 
         interaction.reply({
             embeds: [new EmbedBuilder({
@@ -53,7 +51,7 @@ class Skip {
             }
             else {
                 music.emit("stop", player);
-                interaction.editReply({
+                interaction.channel!.send({
                     embeds: [new EmbedBuilder({
                         description: "Player Stopped and Destroyed!",
                         color: Colors.DarkGreen

@@ -148,7 +148,7 @@ class Buttons {
         player.skip();
         await interaction.deferUpdate();
 
-        if ((player.queue !== undefined) && (player.queue.size != 0)) {
+        if (player.current || player.trackRepeat || player.queueRepeat) {
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
                     description: "Song skiped!",
@@ -156,8 +156,6 @@ class Buttons {
                 })]
             })
         }
-
-        if (player.trackRepeat || player.queueRepeat) return;
 
         const tmpMsg = await interaction.channel!.send({
             embeds: [new EmbedBuilder({
