@@ -122,7 +122,8 @@ export async function play(message: discordJs.Message) {
 
     await addSongToPlayer(message.content, message.author, player, message.channel as discordJs.TextChannel);
 
-    if (!player.playing) player.play();
+    if (!player.playing && player.queue.size !== 0)
+        player.play();
 }
 
 export async function addSongToPlayer(searchTerm: string, author: discordJs.User, player: Player, channel?: discordJs.TextChannel) {
