@@ -119,15 +119,11 @@ class Setup {
     @ButtonComponent({ id: "create" })
     async create(interaction: ButtonInteraction) {
         const tempMusic = musicGuilds.get(interaction.guild!.id);
-        interaction.guild?.channels.cache.get(tempMusic!.channelId)?.delete();
+        interaction.guild?.channels.cache.get(tempMusic!.channelId)?.delete().catch(() => {});
 
         const channel = await createMusicChannel(interaction.guild!)
         return interaction.update({
             embeds: [new EmbedBuilder({
-                color: Colors.NotQuiteBlack,
-                image: { url: "https://cdn.discordapp.com/attachments/981163706878689280/989244874756853800/3.gif" }
-            }),
-            new EmbedBuilder({
                 color: Colors.DarkButNotBlack,
                 fields: [
                     {

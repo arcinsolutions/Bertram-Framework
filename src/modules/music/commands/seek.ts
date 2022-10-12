@@ -42,13 +42,14 @@ class Seek {
             });
         };
 
-        const ms = Number(timestamp.split(':')[0]) * 60 * 1000 + Number(timestamp.split(':')[1]) * 1000;
+        let ms = Number(timestamp.split(':')[0]) * 60 * 1000 + Number(timestamp.split(':')[1]) * 1000;
+        if (timestamp === "0") ms = 0;
 
-        if (!ms) {
+        if (isNaN(ms)) {
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     title: 'Not a valid timestamp',
-                    description: 'please enter a timestamp with the following format mm:ss',
+                    description: 'please enter a timestamp with the following format mm:ss or 0',
                     color: Colors.DarkRed
                 })]
             });
