@@ -79,6 +79,7 @@ export async function createMusicPlayer(interaction: discordJs.CommandInteractio
         selfDeaf: true,
         queue: new BetterQueue()
     })
+    player.filters.setVolume(35);
 
     music.emit("playerCreated", player)
 
@@ -101,7 +102,7 @@ export async function play(message: discordJs.Message) {
     let player
     try {
         player = music.players.get(message.guild!.id);
-        if (!player)
+        if (!player) {
             player = music.createPlayer({
                 guildId: message.guild!.id,
                 textChannelId: message.channel.id,
@@ -109,6 +110,8 @@ export async function play(message: discordJs.Message) {
                 selfDeaf: true,
                 queue: new BetterQueue()
             })
+            player.filters.setVolume(35);
+        }
     } catch (error) {
         return await message.channel.send({
             embeds: [
@@ -122,7 +125,8 @@ export async function play(message: discordJs.Message) {
 
     await addSongToPlayer(message.content, message.author, player, message.channel as discordJs.TextChannel);
 
-    if (!player.playing) player.play();
+    if (!player.playing && player.queue.size !== 0)
+        player.play();
 }
 
 export async function addSongToPlayer(searchTerm: string, author: discordJs.User, player: Player, channel?: discordJs.TextChannel) {
