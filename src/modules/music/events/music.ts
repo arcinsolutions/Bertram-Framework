@@ -60,6 +60,7 @@ music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
 // +++ QueueEnd +++
 music.on('queueEnd', async (player: Player) => {
     if (player === undefined) return;
+    await setDefaultMusicEmbed(player.guildId);
 
     const channel = await core.client.channels.cache.get(player.textChannelId!) as discordJs.TextChannel | undefined;
     if (channel === undefined) return player.destroy();
