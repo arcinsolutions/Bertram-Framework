@@ -1,10 +1,11 @@
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
+import { updateQueueEmbed } from "./embed.js";
 import { music } from './index.js';
 import { BetterQueue } from "./structures.js";
 
-export const music_Buttons = (disabled?: boolean, url?: string, playerPaused?: Boolean) => {
+export const music_Buttons = (disabled?: boolean, playerPaused?: Boolean, looped?: "Track" | "Queue") => {
     return new ActionRowBuilder<MessageActionRowComponentBuilder>(
         {
             components: [
@@ -29,6 +30,28 @@ export const music_Buttons = (disabled?: boolean, url?: string, playerPaused?: B
                 new ButtonBuilder({
                     customId: "music_shuffle",
                     emoji: "🔀",
+                    style: ButtonStyle.Secondary,
+                    disabled
+                }),
+                new ButtonBuilder({
+                    customId: "music_loop",
+                    emoji: looped === "Track" ? "🔂" : "",
+                    label: typeof looped === "undefined" ? "Loop disabled" : "",
+                    style: ButtonStyle.Secondary,
+                    disabled
+                }),
+            ]
+        }
+    )
+}
+
+export const music_Buttons2 = (disabled?: boolean, url?: string) => {
+    return new ActionRowBuilder<MessageActionRowComponentBuilder>(
+        {
+            components: [
+                new ButtonBuilder({
+                    customId: "music_favorite",
+                    emoji: '⭐',
                     style: ButtonStyle.Secondary,
                     disabled
                 }),
@@ -224,9 +247,8 @@ class Buttons {
         else {
             const queue = player.queue as BetterQueue;
             queue.shuffle();
-            music.emit('queueShuffled', player);
             
-            await interaction.deferUpdate();
+            await interaction.deferUpdate().then(() => {updateQueueEmbed(player!)});
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
                     description: ":white_check_mark: Queue shuffled!",

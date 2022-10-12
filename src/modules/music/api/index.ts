@@ -6,7 +6,7 @@ import { musicGuild } from '../database/entities/guild.js';
 import { createCanvas, loadImage } from 'canvas'
 import formatDuration from 'format-duration'
 import { BetterQueue, BetterTrack } from './structures.js';
-import { setMusicEmbed } from './embed.js';
+import { setMusicEmbed, updateQueueEmbed } from './embed.js';
 import { core } from './../../../core/index.js';
 import sharp from 'sharp';
 import fetch from 'node-fetch';
@@ -173,9 +173,9 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
         for (const track of res.tracks) {
             track.setRequester(author);
             (player.queue as BetterQueue)?.add(track);
-            music.emit("songAdded", player, track);
         }
 
+        updateQueueEmbed(player);
         channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
@@ -197,37 +197,10 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
                 })
             ]
         });
-        music.emit("songAdded", player, track);
+        updateQueueEmbed(player);
     }
 }
 
-export async function updateQueueEmbed(player: Player) {
-    const queue = player.queue as BetterQueue;
-    if (queue.size <= 0)
-        return;
-
-    const guildData = musicGuilds.get(player.guildId);
-    if (!guildData) return;
-
-    const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
-    if (channel == null) return;
-
-    if (!player.current) return;
-
-    const message = await channel.messages.fetch(guildData.messageId);
-    if (message == null || message.embeds[0] == undefined) return await channel.send({
-        embeds: [new discordJs.EmbedBuilder({
-            description: ':x: the channel is broken, please use **/setup** to fix it',
-            color: discordJs.Colors.DarkButNotBlack
-        })]
-    });
-
-    message.edit({
-        content: queue.generateFormattedQueue == '' ? '**__Queue:__**\nSend a URL or a search term to add a song to the queue.' : queue.generateFormattedQueue,
-        files: [],
-        embeds: [message.embeds[0]]
-    })
-}
 // --- Channel Stuff ---
 
 // --------------------------------------------------

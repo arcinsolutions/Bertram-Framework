@@ -1,7 +1,7 @@
 import { Client } from 'discordx';
 import { Node, Player, Track } from 'vulkava';
-import { setDefaultMusicEmbed, updateMusicEmbed, updateMusicEmbedButtons } from '../api/embed.js';
-import { addSongToPlayer, music, updateQueueEmbed } from './../api/index.js';
+import { setDefaultMusicEmbed, updateMusicEmbed, updateMusicEmbedButtons, updateQueueEmbed } from '../api/embed.js';
+import { addSongToPlayer, music } from './../api/index.js';
 import { core } from './../../../core/index.js';
 import { BetterTrack } from './../api/structures.js';
 
@@ -82,17 +82,9 @@ music.on('warn', (node: Node, msg: string) => {
 
 // +++ Other / Custom Events +++
 
-music.addListener("songAdded", (player: Player) => {
-    return updateQueueEmbed(player);
-})
-
 music.addListener("stop", (player: Player) => {
     player.destroy();
     return setDefaultMusicEmbed(player.guildId);
-})
-
-music.addListener('queueShuffled', (player: Player) => {
-    return updateQueueEmbed(player);
 })
 
 // --- Other / Custom Events ---
