@@ -36,7 +36,7 @@ export const music_Buttons = (disabled?: boolean, url?: string, playerPaused?: B
                     url: url,
                     emoji: "🔗",
                     style: ButtonStyle.Link,
-                    disabled: (typeof url === 'undefined' || disabled) ? true : false
+                    disabled: !!(typeof url === 'undefined' || disabled)
                 })
             ]
         }
@@ -164,13 +164,12 @@ class Buttons {
                 color: Colors.DarkOrange
             })]
         })
-        await setTimeout(async () => {
+        setTimeout(async () => {
             player = music.players.get(interaction.guild!.id);
 
             if (player?.current != null || player?.queue.size! > 0) {
                 return tmpMsg.deletable ? tmpMsg.delete() : null;
-            }
-            else {
+            } else {
                 music.emit("stop", player);
                 return interaction.channel!.send({
                     embeds: [new EmbedBuilder({

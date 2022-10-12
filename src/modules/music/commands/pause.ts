@@ -1,12 +1,12 @@
-import { Category } from "@discordx/utilities";
-import { Colors, CommandInteraction, EmbedBuilder, GuildMember } from "discord.js";
-import { Discord, Slash } from "discordx";
-import { music } from "../api/index.js";
+import {Category} from "@discordx/utilities";
+import {Colors, CommandInteraction, EmbedBuilder, GuildMember} from "discord.js";
+import {Discord, Slash} from "discordx";
+import {music} from "../api/index.js";
 
 @Discord()
 @Category("Music")
 class Pause {
-    @Slash({ name: "pause", description: "Pause or Unpause the current Song" })
+    @Slash({name: "pause", description: "Pause or Unpause the current Song"})
     async pause(interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true

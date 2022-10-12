@@ -34,8 +34,7 @@ export class Client extends ClientTS {
     }
 
     public static async build(options: ClientOptions): Promise<Client> {
-        const client = new Client(options);
-        return client;
+        return new Client(options);
     }
 
     public emit<K extends keyof BertramEvents>(event: K, ...args: BertramEvents[K]): boolean;

@@ -38,7 +38,7 @@ class Shuffle {
                     color: Colors.DarkRed
                 })]
             });
-        };
+        }
 
         queue.shuffle();
         music.emit('queueShuffled', player);

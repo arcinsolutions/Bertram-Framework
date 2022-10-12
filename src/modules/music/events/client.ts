@@ -1,20 +1,20 @@
-import { TextChannel } from "discord.js";
-import { getMusicStuffFromDB, music, musicGuilds, play } from "../api/index.js";
-import { registerFont } from 'canvas';
-import { core } from "../../../core/index.js";
-import { Discord, On, Once } from 'discordx';
-import type { ArgsOf } from "discordx";
-import { setTimeout } from "timers";
-import { IncomingDiscordPayload } from "vulkava/lib/@types/index.js";
+import {TextChannel} from "discord.js";
+import {getMusicStuffFromDB, music, musicGuilds, play} from "../api/index.js";
+import {registerFont} from 'canvas';
+import {core} from "../../../core/index.js";
+import {Discord, On, Once} from 'discordx';
+import type {ArgsOf} from "discordx";
+import {setTimeout} from "timers";
+import {IncomingDiscordPayload} from "vulkava/lib/@types/index.js";
 
 @Discord()
 class Events {
-    @Once({ event: "ready" })
+    @Once({event: "ready"})
     private async onReady() {
         await getMusicStuffFromDB();
     }
 
-    @On({ event: "voiceStateUpdate" })
+    @On({event: "voiceStateUpdate"})
     private async onVoiceStateUpdate([newState, oldState]: ArgsOf<'voiceStateUpdate'>) {
         if (typeof newState === 'undefined' || typeof oldState === 'undefined' || typeof newState.client === 'undefined' || typeof oldState.client === 'undefined')
             return;
@@ -47,7 +47,7 @@ class Events {
         }
     }
 
-    @On({ event: "messageCreate" })
+    @On({event: "messageCreate"})
     private onMessageCreate([message]: ArgsOf<'messageCreate'>) {
         if ((message.content === '') && (message.author.username !== core.client.user?.username))
             return;
@@ -59,7 +59,8 @@ class Events {
             return;
 
         if (message.author.id === core.client.user!.id) {
-            setTimeout(() => message.delete().catch(() => { }), 10000);
+            setTimeout(() => message.delete().catch(() => {
+            }), 10000);
             return;
         }
 
@@ -76,8 +77,8 @@ core.client.once("afterLogin", async () => {
 
     music.start(core.client.user.id);
 
-    registerFont("./src/modules/music/assets/Outfit-Regular.ttf", { family: "Outfit" });
-    registerFont("./src/modules/music/assets/Outfit-Bold.ttf", { family: "OutfitBold" });
+    registerFont("./src/modules/music/assets/Outfit-Regular.ttf", {family: "Outfit"});
+    registerFont("./src/modules/music/assets/Outfit-Bold.ttf", {family: "OutfitBold"});
 })
 
 // --- On Start ---
