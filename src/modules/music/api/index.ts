@@ -243,10 +243,14 @@ export async function createMusicImage(track: BetterTrack) {
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
-    const fetchedImg = await fetch(track.thumbnail!).then(res => res.arrayBuffer());
-    const Uint8Buff = new Uint8Array(fetchedImg);
-
-    const thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+    var thumbnail;
+    if (track.thumbnail == null) {
+        thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+    } else {
+        const fetchedImg = await fetch(track.thumbnail!).then(res => res.arrayBuffer());
+        const Uint8Buff = new Uint8Array(fetchedImg);
+        thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+    }
 
     await loadImage(thumbnail).then(image => {
         const ratio = image.width / image.height
@@ -285,7 +289,7 @@ export async function createMusicImage(track: BetterTrack) {
         formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
 
     ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
-    ctx.fillText(formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
+    ctx.fillText(track.isStream ? "LIVE" : formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
     
     let formattedRequester = String(track.requester.username);
     if (track.requester.username.length >= 45)
