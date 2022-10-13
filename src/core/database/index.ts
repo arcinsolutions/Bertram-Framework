@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { goldenConfig } from "../../bertram.js";
 import { Guild as DBGuild } from './entities/guild.js';
 import { Client } from './../index.js';
+import { Member as DBMember } from "./entities/member.js";
 
 let DBsource: DataSource;
 let isDBConnected: Boolean = false;
@@ -15,6 +16,7 @@ export const database = {
         return DBsource;
     },
     guild: async (ID: string) => await getGuild(ID),
+    member: async (ID: string) => await getMember(ID),
     addGuild(guild: JSGuild) {_addGuild(guild)},
     get connected() { return isDBConnected }
 }
@@ -58,6 +60,10 @@ async function initCore(client: Client) {
  */
 async function getGuild(ID: string) {
     return await (DBsource.getRepository(DBGuild).findOneBy({ guildId: ID }) as Promise<DBGuild>);
+}
+
+async function getMember(ID: string) {
+    return await (DBsource.getRepository(DBMember).findOneBy({ memberId: ID }) as Promise<DBMember>);
 }
 
 async function _addGuild(guild: JSGuild | null) {

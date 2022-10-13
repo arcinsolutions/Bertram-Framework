@@ -1,10 +1,11 @@
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
+import { updateQueueEmbed } from "./embed.js";
 import { music } from './index.js';
 import { BetterQueue } from "./structures.js";
 
-export const music_Buttons = (disabled?: boolean, url?: string, playerPaused?: Boolean) => {
+export const music_Buttons = (disabled?: boolean, playerPaused?: Boolean, looped?: "Track" | "Queue") => {
     return new ActionRowBuilder<MessageActionRowComponentBuilder>(
         {
             components: [
@@ -29,6 +30,28 @@ export const music_Buttons = (disabled?: boolean, url?: string, playerPaused?: B
                 new ButtonBuilder({
                     customId: "music_shuffle",
                     emoji: "🔀",
+                    style: ButtonStyle.Secondary,
+                    disabled
+                }),
+                new ButtonBuilder({
+                    customId: "music_loop",
+                    emoji: looped === "Track" ? "🔂" : "",
+                    label: typeof looped === "undefined" ? "Loop disabled" : "",
+                    style: ButtonStyle.Secondary,
+                    disabled
+                }),
+            ]
+        }
+    )
+}
+
+export const music_Buttons2 = (disabled?: boolean, url?: string) => {
+    return new ActionRowBuilder<MessageActionRowComponentBuilder>(
+        {
+            components: [
+                new ButtonBuilder({
+                    customId: "music_favorite",
+                    emoji: '⭐',
                     style: ButtonStyle.Secondary,
                     disabled
                 }),
@@ -146,9 +169,9 @@ class Buttons {
             })
         
         player.skip();
+        await interaction.deferUpdate();
 
-        if ((player.queue !== undefined) && (player.queue.size != 0)) {
-            await interaction.deferUpdate();
+        if (player.current || player.trackRepeat || player.queueRepeat) {
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
                     description: "Song skiped!",
@@ -156,30 +179,6 @@ class Buttons {
                 })]
             })
         }
-
-        await interaction.deferUpdate();
-        const tmpMsg = await interaction.channel!.send({
-            embeds: [new EmbedBuilder({
-                description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
-                color: Colors.DarkOrange
-            })]
-        })
-        setTimeout(async () => {
-            player = music.players.get(interaction.guild!.id);
-
-            if (player?.current != null || player?.queue.size! > 0) {
-                return tmpMsg.deletable ? tmpMsg.delete() : null;
-            } else {
-                music.emit("stop", player);
-                return interaction.channel!.send({
-                    embeds: [new EmbedBuilder({
-                        description: ":white_check_mark: Player Stopped and Destroyed!",
-                        color: Colors.DarkGreen
-                    })]
-                })
-            }
-        }, 10000);
-        return;
     }
 
     @ButtonComponent({ id: "music_shuffle" })
@@ -223,9 +222,8 @@ class Buttons {
         else {
             const queue = player.queue as BetterQueue;
             queue.shuffle();
-            music.emit('queueShuffled', player);
             
-            await interaction.deferUpdate();
+            await interaction.deferUpdate().then(() => {updateQueueEmbed(player!)});
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
                     description: ":white_check_mark: Queue shuffled!",

@@ -5,6 +5,7 @@ import { EmbedBuilder } from 'discord.js';
 import { Colors } from 'discord.js';
 import { BetterQueue } from './../api/structures.js';
 import { Category } from "@discordx/utilities";
+import { updateQueueEmbed } from "../api/embed.js";
 
 
 @Discord()
@@ -41,7 +42,7 @@ class Shuffle {
         }
 
         queue.shuffle();
-        music.emit('queueShuffled', player);
+        updateQueueEmbed(player);
 
         return interaction.editReply({
             embeds: [new EmbedBuilder({

@@ -5,7 +5,7 @@ import { Player } from 'vulkava';
 import { BetterQueue, BetterTrack } from './structures.js';
 import { musicGuild } from './../database/entities/guild.js';
 import * as discordJs from 'discord.js';
-import { music_Buttons } from "./buttons.js";
+import { music_Buttons, music_Buttons2 } from "./buttons.js";
 import fetch from 'node-fetch';
 import sharp from 'sharp';
 import { commands } from './../../../core/commands.js';
@@ -87,13 +87,11 @@ export async function setDefaultMusicEmbed(guildId: string) {
 
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
-    if (!await checkHasMusicChannelPermissions(channel))
-        return channel.send({ embeds: [getBrokenChannelEmbed()] });
+    if (!checkHasMusicChannelPermissions(channel))
+        return await gotBrokenChannelEmbed(channel)
 
     if (message == null)
-        return await channel.send({
-            embeds: [getBrokenChannelEmbed()]
-        });
+        return await gotBrokenChannelEmbed(channel)
 
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
@@ -123,17 +121,31 @@ export async function setDefaultMusicEmbed(guildId: string) {
                 color: discordJs.Colors.DarkButNotBlack
             })
         ],
-        components: [music_Buttons(true, "https://arcin.solutions", false)]
+        components: [music_Buttons(true, false), music_Buttons2(true, 'https://arcin.solutions')]
     })
 }
 
 
-function getBrokenChannelEmbed(): discordJs.APIEmbed | discordJs.JSONEncodable<discordJs.APIEmbed> {
-    return new discordJs.EmbedBuilder({
-        title: 'Something went wrong',
-        description: `Looks like this channel is broken.\nPlease use the ${(commands.get({ name: 'setup' }) === undefined) ? '/setup' : `</setup:${commands.get({ name: 'setup' })!.id}>`} command.`,
-        color: discordJs.Colors.DarkRed,
-    });
+async function gotBrokenChannelEmbed(channel: discordJs.TextChannel) {
+    if (musicGuilds.delete(channel.guild.id)) {
+        await musicGuild.createQueryBuilder()
+            .update({
+                channelId: '',
+                messageId: ''
+            })
+            .where("guildId = :guildId", { guildId: channel.guild.id })
+            .execute();
+    }
+
+    return await channel.send({
+        embeds: [
+            new discordJs.EmbedBuilder({
+                title: 'Something went wrong',
+                description: `Looks like this channel is broken.\nPlease use the ${(commands.get({ name: 'setup' }) === undefined) ? '/setup' : `</setup:${commands.get({ name: 'setup' })!.id}>`} command and remove this channel afterwards.`,
+                color: discordJs.Colors.DarkRed,
+            })
+        ]
+    })
 }
 
 export async function updateMusicEmbed(player: Player) {
@@ -147,13 +159,8 @@ export async function updateMusicEmbed(player: Player) {
 
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
-    if (message == null)
-        return channel.send({
-            embeds: [getBrokenChannelEmbed()]
-        });
-
-    if (!await checkHasMusicChannelPermissions(channel))
-        return channel.send({ embeds: [getBrokenChannelEmbed()] });
+    if (message == null || !checkHasMusicChannelPermissions(channel))
+        return await gotBrokenChannelEmbed(channel)
 
     const queue = player.queue as BetterQueue;
     const current = player.current as BetterTrack;
@@ -172,7 +179,7 @@ export async function updateMusicEmbed(player: Player) {
                 image: { url: 'attachment://music.png' },
             })
         ],
-        components: [music_Buttons(false, current.uri, player.paused)]
+        components: [music_Buttons(false, player.paused), music_Buttons2(false, current.uri)]
     })
 }
 
@@ -195,14 +202,12 @@ export async function updateMusicEmbedButtons(player: Player) {
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
     if (message == null)
-        return await channel.send({
-            embeds: [getBrokenChannelEmbed()]
-        });
+        return await gotBrokenChannelEmbed(channel)
 
     if (player.current === null) return;
 
     message.edit({
-        components: [music_Buttons(false, player.current.uri, player.paused)]
+        components: [music_Buttons(false, player.paused), music_Buttons2(false, player.current.uri)]
     })
 }
 
@@ -216,9 +221,7 @@ export async function updateMusicEmbedFooter(player: Player, options?: { loop?: 
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
     if (message == null)
-        return await channel.send({
-            embeds: [getBrokenChannelEmbed()]
-        });
+        return await gotBrokenChannelEmbed(channel)
 
     if (player.current === null) return;
 
@@ -241,6 +244,36 @@ export async function updateMusicEmbedFooter(player: Player, options?: { loop?: 
                 footer: { text: footerOptionsText }
             })
         ]
+    })
+}
+
+export async function updateQueueEmbed(player: Player) {
+    const queue = player.queue as BetterQueue;
+    if (queue.size <= 0)
+        return;
+
+    const guildData = musicGuilds.get(player.guildId);
+    if (!guildData) return;
+
+    const channel = client.channels.cache.get(guildData.channelId) as discordJs.TextChannel | undefined;
+    if (channel == null) return;
+
+    if (!player.current) return;
+
+    let message;
+
+    try {
+        message = await channel.messages.fetch(guildData.messageId);
+    } catch (error) {
+        return await gotBrokenChannelEmbed(channel)
+    }
+
+    if (message.embeds[0] == undefined) return await gotBrokenChannelEmbed(channel)
+
+    message.edit({
+        content: queue.generateFormattedQueue == '' ? '**__Queue:__**\nSend a URL or a search term to add a song to the queue.' : queue.generateFormattedQueue,
+        files: [],
+        embeds: [message.embeds[0]]
     })
 }
 
