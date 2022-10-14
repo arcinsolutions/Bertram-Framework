@@ -249,7 +249,12 @@ export async function createMusicImage(track: BetterTrack) {
     } else {
         const fetchedImg = await fetch(track.thumbnail!).then(res => res.arrayBuffer());
         const Uint8Buff = new Uint8Array(fetchedImg);
-        thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+
+        try {
+            thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+        } catch (e) {
+            thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+        }
     }
 
     await loadImage(thumbnail).then(image => {
