@@ -71,7 +71,7 @@ export async function createMusicChannel(guild: discordJs.Guild) {
         messageId: message.id
     });
 
-    setMusicEmbed(guild.id)
+    await setMusicEmbed(guild.id)
 
     return channel;
 }
@@ -87,7 +87,7 @@ export async function setDefaultMusicEmbed(guildId: string) {
 
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
-    if (!checkHasMusicChannelPermissions(channel))
+    if (!await checkHasMusicChannelPermissions(channel))
         return await gotBrokenChannelEmbed(channel)
 
     if (message == null)
@@ -133,7 +133,7 @@ async function gotBrokenChannelEmbed(channel: discordJs.TextChannel) {
                 channelId: '',
                 messageId: ''
             })
-            .where("guildId = :guildId", { guildId: channel.guild.id })
+            .where(`guildId = :guildId`, { guildId: channel.guild.id })
             .execute();
     }
 
@@ -159,7 +159,7 @@ export async function updateMusicEmbed(player: Player) {
 
     const message: discordJs.Message<true> | null = await getMusicEmbedMessage(channel, guildData);
 
-    if (message == null || !checkHasMusicChannelPermissions(channel))
+    if (message == null || !await checkHasMusicChannelPermissions(channel))
         return await gotBrokenChannelEmbed(channel)
 
     const queue = player.queue as BetterQueue;

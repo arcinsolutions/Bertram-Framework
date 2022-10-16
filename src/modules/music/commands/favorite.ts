@@ -1,7 +1,7 @@
 import { Category } from "@discordx/utilities";
 import { Discord, Slash } from "discordx";
 import { CommandInteraction, EmbedBuilder, Colors } from 'discord.js';
-import { core } from "src/core/index.js";
+import { core } from "./../../../core/index.js";
 
 @Discord()
 @Category("Music")

@@ -1,5 +1,14 @@
 import { RateLimit, TIME_UNIT } from "@discordx/utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, MessageActionRowComponentBuilder } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    Colors,
+    EmbedBuilder,
+    GuildMember,
+    MessageActionRowComponentBuilder
+} from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
 import { updateQueueEmbed } from "./embed.js";
 import { music } from './index.js';
@@ -59,7 +68,7 @@ export const music_Buttons2 = (disabled?: boolean, url?: string) => {
                     url: url,
                     emoji: "🔗",
                     style: ButtonStyle.Link,
-                    disabled: (typeof url === 'undefined' || disabled) ? true : false
+                    disabled: !!(typeof url === 'undefined' || disabled)
                 })
             ]
         }
@@ -167,7 +176,7 @@ class Buttons {
                 })],
                 ephemeral: true
             })
-        
+
         player.skip();
         await interaction.deferUpdate();
 
@@ -218,12 +227,13 @@ class Buttons {
                 })],
                 ephemeral: true
             })
-        }
-        else {
+        } else {
             const queue = player.queue as BetterQueue;
             queue.shuffle();
-            
-            await interaction.deferUpdate().then(() => {updateQueueEmbed(player!)});
+
+            await interaction.deferUpdate().then(() => {
+                updateQueueEmbed(player!)
+            });
             return interaction.channel!.send({
                 embeds: [new EmbedBuilder({
                     description: ":white_check_mark: Queue shuffled!",

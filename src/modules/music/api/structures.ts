@@ -74,7 +74,7 @@ export class BetterQueue extends DefaultQueue {
         let contentLength = 0;
         const formattedQueueArray = [];
 
-        for (var i = 0; i <= this.tracks.length; i++) {
+        for (let i = 0; i <= this.tracks.length; i++) {
             const track = this.tracks[i] as BetterUnresolvedTrack;
 
             if (track === undefined) continue;

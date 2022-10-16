@@ -52,7 +52,7 @@ class Help {
                 })]
             })
             console.warn('\x1b[31m%s\x1b[0m',error);
-        };
+        }
     }
 
 }

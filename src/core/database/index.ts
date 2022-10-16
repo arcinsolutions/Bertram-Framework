@@ -23,7 +23,7 @@ export const database = {
 
 
 async function initCore(client: Client) {
-    if (!goldenConfig || (goldenConfig.DB_Host || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == (null || "" || undefined))
+    if (!goldenConfig || (goldenConfig.DB_Host || goldenConfig.DB_Port || goldenConfig.DB_Username || goldenConfig.DB_Password || goldenConfig.DB_Database) == ("" || undefined))
         throw new TypeError('Fatal: DB Setup unreadable\nDB Setup instructions at https://github.com/arcinsolutions/Bertram');
 
     DBsource = new DataSource({

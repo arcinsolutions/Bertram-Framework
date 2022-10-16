@@ -11,11 +11,7 @@ export const help = {
             return HelpText.find(x => x.category == category)!.text;
         }
 
-        if (typeof category == "number") {
-            return HelpText[category].text;
-        }
-
-        return "";
+        return HelpText[category].text;
     },
     get lenght() {
         return core.commands.getAllCategories.length;

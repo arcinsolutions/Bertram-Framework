@@ -11,7 +11,7 @@ const env = config({
 });
 export const goldenConfig = env.parsed;
 
-if (typeof goldenConfig === 'undefined' || goldenConfig.DISCORD_TOKEN == (null || "")) {
+if (typeof goldenConfig === 'undefined' || goldenConfig.DISCORD_TOKEN == "") {
     throw new TypeError('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/arcinsolutions/Bertram');
 }
 
@@ -38,12 +38,12 @@ client.on("ready", async () => {
     await client.guilds.fetch();
 
     if (goldenConfig?.RELEASE == "true") {
-        client.initGlobalApplicationCommands({
+        await client.initGlobalApplicationCommands({
             log: true
         });
     }
     else
-        client.initApplicationCommands();
+        await client.initApplicationCommands();
 
     // uncomment this line to clear all guild commands,
     // useful when moving to global commands from guild commands

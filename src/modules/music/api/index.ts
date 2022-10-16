@@ -179,7 +179,7 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
             (player.queue as BetterQueue)?.add(track);
         }
 
-        updateQueueEmbed(player);
+        await updateQueueEmbed(player);
         channel.send({
             embeds: [
                 new discordJs.EmbedBuilder({
@@ -201,7 +201,7 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
                 })
             ]
         });
-        updateQueueEmbed(player);
+        await updateQueueEmbed(player);
     }
 }
 
@@ -223,7 +223,7 @@ export async function createMusicImage(track: BetterTrack) {
 
     await loadImage(thumbnail).then(image => {
         const ratio = image.width / image.height
-        var width = ((image.width / 100) * (canvas.width / 25))
+        let width = ((image.width / 100) * (canvas.width / 25));
         const height = ((image.height / 100) * (canvas.height / 25))
 
         if ((width / height) != ratio)
@@ -236,7 +236,7 @@ export async function createMusicImage(track: BetterTrack) {
         })
     })
 
-    var a = [track.author, ' - ', ' (Official Music Video)', ' (Official Video)'];
+    const a = [track.author, ' - ', ' (Official Music Video)', ' (Official Video)'];
 
     ctx.font = '90px OutfitBold';
     ctx.fillStyle = '#ffffff';
