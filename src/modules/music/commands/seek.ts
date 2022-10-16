@@ -40,7 +40,7 @@ class Seek {
                     color: Colors.DarkRed
                 })]
             });
-        };
+        }
 
         let ms = Number(timestamp.split(':')[0]) * 60 * 1000 + Number(timestamp.split(':')[1]) * 1000;
         if (timestamp === "0") ms = 0;
@@ -53,7 +53,7 @@ class Seek {
                     color: Colors.DarkRed
                 })]
             });
-        };
+        }
 
         if (ms > track.duration) {
             return interaction.editReply({
@@ -63,9 +63,9 @@ class Seek {
                     color: Colors.DarkRed
                 })]
             });
-        };
+        }
 
-        player.seek(ms);
+        await player.seek(ms);
 
         return interaction.editReply({
             embeds: [new EmbedBuilder({

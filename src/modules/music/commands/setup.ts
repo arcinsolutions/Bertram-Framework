@@ -1,5 +1,5 @@
 import { Category, PermissionGuard } from "@discordx/utilities";
-import { CommandInteraction, ButtonInteraction, ButtonStyle, EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, MessageActionRowComponentBuilder, PermissionFlagsBits } from "discord.js";
+import { CommandInteraction, ButtonInteraction, ButtonStyle, EmbedBuilder, Colors, ActionRowBuilder, ButtonBuilder, MessageActionRowComponentBuilder } from "discord.js";
 import { Discord, Slash, ButtonComponent, Guard } from "discordx";
 import { core } from "../../../core/index.js";
 import { musicGuilds } from "../api/index.js";

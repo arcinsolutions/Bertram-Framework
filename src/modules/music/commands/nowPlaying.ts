@@ -1,13 +1,20 @@
-import { Category } from "@discordx/utilities";
-import { Discord, Slash } from "discordx";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
-import { music } from './../api/index.js';
+import {Category} from "@discordx/utilities";
+import {Discord, Slash} from "discordx";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Colors,
+    EmbedBuilder,
+    MessageActionRowComponentBuilder
+} from 'discord.js';
+import {CommandInteraction} from 'discord.js';
+import {music} from './../api/index.js';
 
 @Discord()
 @Category("Music")
 class NowPlaying {
-    @Slash({ name: "nowplaying", description: "See what is currently being played." })
+    @Slash({name: "nowplaying", description: "See what is currently being played."})
     async play(interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true,
@@ -38,25 +45,25 @@ class NowPlaying {
                             customId: "music_stop",
                             style: ButtonStyle.Secondary,
                             emoji: "<:stop:930538012805333122>",
-                            disabled: (player ? false : true)
+                            disabled: (!player)
                         }),
                         new ButtonBuilder({
                             customId: "music_playpause",
                             emoji: "<:playpause:930535466908934144>",
                             style: ButtonStyle.Secondary,
-                            disabled: (player ? false : true)
+                            disabled: (!player)
                         }),
                         new ButtonBuilder({
                             customId: "music_skip",
                             emoji: "<:skip:930535779887874110>",
                             style: ButtonStyle.Secondary,
-                            disabled: (player ? false : true)
+                            disabled: (!player)
                         }),
                         new ButtonBuilder({
                             customId: "music_shuffle",
                             emoji: "<:shuffle:930534110185783386>",
                             style: ButtonStyle.Secondary,
-                            disabled: (player ? false : true)
+                            disabled: (!player)
                         })
                     ]
                 })

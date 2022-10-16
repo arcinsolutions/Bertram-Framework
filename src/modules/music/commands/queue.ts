@@ -1,15 +1,15 @@
-import { Category } from "@discordx/utilities";
-import { ButtonStyle, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
-import { Discord, Slash } from "discordx";
-import { music } from "../api/index.js";
-import { BetterQueue } from './../api/structures.js';
-import { Pagination, PaginationItem } from '@discordx/pagination';
-import { PaginationType } from '@discordx/pagination';
+import {Category} from "@discordx/utilities";
+import {ButtonStyle, Colors, CommandInteraction, EmbedBuilder} from "discord.js";
+import {Discord, Slash} from "discordx";
+import {music} from "../api/index.js";
+import {BetterQueue} from './../api/structures.js';
+import {Pagination, PaginationItem} from '@discordx/pagination';
+import {PaginationType} from '@discordx/pagination';
 
 @Discord()
 @Category("Music")
 class Queue {
-    @Slash({ name: "queue", description: "Show the current queue" })
+    @Slash({name: "queue", description: "Show the current queue"})
     async queue(interaction: CommandInteraction) {
         await interaction.deferReply({
             ephemeral: true
@@ -46,7 +46,7 @@ class Queue {
         }
 
         const pagination = new Pagination(interaction, await GeneratePages(queue), {
-            onTimeout: () => interaction.editReply({ embeds: [timeoutEmbed] }),
+            onTimeout: () => interaction.editReply({embeds: [timeoutEmbed]}),
             start: {
                 label: "⏮️",
                 style: ButtonStyle.Secondary,
@@ -84,7 +84,7 @@ async function GeneratePages(queue: BetterQueue): Promise<PaginationItem[]> {
             embeds: [new EmbedBuilder({
                 title: 'Queue',
                 description: page,
-                footer: { text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length },
+                footer: {text: "Page " + (pages.indexOf(page) + 1) + " of " + pages.length},
                 color: Colors.DarkGreen
             })],
         };

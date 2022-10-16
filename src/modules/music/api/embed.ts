@@ -18,9 +18,9 @@ export async function setMusicEmbed(guildID: string) {
     const player = music.players.get(guildID)
 
     if (player == undefined)
-        setDefaultMusicEmbed(guildID)
+        await setDefaultMusicEmbed(guildID)
     else
-        updateMusicEmbed(player)
+        await updateMusicEmbed(player)
 }
 
 

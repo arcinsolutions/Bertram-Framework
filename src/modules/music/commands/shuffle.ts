@@ -39,7 +39,7 @@ class Shuffle {
                     color: Colors.DarkRed
                 })]
             });
-        };
+        }
 
         queue.shuffle();
         updateQueueEmbed(player);

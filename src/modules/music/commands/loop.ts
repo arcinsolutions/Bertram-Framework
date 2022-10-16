@@ -1,8 +1,8 @@
-import { Category, EnumChoice } from "@discordx/utilities";
-import { ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder } from "discord.js";
-import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
-import { updateMusicEmbedFooter } from "../api/embed.js";
-import { music } from './../api/index.js';
+import {Category, EnumChoice} from "@discordx/utilities";
+import {ApplicationCommandOptionType, Colors, CommandInteraction, EmbedBuilder} from "discord.js";
+import {Discord, Slash, SlashChoice, SlashOption} from "discordx";
+import {updateMusicEmbedFooter} from "../api/embed.js";
+import {music} from './../api/index.js';
 
 enum mode {
     None = 'none',
@@ -13,12 +13,16 @@ enum mode {
 @Discord()
 @Category("Music")
 class Loop {
-    @Slash({ name: "loop", description: "Loop the current song or queue" })
+    @Slash({name: "loop", description: "Loop the current song or queue"})
     private async loop(
         @SlashChoice(...EnumChoice(mode))
-        @SlashOption({ name: "mode", description: "The mode to loop", required: true, type: ApplicationCommandOptionType.String })
-        modeOption : string,
-
+        @SlashOption({
+            name: "mode",
+            description: "The mode to loop",
+            required: true,
+            type: ApplicationCommandOptionType.String
+        })
+            modeOption: string,
         interaction: CommandInteraction) {
         const player = music.players.get(interaction.guildId!);
         await interaction.deferReply({
@@ -64,7 +68,7 @@ class Loop {
         if (modeOption === mode.Queue) {
             player.setTrackLoop(false);
             player.setQueueLoop(true);
-            updateMusicEmbedFooter(player, { loop: 'Queue' });
+            updateMusicEmbedFooter(player, {loop: 'Queue'});
             return interaction.editReply({
                 embeds: [new EmbedBuilder({
                     title: 'Loop Enabled',
