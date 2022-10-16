@@ -98,8 +98,13 @@ export async function setDefaultMusicEmbed(guildId: string) {
 
     const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => { return res.arrayBuffer() });
     const Uint8Buff = new Uint8Array(ImgBuff);
+    var thumbnail;
 
-    const thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
+    try {
+        thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
+    } catch (e) {
+        thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+    }
 
     await loadImage(thumbnail).then(img => {
         ctx.drawImage(img, 25, 25, canvas.width - 50, canvas.height - 50);

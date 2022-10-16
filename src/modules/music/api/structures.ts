@@ -78,7 +78,7 @@ export class BetterQueue extends DefaultQueue {
             const track = this.tracks[i] as BetterUnresolvedTrack;
 
             if (track === undefined) continue;
-            const formattedTrack = `\n**${i + 1}.** ${track.title} - ${track.author} [${formatDuration(track.duration, { leading: true })}]`;
+            const formattedTrack = `\n**${i + 1}.** ${track.title} - ${track.author} [${track.isStream ? "LIVE" : formatDuration(track.duration, { leading: true })}]`;
             contentLength += formattedTrack.length;
 
             if (contentLength > 1500) {
