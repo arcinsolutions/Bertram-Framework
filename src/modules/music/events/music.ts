@@ -67,7 +67,7 @@ music.on('queueEnd', async (player: Player) => {
 
     const tmpMsg = await channel!.send({
         embeds: [new discordJs.EmbedBuilder({
-            description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
+            description: ":yellow_circle: **That was the last song!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
             color: discordJs.Colors.DarkOrange
         })]
     })
