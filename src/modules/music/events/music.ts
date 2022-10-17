@@ -60,13 +60,14 @@ music.on('trackStuck', (player: Player, track: Track, stuckMs: number) => {
 // +++ QueueEnd +++
 music.on('queueEnd', async (player: Player) => {
     if (player === undefined) return;
+    await setDefaultMusicEmbed(player.guildId);
 
     const channel = await core.client.channels.cache.get(player.textChannelId!) as discordJs.TextChannel | undefined;
     if (channel === undefined) return player.destroy();
 
     const tmpMsg = await channel!.send({
         embeds: [new discordJs.EmbedBuilder({
-            description: ":yellow_circle: **last Song skipped!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
+            description: ":yellow_circle: **That was the last song!**\nPlayer will get destroyed in **__10 Seconds__** if you dont request a Song!",
             color: discordJs.Colors.DarkOrange
         })]
     })
