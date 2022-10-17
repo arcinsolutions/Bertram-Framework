@@ -98,12 +98,12 @@ export async function setDefaultMusicEmbed(guildId: string) {
     const canvas = createCanvas(1920, 1080);
     const ctx = canvas.getContext('2d');
 
-    const ImgBuff = await fetch('https://unsplash.it/1920/1080?random&blur=4').then(res => { return res.arrayBuffer() });
+    const ImgBuff = await fetch('https://source.unsplash.com/collection/11649432/1920x1080').then(res => { return res.arrayBuffer() });
     const Uint8Buff = new Uint8Array(ImgBuff);
     var thumbnail;
 
     try {
-        thumbnail = await sharp(Uint8Buff).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
+        thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
     } catch (e) {
         thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
     }
