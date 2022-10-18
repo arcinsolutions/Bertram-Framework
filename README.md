@@ -8,6 +8,7 @@
   - 24/7 music
   - Songs request channel
   - supports Apple Music, Spotify, Soundcloud, YouTube and YouTube Music
+  - Favorites
 
 - ### 📈comming Features
   - Autoplay
