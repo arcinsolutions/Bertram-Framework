@@ -18,6 +18,7 @@ export const database = {
     guild: async (ID: string) => await getGuild(ID),
     member: async (ID: string) => await getMember(ID),
     addGuild(guild: JSGuild) {_addGuild(guild)},
+    addMember(id: string | undefined) {return _addMember(id)},
     get connected() { return isDBConnected }
 }
 
@@ -37,7 +38,8 @@ async function initCore(client: Client) {
         logging: false,
         entities: [
             "src/modules/**/database/entities/*.ts",
-            DBGuild
+            DBGuild,
+            DBMember
         ],
     })
 
@@ -59,11 +61,11 @@ async function initCore(client: Client) {
  * @returns returns all Saved data which is stored in the database about the guild
  */
 async function getGuild(ID: string) {
-    return await (DBsource.getRepository(DBGuild).findOneBy({ guildId: ID }) as Promise<DBGuild>);
+    return await (DBsource.getRepository(DBGuild).findOneBy({ guildId: ID }) as Promise<DBGuild | null>);
 }
 
 async function getMember(ID: string) {
-    return await (DBsource.getRepository(DBMember).findOneBy({ memberId: ID }) as Promise<DBMember>);
+    return await (DBsource.getRepository(DBMember).findOneBy({ memberId: ID }) as Promise<DBMember | null>);
 }
 
 async function _addGuild(guild: JSGuild | null) {
@@ -73,6 +75,17 @@ async function _addGuild(guild: JSGuild | null) {
         newGuild.guildId = guild.id;
         newGuild.guildName = guild.name;
         await DBsource.getRepository(DBGuild).save(newGuild);
+    }
+}
+
+async function _addMember(id: string | undefined) {
+    if (!id)
+        return;
+
+    if (await getMember(id) == undefined) {
+        const newMember = new DBMember();
+        newMember.memberId = id;
+        return await DBsource.getRepository(DBMember).save(newMember);
     }
 }
 

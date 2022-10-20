@@ -6,17 +6,27 @@ import { musicGuild } from '../database/entities/guild.js';
 import { createCanvas, loadImage } from 'canvas'
 import formatDuration from 'format-duration'
 import { BetterQueue, BetterTrack } from './structures.js';
-import { setMusicEmbed, updateQueueEmbed } from './embed.js';
+import { setMusicEmbed, updateMusicEmbedButtons, updateMusicEmbedFooter, updateQueueEmbed } from './embed.js';
 import { core } from './../../../core/index.js';
 import sharp from 'sharp';
 import fetch from 'node-fetch';
 import { config } from './../../../core/config/index.js';
+import { musicMember } from '../database/entities/member.js';
+import { Member } from 'src/core/database/entities/member.js';
 
 // !IMPORTANT!
 export let musicGuilds: Map<string, { channelId: string, messageId: string }> = new Map();
+export let musicFavorties: Map<string, { tracks: Array<string> }> = new Map();
 
 export const getMusicStuffFromDB = async () => {
     const data = await core.database.get.getTreeRepository(musicGuild).find();
+    const favorites = await core.database.get.getTreeRepository(musicMember).find();
+
+    favorites.map(user => {
+        musicFavorties.set(user.memberId, {
+            tracks: user.favoriteSongs
+        })
+    })
 
     data.map(guild => {
         musicGuilds.set(guild.guildId, {
@@ -205,6 +215,54 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
     }
 }
 
+export async function addSongsToQueue(tracks: string[], player: Player, requester: string) {
+    const res = await music.search(tracks[0], "youtubemusic");
+
+    switch (res.loadType) {
+        case "LOAD_FAILED":
+            return new discordJs.EmbedBuilder({
+                description: `:x: Load failed!\nError: ${res.exception?.message}`
+            })
+        case "NO_MATCHES":
+            return new discordJs.EmbedBuilder({
+                description: `:x: No matches!`
+            })
+        default:
+            break;
+    }
+
+    if (res.loadType === 'PLAYLIST_LOADED') {
+        for (const track of res.tracks) {
+            track.setRequester(requester);
+            (player.queue as BetterQueue)?.add(track);
+        }
+
+        await updateQueueEmbed(player);
+        player.textChannel?.send({
+            embeds: [
+                new discordJs.EmbedBuilder({
+                    description: `:white_check_mark: Playlist loaded!\n${res.tracks.length} tracks added to the queue.`,
+                    color: discordJs.Colors.DarkGreen
+                })
+            ]
+        });
+    } else {
+        const track = res.tracks[0];
+        track.setRequester(player.queue.current?.requester);
+
+        (player.queue as BetterQueue)?.add(track);
+        player.textChannel?.send({
+            embeds: [
+                new discordJs.EmbedBuilder({
+                    description: `:white_check_mark: Track added to the queue!`,
+                    color: discordJs.Colors.DarkGreen
+                })
+            ]
+        });
+        await updateQueueEmbed(player);
+    }
+}
+
 // --- Channel Stuff ---
 
 // --------------------------------------------------
@@ -218,15 +276,15 @@ export async function createMusicImage(track: BetterTrack) {
 
     var thumbnail;
     if (track.thumbnail == null) {
-        thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+        thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
     } else {
         const fetchedImg = await fetch(track.thumbnail!).then(res => res.arrayBuffer());
         const Uint8Buff = new Uint8Array(fetchedImg);
 
         try {
-            thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+            thumbnail = await sharp(Uint8Buff).blur(8).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
         } catch (e) {
-            thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({brightness: 0.6}).toBuffer();
+            thumbnail = await sharp("./src/modules/music/assets/Music_Placeholder.png").blur(8).resize(canvas.width, canvas.height).modulate({ brightness: 0.6 }).toBuffer();
         }
     }
 
@@ -255,7 +313,7 @@ export async function createMusicImage(track: BetterTrack) {
     }).join('|'), 'g'), "") : track.title;
 
     if (formattedTitle.length >= 45)
-        formattedTitle = formattedTitle.slice(0, 45 - 1) + "…"  
+        formattedTitle = formattedTitle.slice(0, 45 - 1) + "…"
 
     ctx.fillText(
         (formattedTitle)
@@ -264,18 +322,112 @@ export async function createMusicImage(track: BetterTrack) {
 
     let formattedAuthor = track.author;
     if (formattedAuthor.length >= 45)
-        formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"  
+        formattedAuthor = formattedAuthor.slice(0, 45 - 1) + "…"
 
     ctx.fillText(formattedAuthor, 100, 400, (canvas.width - 50));
     ctx.fillText(track.isStream ? "LIVE" : formatDuration(track.duration, { leading: true }), 100, 600, (canvas.width - 50));
-    
+
     let formattedRequester = String(track.requester.username);
     if (track.requester.username.length >= 45)
-        formattedRequester = formattedRequester.slice(0, 45 - 1) + "…"  
-    
+        formattedRequester = formattedRequester.slice(0, 45 - 1) + "…"
+
     ctx.fillText(formattedRequester, 100, 800, (canvas.width - 50));
 
     return canvas.toBuffer();
 }
 
 // --- Image Stuff ---
+
+export async function addFavoriteToMember(id: string, url: string) {
+    const member = await core.database.get.getTreeRepository(musicMember).findOneBy({ memberId: id }) as musicMember | null;
+
+    if (member != null && member.favoriteSongs != undefined)
+        if (member.favoriteSongs.includes(url))
+            return false
+        else {
+            await core.database.get.createQueryBuilder().update(musicMember).set({ favoriteSongs: [...member!.favoriteSongs, url] }).where("memberId = :id", { id }).execute()
+            return true
+        }
+
+    await musicMember.createQueryBuilder()
+        .insert()
+        .into(musicMember)
+        .values({
+            memberId: id,
+            favoriteSongs: [url]
+        })
+        .orUpdate(["favoriteSongs"])
+        .execute();
+
+    return true
+}
+
+export async function removeFavoriteFromMember(id: string, url: string) {
+    const member = await core.database.get.getTreeRepository(musicMember).findOneBy({ memberId: id }) as musicMember | null;
+
+    if (member != null && member.favoriteSongs != undefined)
+        if (member.favoriteSongs.includes(url)) {
+            return await core.database.get.createQueryBuilder().update(musicMember).set({ favoriteSongs: member.favoriteSongs.filter(fav => fav !== url) }).where("memberId = :id", { id }).execute().then(() => { return true })
+        }
+
+    return false
+}
+
+export async function getFavoritesFromMember(id: string) {
+    const member = await core.database.get.getTreeRepository(musicMember).findOneBy({ memberId: id }) as musicMember | null;
+
+    if (member != null && member.favoriteSongs != undefined)
+        return member.favoriteSongs
+
+    return null
+}
+
+type _mode = "none" | "track" | "queue";
+
+export async function musicLoop(guildId: string, mode: _mode) {
+    const player = music.players.get(guildId);
+
+    if (!player) {
+        return new discordJs.EmbedBuilder({
+            title: 'No active Player',
+            description: 'please use this Command only if a is currently being played.',
+            color: discordJs.Colors.DarkRed
+        })
+    }
+
+    if (mode == "none") {
+        player.setTrackLoop(false);
+        player.setQueueLoop(false);
+        updateMusicEmbedFooter(player);
+        updateMusicEmbedButtons(player);
+        return new discordJs.EmbedBuilder({
+            title: 'Loop Disabled',
+            description: 'Loop has been disabled',
+            color: discordJs.Colors.DarkGreen
+        })
+    }
+
+    if (mode === "track") {
+        player.setTrackLoop(true);
+        player.setQueueLoop(false);
+        updateMusicEmbedFooter(player, { loop: 'Track' });
+        updateMusicEmbedButtons(player);
+        return new discordJs.EmbedBuilder({
+            title: 'Loop Enabled',
+            description: 'Loop has been enabled for the current track',
+            color: discordJs.Colors.DarkGreen
+        })
+    }
+
+    if (mode === "queue") {
+        player.setTrackLoop(false);
+        player.setQueueLoop(true);
+        updateMusicEmbedFooter(player, { loop: 'Queue' });
+        updateMusicEmbedButtons(player);
+        return new discordJs.EmbedBuilder({
+            title: 'Loop Enabled',
+            description: 'Loop has been enabled for the current queue',
+            color: discordJs.Colors.DarkGreen
+        })
+    }
+}

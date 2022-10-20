@@ -24,13 +24,13 @@ class Setup {
         })
         const tempMusic = musicGuilds.get(interaction.guild!.id);
 
-        if (typeof tempMusic === 'undefined') {
-            core.database.addGuild(interaction.guild!);
-            musicGuilds.set(interaction.guild!.id, {
-                channelId: "",
-                messageId: ""
-            });
-        }
+        // if (typeof tempMusic === 'undefined') {
+        //     core.database.addGuild(interaction.guild!);
+        //     musicGuilds.set(interaction.guild!.id, {
+        //         channelId: "",
+        //         messageId: ""
+        //     });
+        // }
 
         if (tempMusic === undefined || interaction.guild!.channels.cache.get(tempMusic.channelId) === undefined) {
             const channel = await createMusicChannel(interaction.guild!);

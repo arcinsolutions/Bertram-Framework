@@ -18,7 +18,7 @@ export async function setMusicEmbed(guildID: string) {
     const player = music.players.get(guildID)
 
     if (player == undefined)
-        await setDefaultMusicEmbed(guildID)
+        return await setDefaultMusicEmbed(guildID)
     else
         await updateMusicEmbed(player)
 }
@@ -285,9 +285,10 @@ export async function updateQueueEmbed(player: Player) {
 async function checkHasMusicChannelPermissions(channel: discordJs.TextChannel) {
     const permissions = channel.permissionsFor(client.user!);
     try {
-        if (permissions == null || !permissions.has(discordJs.PermissionFlagsBits.AttachFiles) ||
+        if (permissions == null || !permissions.has(discordJs.PermissionFlagsBits.AttachFiles, true) ||
             !permissions.has(discordJs.PermissionFlagsBits.EmbedLinks) || !permissions.has(discordJs.PermissionFlagsBits.ManageMessages))
             return false
+        return true
     } catch (error) {
         return true
     }
