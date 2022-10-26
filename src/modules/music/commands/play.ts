@@ -46,7 +46,16 @@ class Play {
         const player = await createMusicPlayer(interaction);
 
         //Connect to the Voice Channel
-        player.connect();
+        try {
+            player.connect();
+        } catch(e) {
+            console.log(e);
+            interaction.editReply({
+                embeds: [embed.setDescription(`:x: The bot could not connect to your channel. Please try again later.`)]
+            })
+            if (player !== undefined)
+            return player.destroy();
+        }
 
 
         if (res.loadType === 'PLAYLIST_LOADED') {
