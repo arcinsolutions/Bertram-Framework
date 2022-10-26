@@ -171,7 +171,21 @@ export async function addSongToPlayer(searchTerm: string, author: discordJs.User
         return player.destroy();
     }
 
-    player.connect();
+    try {
+        player.connect();
+    } catch(e) {
+        console.log(e);
+        await channel.send({
+            embeds: [
+                new discordJs.EmbedBuilder({
+                    description: ":x: The bot could not connect to your channel. Please try again later.",
+                    color: discordJs.Colors.DarkRed
+                })
+            ]
+        })
+        if (player !== undefined)
+        return player.destroy();
+    }
 
     if (res.loadType === 'PLAYLIST_LOADED') {
         for (const track of res.tracks) {
