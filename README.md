@@ -25,3 +25,5 @@
 
 ## Troubleshooting
 - please use [pnpm](https://pnpm.io) as a package manager.
+
+[![forthebadge](https://forthebadge.com/images/badges/contains-tasty-spaghetti-code.svg)](https://forthebadge.com)
